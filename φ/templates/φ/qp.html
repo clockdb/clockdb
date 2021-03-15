@@ -1,0 +1,86 @@
+{% extends "φ/layout.html" %}
+
+{% block body %}
+
+<!--- SCRIPT --->
+<script>       
+
+    // DOCUMENT TITLE
+    document.title = 'clockdb.com | home'
+
+</script>
+
+<!--- HOME --->
+
+<Section id="φ" style='padding-bottom:27%'>
+    <table>
+        <tbody>
+
+            <tr>
+                <td  colspan='2' style="border-bottom: ridge;">
+                    <h2 style="font-weight:bold;">entity</h2>
+                </td>
+                <td style="border-bottom: ridge;" >
+                    <h2 style="font-weight:bold;">value</h2>
+                </td>
+                <td style="border-bottom: ridge;">
+                    <h2 style="font-weight:bold;">+/-</h2>
+                </td>
+                <td style="border-bottom: ridge;">
+                    <h2 style="font-weight:bold;">status</h2>
+                </td>
+            </tr>
+
+            <tr></tr>
+            <tr></tr>
+
+            {% for entity in entities %}
+
+                <tr>
+                    <td colspan='2' style='padding-top: 24px;'>
+                        <a href="/{{ entity.TradingSymbol }}">
+                            <button style='padding-bottom: 0%;'>
+                                <h3 style="text-align:left; padding-bottom: 0%;"><b>{{ entity.EntityRegistrantName }} ({{ entity.TradingSymbol }})</b></h3>
+                            </button>
+                        </a>                           
+                    </td>
+                    <td style="vertical-align:bottom;" style='padding-top: 24px;'>
+                        <a href="/{{ entity.TradingSymbol }}">
+                            <button style='vertical-align:bottom; padding-bottom: 1%;'>
+                                <h3 style="text-align:center;"><b>{{ entity.Clockφ }}%</b></h3>
+                            </button>
+                        </a>
+                    </td>
+                    <td style="vertical-align:bottom;" style='padding-top: 24px;'>
+                        <a href="/{{ entity.TradingSymbol }}">
+                            <button style='padding-bottom: 1%;'>
+                                <h3 style="text-align: center;">{{ entity.ClockφChange }}pp</h3>
+                            </button>
+                        </a>
+                    </td>
+                    <td style="vertical-align:bottom;" style='padding-top: 24px;'>
+                        <a href="/{{ entity.TradingSymbol }}">
+                            <button style='padding-bottom: 1%;'>
+                                <h3 style="text-align: center;">{{ entity.Status }}</h3>
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan='4'>
+                        <a href="/{{ entity.TradingSymbol }}">
+                            <button style='padding-bottom: 0%;'>
+                                <h5 style="color:#8A9096; padding-bottom: 13px;">{{ entity.lastyear }}</h5>
+                                <h5 style="color:#8A9096; padding-bottom: 13px;">{{ entity.Industry }}</h5>
+                            </button>
+                        </a>                           
+                    </td>
+                </tr>
+            
+            {% endfor %}
+            
+        </tbody>
+    </table>
+</Section>
+
+{% endblock %}

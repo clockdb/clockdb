@@ -1,0 +1,109 @@
+{% extends "φ/layout.html" %}
+
+{% block body %}
+
+<!--- SCRIPT --->
+<script>       
+
+    // DOCUMENT TITLE
+    document.title = 'clockdb.com - Documentation'
+
+</script>
+
+<!--- DOCUMENTATION --->
+
+<div class="text" style="padding:5%">
+
+
+    <h3 style="padding-bottom:77px">FINANCIALS</h3>
+
+    <h3>Trial Balances & Cash Flow Statements</h3>
+
+        <p style="padding-bottom:77px">We reverse engineered the Financial Statements available through the Security And Exchange Commission (SEC) to obtain Trial Balances and Cash Flow Statements.
+            These documents constitutes the starting point of any valid fundamental analysis.
+            If the data provided by the algorithm turned out to be inacurate or if you would like to implement adjustment according to your specific needs, the information is fully constumizable.</p>
+
+            
+    <h3>Balance Sheets, Income Statements, Comprehensive Income, Stockholder's Equity</h3>
+
+        <p style="padding-bottom:77px">The financial statements are rebuild from the trial balances. Any adjustment on the client side will be reflected in the financial statements.</p>
+
+
+    <h3 style="padding-bottom:77px">AUDIT</h3>
+
+    <h3>Mission</h3>
+
+        <p style="padding-bottom:77px">Our Mission is to provide our users with a environment in which they can perform mulitple analysis of a corporation while knowing that the informaiton is reliable and remain uncorrupted.</H3>
+
+    <h3>Materiality Threshold</H3>
+
+        <p style="padding-bottom:77px">The Materiality Threshold establish the sensitivity of the models to misstatements in the financial statements.
+            Any user who wishes to evaluate a business should make sure the anomalies detected are bellow this Threshold.</h3>
+
+    <h3>Procedures</h3>
+  
+          <p style="padding-bottom:77px">We implemented divers data processing audit procedures in order to prove that the information collected from the SEC as been duly reproduced in our database.</p>
+
+    <h3>Anomalies and unexplained differences</h3>
+    
+        <p style="padding-bottom:77px">We provided you with a summary of the anomalies and unexplained differences for more efficiency and precision.</p>
+
+
+    <h3 style="padding-bottom:77px">VALUATION</h3>
+
+    <h3>Financial Ratios</h3>
+    
+        <p style="padding-bottom:77px">The definition of the diverse ratios compiled are documented in footnote.</p>
+
+    <h3>Capitalized Cash Flow</h3>
+ 
+        <p style="padding-bottom:77px">The Capitalization of Cash Flow Method is an income-based approach to valuation that is based on the company's ability to generate cash flows in the future.
+        Diverse balance sheets adjustments are then executed to take into account the financial structure of the corporation.
+        Again, the data is fully costumizable.</p>
+
+    <h3>Capitalized Income</h3>
+
+        <p style="padding-bottom:77px">Capitalization of earnings is a method to determine the value of an business by calculating the worth of its profits based on current earnings and expected future performance.
+            Considering the stage of the project, the information provided to you is only based on historical data. Feel free to adjust it to suits your need.</p>    
+
+    <h3>Capitalized Forecast</h3>
+    
+        <p style="padding-bottom:77px">We provided you with a virgin capitalized cashflow template if you wish to evaluate the business based on forecast for which the data is not collected at the time being.</p>
+
+    <h3>Capitalization Rates</h3>
+    
+        <p style="padding-bottom:77px">A capitalization rate is used to compare different assets (businesses) on a mutual basis while also taking into account the specificities of each business in question.
+            The rate usually considers the expected return, the growth of the corporation, its risk and the cost of it's total assets paid through interest and dividends.</p>
+
+    <h3>Intrinsic Values</h3>
+    
+            <p style="padding-bottom:77px">The intrinsic value page gives you an overview of the intrinsic value results of the different methods and gives you the opportunity to weight in these methods to suit your needs.</p>
+    
+
+    <h3 style="padding-bottom:77px">OPINION</h3>
+
+    <h3>Intrinsic Value</h3>
+    
+        <p style="padding-bottom:77px">The intrinsic value from the Opinion section gives you the weighted intrinsic value based on the weight provided in the intrinsic value section and end up with a single intrinsic value for all common shares.</p>
+
+    <h3>Market Capitalization</h3>
+    
+        <p style="padding-bottom:77px">The market capitalization is the total market value of the common shares of a corporation that must be put in relation to the intrinsic value in order to asses the overvaluation (undervaluation).
+            It is essentialy the product of the number of shares oustanding by the market value of each shares.</p>
+
+    <h3>Valuation Ratio</h3>
+    
+        <p style="padding-bottom:77px">The valuation ratio is the quotient of the intrinsic value over the market capitalization. It determines if the price of a common shares is expensive of not and is the final value concluding the decision making process.</p>
+    
+    <h3>Audit</h3>
+  
+        <p style="padding-bottom:77px">The audit opinion is the opinion of the algorithm on the data is it provided with in the trial balances and the cash flow statements.
+            In order to rely on the valuation ratio, one should make sure the underlying data is accurate and therefor make sure the audit leads to the opinion that nothing leads to believe that there are material misstatements in the financial statements.</p>
+
+    <h3>Opinion</h3>
+ 
+           <p style="padding-bottom:77px">Based on the audit opinion and the valuation ratio, we conclude if the asset is one to buy or hedge for a loss in value.</p>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "φ/layout.html" %}
+
+{% block body %}
+
+<!--- SCRIPT --->
+<script>       
+
+    // DOCUMENT TITLE
+    document.title = 'clockdb.com | menu'
+
+</script>
+
+<!--- ENTITIES --->
+
+<div class="text" style="padding: 2%; padding-bottom: 199px;">
+
+    <ul style="padding-top: 59px;">
+            
+        <a href="{% url 'φ:db' %}"><button><h4 style="padding-top:4%; padding-bottom:27px;"><b>db audited database</h4></b></button></a>
+
+        <a href="{% url 'φ:qp' %}"><button><h4 style="padding-top:4%; padding-bottom:27px;"><b>qp database with material misstatements</h4></b></button></a>
+
+        <a href="{% url 'φ:entities' %}"><button><h4 style="padding-top:4%; padding-bottom:27px;"><b>list of entities</h4></b></button></a>
+        
+        <a href="{% url 'φ:index' %}"><button><h4 style="padding-top:4%; padding-bottom:27px;"><b>contact</h4></b></button></a>
+
+        <a href="{% url 'φ:disclaimer' %}"><button><h4 style="padding-top:4%; padding-bottom:27px;"><b>disclaimer</h4></b></button></a>
+
+    </ul>
+    
+</div>
+
+{% endblock %}

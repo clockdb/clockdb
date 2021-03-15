@@ -1,0 +1,38 @@
+{% extends "φ/layout.html" %}
+
+{% block body %}
+
+<!--- SCRIPT --->
+<script>       
+
+    // DOCUMENT TITLE
+    document.title = 'clockdb.com | entities'
+
+</script>
+
+<!--- ENTITIES --->
+
+<div class="text" style="padding: 7%;">
+
+    <ul style="margin:19px;">
+
+        {% for entity in entities %}
+            
+            <a href="/{{ entity.TradingSymbol }}">
+           
+                <button>
+                    
+                    <h4 style='text-align:center'><b>{{ entity.EntityRegistrantName }} ({{ entity.TradingSymbol }})</h4></b>
+                    <h5 style="color:#8A9096; padding-bottom:5%">{{ entity.Industry }}</h5>
+
+                </button>
+ 
+            </a>
+
+        {% endfor %}
+    
+    </ul>
+    
+</div>
+
+{% endblock %}
