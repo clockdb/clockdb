@@ -1,0 +1,285 @@
+<!--- CONTEXT --->
+<div id="Context" style="display: none" class="card p-4 align-items-start">
+    <table class='margin'> 
+        <tbody>
+            <tr>
+                <td><h3 id="EntityRegistrantNameContext" style="font-weight:bold; margin-left:0px;"></h3></td>
+            </tr>
+            <tr>
+                <td><h3 style="font-weight:bold; margin-left:0px;">CONTEXT</h3></td>
+            </tr>
+        </tbody>
+    </table>
+    <table class='margin'> 
+        <tbody>
+            <tr id="ContextDateRow" class="ContextDate">
+                <td colspan='3'></td>
+                <td style="text-align:center; font-weight:bold;"></td>
+                <td style="padding-top:30px">
+                    <input type="checkbox" id="ContextDateCheckbox"></input>
+                    <input type="checkbox" id="ContextDateCheckbox2"></input>
+                </td>
+                <td colspan='2' style="padding-top:30px" class="C1"><input id="ContextDate1" style="font-weight:bold; text-align:center;" value="{{ entity.lastyear }}" onfocusout="Compile()"></input></td>
+                <td colspan='2' style="padding-top:30px" class="C2"><input id="ContextDate2" style="font-weight:bold; text-align:center;" value="{{ entity.secondlastyear }}" onfocusout="Compile()"></input></td>
+                <td colspan='2' style="padding-top:30px" class="C3"><input id="ContextDate3" style="font-weight:bold; text-align:center;" value="{{ entity.thirdlastyear }}" onfocusout="Compile()"></input></td>
+                <td colspan='2' style="padding-top:30px" class="C4"><input id="ContextDate4" style="font-weight:bold; text-align:center;" value="{{ entity.fourthlastyear }}" onfocusout="Compile()"></input></td>
+                <td colspan='2' style="padding-top:30px" class="C5"><input id="ContextDate5" style="font-weight:bold; text-align:center;" value="{{ entity.fifthlastyear }}" onfocusout="Compile()"></input></td>
+                <td colspan='2' style="padding-top:30px" class="C6"><input id="ContextDate6" style="font-weight:bold; text-align:center;" value="{{ entity.sixthlastyear }}" onfocusout="Compile()"></input></td>
+            </tr>
+            <tr id="AmendRow" class="Context">
+                <td colspan='3'></td>
+                <td style="text-align:center; font-weight:bold;"></td>
+                <td>
+                    <input type="checkbox" id="AmendCheckbox"></input>
+                    <input type="checkbox" id="AmendCheckbox2"></input>
+                </td>
+                <td colspan='2' style="padding-bottom: 3%;" class="C1"><input id="Amend1" style="font-weight:bold; text-align:center;" value="{{ entity.amendlastyear }}" onfocusout="Compile()"></input></td>
+                <td colspan='2' style="padding-bottom: 3%;" class="C2"><input id="Amend2" style="font-weight:bold; text-align:center;" value="{{ entity.amendsecondlastyear }}" onfocusout="Compile()"></input></td>
+                <td colspan='2' style="padding-bottom: 3%;" class="C3"><input id="Amend3" style="font-weight:bold; text-align:center;" value="{{ entity.amendthirdlastyear }}" onfocusout="Compile()"></input></td>
+                <td colspan='2' style="padding-bottom: 3%;" class="C4"><input id="Amend4" style="font-weight:bold; text-align:center;" value="{{ entity.amendfourthlastyear }}" onfocusout="Compile()"></input></td>
+                <td colspan='2' style="padding-bottom: 3%;" class="C5"><input id="Amend5" style="font-weight:bold; text-align:center;" value="{{ entity.amendfifthlastyear }}" onfocusout="Compile()"></input></td>
+                <td colspan='2' style="padding-bottom: 3%;" class="C6"><input id="Amend6" style="font-weight:bold; text-align:center;" value="{{ entity.amendsixthlastyear }}" onfocusout="Compile()"></input></td>
+            </tr>
+            <script>
+                function FilingsHref() {
+                    var z = 0
+                    var a = document.getElementById('url1').value;
+                    document.getElementById('Filings1').href = a;
+                    if (a.length < 5) {
+                        z = z + 1
+                    }
+                    var a = document.getElementById('url2').value;
+                    document.getElementById('Filings2').href = a;
+                    if (a.length < 5) {
+                        z = z + 1
+                    }
+                    var a = document.getElementById('url3').value;
+                    document.getElementById('Filings3').href = a;
+                    if (a.length < 5) {
+                        z = z + 1
+                    }
+                    var a = document.getElementById('url4').value;
+                    document.getElementById('Filings4').href = a;
+                    if (a.length < 5) {
+                        z = z + 1
+                    }
+                    var a = document.getElementById('url5').value;
+                    document.getElementById('Filings5').href = a;
+                    if (a.length < 5) {
+                        z = z + 1
+                    }
+                    var a = document.getElementById('url6').value;
+                    document.getElementById('Filings6').href = a;
+                    if (a.length < 5) {
+                        z = z + 1
+                    }
+                    if (z == 6) {
+                        a = 'none';
+                    } else {
+                        a = '';
+                    }
+                    FilingsUrl = document.getElementsByClassName('Filings');
+                    //
+                    for(let i = 0; i <= FilingsUrl.length; i++) { 
+                        try {
+                            FilingsUrl[i].style.display = a;
+                        } catch {}
+                    }
+                }
+            </script>
+            <tr id="FilingsRow" class="Filings">
+                <td colspan="5"></td>
+                <td colspan='2' class='C1' style="text-align:center"><a target="_blank" id="Filings1" style="color:#0D47A1;"><h6 style="text-align:center; padding-bottom: 3%;;">Filings</h6></a>
+                <td colspan='2' class='C2' style="text-align:center"><a target="_blank" id="Filings2" style="color:#0D47A1;"><h6 style="text-align:center; padding-bottom: 3%;;">Filings</h6></a>
+                <td colspan='2' class='C3' style="text-align:center"><a target="_blank" id="Filings3" style="color:#0D47A1;"><h6 style="text-align:center; padding-bottom: 3%;;">Filings</h6></a>
+                <td colspan='2' class='C4' style="text-align:center"><a target="_blank" id="Filings4" style="color:#0D47A1;"><h6 style="text-align:center; padding-bottom: 3%;;">Filings</h6></a>
+                <td colspan='2' class='C5' style="text-align:center"><a target="_blank" id="Filings5" style="color:#0D47A1;"><h6 style="text-align:center; padding-bottom: 3%;;">Filings</h6></a>
+                <td colspan='2' class='C6' style="text-align:center"><a target="_blank" id="Filings6" style="color:#0D47A1;"><h6 style="text-align:center; padding-bottom: 3%;;">Filings</h6></a>   
+            </tr>
+            <tr id="CIKRow" class="Context">
+                <td colspan="4"><h6>Entity Central Index Key</h6></td>
+                <td>
+                    <input type="checkbox" id="CIKCheckbox"></input>
+                    <input type="checkbox" id="CIKCheckbox2"></input>
+                </td>
+                <td colspan='2' class='C1'><input type="text" value="{{ entity.EntityCentralIndexKey }}" id="CIK1" style="font-weight:bold;" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C2'><input type="text" id="CIK2" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C3'><input type="text" id="CIK3" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C4'><input type="text" id="CIK4" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C5'><input type="text" id="CIK5" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C6'><input type="text" id="CIK6" onfocusout="Compile()"></input></td>
+            </tr>
+            <tr id="EntityRegistrantNameRow" class="Header">
+                <td colspan="3"><h6>Entity Registrant Name</h6></td>
+                <td><button style="font-weight:bold; text-align:center;  box-shadow: none; color:#0D47A1; background-color: white" data-page="MissionFiles" class="MissionFiles">{</button></td>
+                <td>
+                    <input type="checkbox" id="EntityRegistrantNameCheckbox"></input>
+                    <input type="checkbox" id="EntityRegistrantNameCheckbox2"></input>
+                </td>
+                <td colspan='2' class='C1'><input value="{{ entity.EntityRegistrantName }}" id="EntityRegistrantName1" style="font-weight:bold;" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C2'><input id="EntityRegistrantName2" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C3'><input id="EntityRegistrantName3" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C4'><input id="EntityRegistrantName4" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C5'><input id="EntityRegistrantName5" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C6'><input id="EntityRegistrantName6" type="text" onfocusout="Compile()"></input></td>
+            </tr>
+            <tr id="TradingSymbolRow" class="Header">
+                <td colspan="4"><h6>Trading Symbol</h6></td>
+                <td>
+                    <input type="checkbox" id="TradingSymbolCheckbox"></input>
+                    <input type="checkbox" id="TradingSymbolCheckbox2"></input>
+                </td>
+                <td colspan='2' class='C1'><input value="{{ entity.TradingSymbol }}" id="TradingSymbol1" style="font-weight:bold;" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C2'><input id="TradingSymbol2" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C3'><input id="TradingSymbol3" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C4'><input id="TradingSymbol4" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C5'><input id="TradingSymbol5" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C6'><input id="TradingSymbol6" type="text" onfocusout="Compile()"></input></td>
+            </tr>
+            <tr id="Industry_SECRow" class="Header">
+                <td colspan="4"><h6>Industry</h6></td>
+                <td>
+                    <input type="checkbox" id="Industry_SECCheckbox"></input>
+                    <input type="checkbox" id="Industry_SECCheckbox2"></input>
+                </td>
+                <td colspan='2' class='C1'><input value="{{ entity.Industry_SEC }}" id="Industry_SEC1" style="font-weight:bold;" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C2'><input id="Industry_SEC2" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C3'><input id="Industry_SEC3" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C4'><input id="Industry_SEC4" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C5'><input id="Industry_SEC5" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C6'><input id="Industry_SEC6" type="text" onfocusout="Compile()"></input></td>
+            </tr>
+            <tr id="IndustryRow" class="Header">
+                <td colspan="4"><h6>Industry (Clockdb)</h6></td>
+                <td>
+                    <input type="checkbox" id="IndustryCheckbox"></input>
+                    <input type="checkbox" id="IndustryCheckbox2"></input>
+                </td>
+                <td colspan='2' class='C1'><input value="{{ entity.Industry }}" id="Industry1" style="font-weight:bold;" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C2'><input id="Industry2" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C3'><input id="Industry3" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C4'><input id="Industry4" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C5'><input id="Industry5" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C6'><input id="Industry6" type="text" onfocusout="Compile()"></input></td>
+            </tr>
+            <tr id="RegionRow" class="Header">
+                <td colspan="4"><h6>Region</h6></td>
+                <td>
+                    <input type="checkbox" id="RegionCheckbox"></input>
+                    <input type="checkbox" id="RegionCheckbox2"></input>
+                </td>
+                <td colspan='2' class='C1'><input value="{{ entity.Region }}" id="Region1" style="font-weight:bold;" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C2'><input id="Region2" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C3'><input id="Region3" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C4'><input id="Region4" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C5'><input id="Region5" type="text" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C6'><input id="Region6" type="text" onfocusout="Compile()"></input></td>
+            </tr>
+            <tr id="AccessionNumberRow" class="Context">
+                <td colspan="4"><h6>Accession Numbers</h6></td>
+                <td>
+                    <input type="checkbox" id="AccessionNumberCheckbox"></input>
+                    <input type="checkbox" id="AccessionNumberCheckbox2"></input>
+                </td>
+                <td colspan='2' class='C1'><input type="text" value="{{ entity.accessionnumberlastyear }}" id="AccessionNumber1" style="font-weight:bold;" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C2'><input type="text" value="{{ entity.accessionnumbersecondlastyear }}" id="AccessionNumber2" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C3'><input type="text" value="{{ entity.accessionnumberthirdlastyear }}" id="AccessionNumber3" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C4'><input type="text" value="{{ entity.accessionnumberfourthlastyear }}" id="AccessionNumber4" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C5'><input type="text" value="{{ entity.accessionnumberfifthlastyear }}" id="AccessionNumber5" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C6'><input type="text" value="{{ entity.accessionnumbersixthlastyear }}" id="AccessionNumber6" onfocusout="Compile()"></input></td>
+            </tr>
+            <tr id="StatusRow" class="Context">
+                <td colspan="4"><h6>Status</h6></td>
+                <td>
+                    <input type="checkbox" id="StatusCheckbox"></input>
+                    <input type="checkbox" id="StatusCheckbox2"></input>
+                </td>
+                <td colspan='2' class='C1'><input type="text" value = "{{ AuditData_lastyear.db }}" id="Status1" style="font-weight:bold;" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C2'><input type="text" value = "{{ AuditData_secondlastyear.db }}" id="Status2" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C3'><input type="text" value = "{{ AuditData_thirdlastyear.db }}" id="Status3" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C4'><input type="text" value = "{{ AuditData_fourthlastyear.db }}" id="Status4" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C5'><input type="text" value = "{{ AuditData_fifthlastyear.db }}" id="Status5" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C6'><input type="text" value = "{{ AuditData_sixthlastyear.db }}" id="Status6" onfocusout="Compile()"></input></td>
+            </tr>
+            <tr id="WIPRow" class="Context">
+                <td colspan="4"><h6>Work In Progress</h6></td>
+                <td>
+                    <input type="checkbox" id="WIPCheckbox"></input>
+                    <input type="checkbox" id="WIPCheckbox2"></input>
+                </td>
+                <td colspan='2' class='C1'><input type="text" id="WIP1" value = "{{ entity.db }}" style="font-weight:bold;" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C2'><input type="text" id="WIP2" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C3'><input type="text" id="WIP3" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C4'><input type="text" id="WIP4" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C5'><input type="text" id="WIP5" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C6'><input type="text" id="WIP6" onfocusout="Compile()"></input></td>
+            </tr>
+            <tr id="SharePriceAsOfRow" class="Date">
+                <td colspan="4"><h6>Shares Price As Of</h6></td>
+                <td>
+                    <input type="checkbox" id="SharePriceAsOfCheckbox"></input>
+                    <input type="checkbox" id="SharePriceAsOfCheckbox2"></input>
+                </td>
+                <td colspan='2' class='C1'><input id="SharePriceAsOf1" value="{{ entity.SecuritiesUpdate }}" style="font-weight:bold;" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C2'><input id="SharePriceAsOf2" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C3'><input id="SharePriceAsOf3" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C4'><input id="SharePriceAsOf4" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C5'><input id="SharePriceAsOf5" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C6'><input id="SharePriceAsOf6" onfocusout="Compile()"></input></td>
+            </tr>
+            <tr id="PreparedRow" class="Date">
+                <td colspan="4"><h6>Prepared</h6></td>
+                <td>
+                    <input type="checkbox" id="PreparedCheckbox"></input>
+                    <input type="checkbox" id="PreparedCheckbox2"></input>
+                </td>
+                <td colspan='2' class='C1'><input id="Prepared1" value="{{ entity.SEC_Update }}" style="font-weight:bold;" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C2'><input id="Prepared2" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C3'><input id="Prepared3" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C4'><input id="Prepared4" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C5'><input id="Prepared5" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C6'><input id="Prepared6" onfocusout="Compile()"></input></td>
+            </tr>
+            <tr id="ReviewedRow" class="Context"></tr>
+                <td colspan="4"><h6>Reviewed</h6></td>
+                <td>
+                    <input type="checkbox" id="ReviewedCheckbox"></input>
+                    <input type="checkbox" id="ReviewedCheckbox2"></input>
+                </td>
+                <td colspan='2' class='C1'><input id="Reviewed1" style="font-weight:bold;" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C2'><input id="Reviewed2" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C3'><input id="Reviewed3" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C4'><input id="Reviewed4" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C5'><input id="Reviewed5" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C6'><input id="Reviewed6" onfocusout="Compile()"></input></td>
+            </tr>
+            <tr id="SignatoryRow" class="Context"></tr>
+                <td colspan="4"><h6>Signatory</h6></td>
+                <td>
+                    <input type="checkbox" id="SignatoryCheckbox"></input>
+                    <input type="checkbox" id="SignatoryCheckbox2"></input>
+                </td>
+                <td colspan='2' class='C1'><input id="Signatory1" style="font-weight:bold;" onchange="Signatory()" onfocusout="Compile()" value="AI generated"></input></td>
+                <td colspan='2' class='C2'><input id="Signatory2" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C3'><input id="Signatory3" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C4'><input id="Signatory4" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C5'><input id="Signatory5" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C6'><input id="Signatory6" onfocusout="Compile()"></input></td>
+            </tr>
+            <tr id="urlRow" class="Context"></tr>
+                <td colspan="4"><h6>urls</h6></td>
+                <td>
+                    <input type="checkbox" id="urlCheckbox"></input>
+                    <input type="checkbox" id="urlCheckbox2"></input>
+                </td>
+                <td colspan='2' class='C1'><input id="url1" value="{{ TrialBalance_lastyear.Link }}" style="font-weight:bold;" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C2'><input id="url2" value="{{ TrialBalance_secondlastyear.Link }}" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C3'><input id="url3" value="{{ TrialBalance_thirdlastyear.Link }}" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C4'><input id="url4" value="{{ TrialBalance_fourthlastyear.Link }}" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C5'><input id="url5" value="{{ TrialBalance_fifthlastyear.Link }}" onfocusout="Compile()"></input></td>
+                <td colspan='2' class='C6'><input id="url6" value="{{ TrialBalance_sixthlastyear.Link }}" onfocusout="Compile()"></input></td>
+            </tr>
+            <tr><td style="color:white">.</td></tr>
+        </tbody>
+    </table>
+</div>

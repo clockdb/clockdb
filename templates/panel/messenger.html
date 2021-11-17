@@ -1,0 +1,256 @@
+<style type="text/css">
+	.chat-log {
+		height: 230px;
+		overflow-x: hidden;
+		overflow-y: auto;
+		padding: 5px;
+		background-color: #fff;
+		font-size: 0.9em;
+		flex-direction: column-reverse;
+	}
+	.chat-message-input-container{
+		outline: none;
+		box-shadow: none;
+	}
+	.chat-message-input{
+		outline: none;
+		border: 2px solid #fff;
+		border-top: 2px solid var(--main-background-color);
+		
+	}
+	.message-container{
+		margin-top: 10px;
+		justify-content: start;
+	}
+	.username-span-messages{
+		font-weight: 600;
+		margin-top: 0px;
+		margin-bottom: auto;
+		margin-left: 5px;
+		margin-right: 5px;
+	}
+	.friend-message-span{
+		font-weight: 380;
+		margin-top: 0px;
+		margin-bottom: auto;
+		margin-left: 5px;
+		margin-right: 5px;
+		font-size: 0.6em;
+		color: var(--light-primary-text-color);
+	}
+	.timestamp-span{
+		font-weight: 400;
+		font-size: 0.8em;
+		color: var(--secondary-text-color);
+	}
+	.timestamp-span:hover{
+		cursor: pointer;
+	}
+	.msg-p{
+		font-weight: 450;
+		margin-top: 5px;
+		margin-bottom: auto;
+		margin-left: 5px;
+		margin-right: 5px;
+		white-space: normal;
+		-ms-word-break: break-all;
+		word-break: break-all;
+	}
+	.profile-image-messages{
+		width: 33px;
+		height: 33px;
+		margin-top: 0px;
+		margin-left: 5px;
+		margin-bottom: 0px;
+	}
+	.profile-image-messages-small{
+		width: 25px;
+		height: 25px;
+		margin-top: 0px;
+		margin-bottom: auto;
+		margin-right: 5px;
+	}
+	.profile-image-messages:hover{
+		cursor: pointer;
+	}
+	.profile-image-messages-small:hover{
+		cursor: pointer;
+	}
+	.username-span-messages:hover{
+		cursor: pointer;
+	}
+	.material-icons:hover{
+		cursor: pointer;
+	}
+	.card {
+		border-radius: 0px;
+	}
+	
+	#id_chatroom_loading_spinner{
+		position: absolute;
+	}
+	.friend-container:hover{
+		background: var(--main-background-color);
+		cursor: pointer;
+	}
+	.friends-list-container{
+		height: 300px;
+		overflow-y: scroll;
+	}
+	.card {
+		width: 100%;
+	}
+	.id_user_info_container{
+		padding-top: 15px;
+		width: 100%;
+	}
+	.recipient{
+		text-align: left;
+		float: left;
+		overflow: hidden;
+		width: 90%;
+	}
+	.panel{
+		text-align: right;
+		float: right;
+		overflow: hidden;
+		width: 10%;
+	}
+	.id_other_username{
+		margin-top: 5px;
+		margin-left: 21px;
+		vertical-align: middle;
+		text-align: left;
+		float: left;
+		overflow: hidden;
+	}
+	.profile_image_messages_{
+		text-align: left;
+		float: left;
+		overflow: hidden;
+	}
+	.messengerHeader{
+		width : 100%;
+		height: 55px;
+		border: solid 1.5px rgb(242, 242, 242);
+		float: left;
+		overflow: hidden;
+		vertical-align: middle;
+		background-color: white;
+	}
+	.messengerTitle{
+		color: #696969;
+		width: 72%;
+		vertical-align: middle;
+		float: left;
+		overflow: hidden;
+		vertical-align: middle;
+		margin-top:3%;
+	}
+	.messengerHeaderPanel{
+		width: 25%;
+		text-align: right;
+		float: left;
+		overflow: hidden;
+		vertical-align: right;
+		margin-top:2%;
+		margin-bottom:2%;
+	}
+	.messengerMain{
+		width: 100%;
+		border: solid 1.5px rgb(242, 242, 242);
+		border-bottom-left-radius: 15px;
+	}
+	.messengerContent{
+		border-bottom-left-radius: 15px;
+	}
+	.messengerInput{
+		height: 100%;
+		font-size: 11px;
+		width: 83%;
+		border: 0;
+		outline: none;
+		margin-top: 2%;
+		margin-bottom: 2%;
+		border-bottom-left-radius: 15px;
+		background-color: rgb(242, 242, 242);
+		padding-left: 10px;
+	}
+	.messengerFriendList{
+		width: 100%;
+		max-height: 300px;
+		overflow-y: scroll;
+	}
+	.messengerContainer{
+		text-align: left;
+		border-bottom-left-radius: 15px;
+	}
+	.messengerView{
+		width: 100%;
+		display: flex;
+		flex-wrap: wrap;
+	}
+	.username-span-messages-friend{
+		vertical-align: middle;
+		margin-left: 21px;
+	}
+</style>
+
+<div class="messengerContainer">
+	<div class="messengerView">	
+		<div class="messengerFriendList">
+			<div class="messengerContent">	
+				{% for x in m_and_f %}
+				<div class="d-flex flex-row p-2 friend-container flex-grow-1" onclick="onSelectFriend('{{x.friend.id}}')" id="id_friend_container_{{x.friend.id}}">
+					<img class="profile-image-messages rounded-circle img-fluid" id="id_friend_img_{{x.friend.id}}" src="/static/clockdb/dummy_image.png/" >
+					<div style="border-bottom-left-radius: 15px;">
+						<span class="username-span-messages-friend" id="{{x.friend.id}}">{{x.friend.username}}</span>
+						<span class="friend-message-span">{{x.message|truncatechars:20}}</span>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+		<div class="messengerHeader" id="id_chatroom_card">
+			<div class="messengerTitle" id="id_room_title">
+				<a class="id_user_info_container" id="id_user_info_container">
+					<div class="profile_image_messages_">
+						<img class="profile-image-messages rounded-circle img-fluid" id="id_other_user_profile_image" src="/static/clockdb/dummy_image.png/">
+					</div>
+					<div class="id_other_username">
+						<h6 id="id_other_username"></h6>
+					</div>
+				</a>
+			</div>
+			<div class='messengerHeaderPanel'>
+				<button class="virgin" id="CloseMessenger" data-page="CloseMessenger">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+						<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+					</svg>
+				</button>
+			</div>
+		</div>
+		<div class="messengerMain">
+			<div style="border-bottom-left-radius: 15px;" id="id_chat_log_container">
+				<div class="d-flex flex-row justify-content-center" id="id_chatroom_loading_spinner_container">
+					<div class="spinner-border text-primary"  id="id_chatroom_loading_spinner" role="status"  style="display: none; ">
+						<span class="sr-only">Loading...</span>
+					</div>
+				</div>
+				<div class="d-flex chat-log" id="id_chat_log"></div>
+				<span class="{% if not debug %}d-none{% endif %} page-number" id="id_page_number">1</span>
+				<div class="messengerContent" style="background-color: rgb(242, 242, 242);">
+					<input class="messengerInput" id="id_chat_message_input"></input>
+					<button class="virgin" data-page="send_message">
+						<span id="id_chat_message_submit">
+							<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16">
+								<path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>
+							  </svg>
+						</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+

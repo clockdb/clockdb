@@ -1,0 +1,53 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<!-- View -->
+<div class="clockdb">
+    <!-- Working Paper -->
+    <section class="φ">
+        {% include 'analysis/valuation/graph.html' %}
+        {% include 'analysis/valuation/opinion.html' %}
+        {% include 'analysis/valuation/intrinsicvalues.html' %}
+        {% include 'analysis/valuation/capitalizedcashflow.html' %}
+        {% include 'analysis/valuation/capitalizedincome.html' %}
+        {% include 'analysis/valuation/capitalizationrates.html' %}
+        {% include 'analysis/valuation/financialratios.html' %}
+        {% include 'analysis/valuation/additionalinformation.html' %}
+        {% include 'analysis/financials/balancesheets.html' %}
+        {% include 'analysis/financials/comprehensiveincome.html' %}
+        {% include 'analysis/financials/incomestatements.html' %}
+        {% include 'analysis/financials/shareholdersequity.html' %}
+        {% include 'analysis/financials/cashflow.html' %}
+        {% include 'analysis/financials/trialbalances.html' %}
+        {% include 'analysis/audit/summary.html' %}
+        {% include 'analysis/audit/anomalies.html' %}
+        {% include 'analysis/audit/procedures/balancesheets.html' %}
+        {% include 'analysis/audit/procedures/incomestatements.html' %}
+        {% include 'analysis/audit/procedures/comprehensiveincome.html' %}
+        {% include 'analysis/audit/procedures/shareholdersequity.html' %}
+        {% include 'analysis/audit/procedures/cashflow.html' %}
+        {% include 'analysis/audit/materiality.html' %}
+        {% include 'analysis/audit/mission.html' %}
+        {% include 'analysis/context.html' %}
+        {% include 'analysis/files.html' %}
+        {% include 'analysis/referencemap.html' %}
+    </section>
+    <!-- Base Content -->
+    {% include 'search/Entities.html' %}
+    {% include 'search/Posts.html' %}
+    {% include 'search/Network.html' %}
+    {% include 'more/about.html' %}
+    {% include 'more/commands.html' %}
+    {% include 'more/disclaimer.html' %}
+    {% include 'more/documentation.html' %}
+    {% include 'profile/profile.html' %}
+    {% include 'profile/edit.html' %}
+    {% include 'profile/friend_requests.html' %}
+    {% include 'profile/notifications/general_notifications.html' %}
+    {% include 'profile/notifications/chat_notifications.html' %}
+</div>
+{% include 'base/onePageApp.html' %}
+{% endblock content %}
+
+
+
+

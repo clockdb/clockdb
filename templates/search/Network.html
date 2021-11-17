@@ -1,0 +1,143 @@
+
+<style type="text/css">
+	.profile-image-userProfile{
+		max-height: 100px;
+		max-width: 100px;
+	}
+	.profile-image-userProfile{
+		border-radius: 12px;
+	}
+	.card{
+		border-radius: 12px;
+	}
+	.friends-text{
+		color: #000;
+		font-weight: 500;
+	}
+	.friends-text-container{
+		border: 1px solid #cccccc;
+		border-radius: 12px;
+	}
+	.friends-btn:hover {
+		background-color: #bfbfbf;
+		border-color: #bfbfbf;
+	}
+	.dropdown-toggle::after { 
+		content: none; 
+	}
+	.profile-link{
+		color: #000;
+	}
+	.card-title {
+		font-size: 15px;
+		font-weight: bold;
+		float: left;
+		overflow: hidden;
+	}
+	.checkmark-icon{
+		color: green;
+	}
+	.cancel-icon{
+		color: red;
+	}
+	.profiles-container{
+		text-align: center;
+		background-color: white;
+		margin: 0;
+		padding: 0;
+		width: 60%;
+		margin-left: 20%;
+	}
+	.profile-container{
+		background-color: white;
+		width: 100%;
+		float: left;
+		overflow: hidden;
+		margin-top: 6%;
+		margin-bottom: 3%;
+	}
+	.profile-main{
+		background-color: white;
+		width: 100%;
+	}
+	.profile-content{
+		background-color: white;
+		width: 33%;
+	}
+	.profile-username{
+		text-align: left;
+		font-size: 13px;
+		padding-left: 3%;
+		width: 50%;
+		display: grid;
+	}
+	.profile-image{
+		float: left;
+		overflow: hidden;
+	}
+	.friends-icon-network{
+		font-size: 9px;
+		margin-left: 9px;
+		margin-bottom: 9px;
+		color: #0080ff;
+		font-weight: bold;
+		float: left;
+		overflow: hidden;
+	}
+	.send-a-message-or-friend-request{
+		font-size: 12px;
+		display: inline-block;
+		width: 100%;
+	}
+</style>
+
+<div id="Network" style="display: none;">
+
+		{% if profileUsers %}
+		<div class="profiles-container">
+		{% for profileUser in profileUsers %}
+		<div class="profile-container">
+			<div class="profile-main">			
+				<div class="profile-image">
+					<a class="profile-link" href="/{{profileUser.0.id}}/profile/">
+					<img class="img-fluid profile-image-userProfile" src="{{profileUser.0.profile_image.url}}" alt="">
+					</a>
+				</div>
+				<div class="profile-username">
+					<a class="profile-link" href="/{{profileUser.0.id}}/profile/">
+						<h5 class="card-title">{{profileUser.0.username}}</h5>
+						{% if profileUser.1 %}
+							<div class="friends-icon-network">φ</div>
+						{% endif %}
+						{% if profileUser.0 == request.user %}
+							<span class="material-icons m-auto pl-2">
+							person_pin
+							</span>
+						{% endif %}
+					</a>
+					{% if profileUser.1 %}
+					<div class="send-a-message-or-friend-request">
+						<h5 class="card-title" style="font-weight: lighter; font-size: 12px;">
+							<a onclick="messageFrom('{{profileUser.0.id}}')">Send a Message</a>
+						</h5>
+					</div>
+					{% else %}
+						{% if profileUser.0 !=  request.user %}
+						<div class="send-a-message-or-friend-request">
+							<button class="btn btn-primary" id="id_send_friend_request_btn_profiles" name="{{profileUser.0.id}}" data-page="friend_request">
+								Send Friend Request
+							</button>
+						</div>
+						{% endif %}
+					{% endif %}
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+		{% else %}
+		<div class="d-flex flex-row flex-grow-1 justify-content-center align-items-center p-4">
+			<p>No results</p>
+		</div>
+		{% endif %}
+	</div>
+</div>

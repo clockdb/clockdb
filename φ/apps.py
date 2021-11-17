@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class ΦConfig(AppConfig):
+class φConfig(AppConfig):
     name = 'φ'

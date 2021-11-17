@@ -1,0 +1,215 @@
+<section class="φ">
+    <span>
+        <table>
+            <tbody>
+                <tr>
+                    <td style="color: white; padding-top: 42px">.</td>
+                </tr>
+                <tr>
+                    <td style="background-color: #f5f4f4; color: #f5f4f4;">.</td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <tbody>
+                <tr>
+                    <td style="padding-top: 55px; text-align: left; padding-bottom: 15px;">
+                        <a href="/{{request.user.id}}/WorkingPaper/${contents.tradingSymbol}">
+                            <h4 id="EntityRegistrantNamePosts" class="EntityRegistrantNamePosts"
+                                style="color:Black;
+                                    font-weight: bold;
+                                    text-shadow: 1px 1px rgb(73, 73, 73);
+                                    display: inline;">
+                                    ${contents.entity} (${contents.tradingSymbol})
+                            </h4>
+                        </a>
+                        <h4 id='o' class='o' 
+                            style="color:Black; 
+                                font-weight:bold; 
+                                text-shadow: 1px 1px rgb(73, 73, 73); 
+                                display: inline; 
+                                padding-right:27px;
+                                display: inline;">
+                            ⬤
+                        </h4>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3 id="Industry_SEC" 
+                            style="color:rgb(73, 73, 73); 
+                                font-weight:bold; 
+                                text-align: left;">
+                            ${contents.industry_sec}
+                        </h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3 id="Industry" 
+                            style="color:rgb(73, 73, 73);
+                                font-weight:bold;
+                                text-align: left;">
+                            ${contents.industry}
+                        </h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3 id="Region" 
+                            style="color:rgb(73, 73, 73); 
+                                font-weight:bold; 
+                                text-align: left;">
+                            ${contents.region}
+                        </h3>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table style="text-align: center">
+            <tbody>
+                <tr>
+                    <td colspan="3" style="padding-top: 42px; padding-bottom: 42px;">
+                        <button onClick="OpinionButton()" 
+                            data-page="Opinion${contents.tradingSymbol}"
+                            id="OpinionButton${contents.tradingSymbol}"
+                            style="
+                                letter-spacing: 2px;
+                                font-weight: bold;">
+                                Opinion
+                        </button>
+                    </td>
+                    <td colspan="3">
+                        <button onClick="LineChartButton()"
+                            data-page="LineChart${contents.tradingSymbol}"
+                            id="LineChartButton${contents.tradingSymbol}"
+                            style="
+                                letter-spacing: 2px;
+                                font-weight: bold;">
+                                Chart
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </span>
+    <span style="display: block;" id="LineChart${contents.tradingSymbol}">
+        <table>
+            <tbody>
+                <tr>
+                    <td style='text-align:center;'>
+                        <canvas id='LineChart' class='LineChartPosts'></canvas>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </span>
+    <span style="display: none" id="Opinion${contents.tradingSymbol}">
+        <table>
+            <tbody>
+                <tr>
+                    <td colspan="2"></td>
+                    <td colspan="2"><h5 id="DateSummary1" class="DateSummary1" style="text-align:center">` + lastyear + `</h4></td>
+                    <td colspan="2"><h5 id="DateSummary2" class="DateSummary2" style="text-align:center">` + secondlastyear + `</h4></td>
+                    <td colspan="2" style="display:none; padding-top:2%;"><h5 id="DateSummary3" class="DateSummary3" style="text-align:center">` + thirdlastyear + `</h4></td>
+                    <td colspan="2" style="display:none; padding-top:2%;"><h5 id="DateSummary4" class="DateSummary4" style="text-align:center">` + fourthlastyear + `</h4></td>
+                    <td colspan="2" style="display:none;"><h5 id="DateSummary5" style="text-align:center"></h4></td>
+                    <td colspan="2" style="display:none;"><h5 id="DateSummary6" style="text-align:center"></h4></td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td colspan='2'><h5 id="SummaryAmend1" style="font-weight:bold; text-align:center; padding-bottom:1%">` + amendlastyear + `</td>
+                    <td colspan='2'><h5 id="SummaryAmend2" style="font-weight:bold; text-align:center; padding-bottom:1%">` + amendsecondlastyear + `</td>
+                    <td colspan='2'style="display:none;"><h5 id="SummaryAmend3" style="font-weight:bold; text-align:center; padding-bottom:1%">` + amendthirdlastyear + `</td>
+                    <td colspan='2'style="display:none;"><h5 id="SummaryAmend4" style="font-weight:bold; text-align:center; padding-bottom:1%">` + amendfourthlastyear + `</td>
+                    <td colspan='2'style="display:none;"><h5 id="SummaryAmend5" style="font-weight:bold; text-align:center; padding-bottom:1%"></td>
+                    <td colspan='2'style="display:none;"><h5 id="SummaryAmend6" style="font-weight:bold; text-align:center; padding-bottom:1%"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td colspan="2"><h6 style="text-align: center;" id='SharePriceUpdate'>` + securitiesupdate + `</h6></td>
+                </tr>
+                <tr id="OpinionφRow" class="Context">
+                    <td colspan="2"><h5 style="margin-left:0px;">OPINION</h5></td>
+                    <td colspan="2" id="Opinionφ1" class="Opinionφ1" style="font-weight:bold; text-align: center;">` + Opinion1 + `</td>
+                    <td colspan="2" id="Opinionφ2" class="Opinionφ2" style="font-weight:lighter; text-align:center;">` + Opinion2 + `</td>
+                    <td colspan="2" style="display:none;" id="Opinionφ3" class="Opinionφ3" style="font-weight:lighter; text-align:center;">` + Opinion3 + `</td>
+                    <td colspan="2" style="display:none;" id="Opinionφ4" class="Opinionφ4" style="font-weight:lighter; text-align:center;">` + Opinion4 + `</td>
+                    <td colspan="2" style="display:none;" id="Opinionφ5" style="font-weight:lighter; text-align:center;"></td>
+                    <td colspan="2" style="display:none;" id="Opinionφ6" style="font-weight:lighter; text-align:center;"></td>
+                </tr>
+                <tr id="ClockφRow" class="ClockRate">
+                    <td colspan="2"><h5 style="margin-left:0px;">VALUATION</h5></td></td>
+                    <td colspan="2" class="ClockRate" id="Clockφ1" class="Clockφ1" style="border-bottom:double black; font-weight:bold; text-align:fight;">` + Clock1 + `</td>
+                    <td colspan="2" class="ClockRate" id="Clockφ2" class="Clockφ2" style="border-bottom:double black; font-weight:lighter; text-align:fight;">` + Clock2 + `</td>
+                    <td colspan="2" style="display:none;" class="ClockRate" id="Clockφ3" class="Clockφ3" style="border-bottom:double black; font-weight:lighter; text-align:fight;">` + Clock3 + `</td>
+                    <td colspan="2" style="display:none;" class="ClockRate" id="Clockφ4" class="Clockφ4" style="border-bottom:double black; font-weight:lighter; text-align:fight;">` + Clock4 + `</td>
+                    <td colspan="2" style="display:none;" id="Clockφ5" style="font-weight:lighter; text-align:fight;"></td>
+                    <td colspan="2" style="display:none;" id="Clockφ6" style="font-weight:lighter; text-align:fight;"></td>
+                </tr>
+                <tr id="BridgeφRow" class="Context">
+                    <td colspan="2"><h5 style="margin-left:0px;">AUDIT</h5></td>
+                    <td colspan="2" id="Bridgeφ1" class="Bridgeφ1" style="font-weight:bold; text-align:center; font-size: 7px;">` + Bridge1 + `</td>
+                    <td colspan="2" id="Bridgeφ2" class="Bridgeφ2" style="font-weight:lighter; text-align:center; font-size: 7px;">` + Bridge2 + `</td>
+                    <td colspan="2" style="display:none;" id="Bridgeφ3" class="Bridgeφ3" style="font-weight:lighter; text-align:center; font-size: 7px;">` + Bridge3 + `</td>
+                    <td colspan="2" style="display:none;" id="Bridgeφ4" class="Bridgeφ4" style="font-weight:lighter; text-align:center; font-size: 7px;">` + Bridge4 + `</td>
+                    <td colspan="2" style="display:none;" id="Bridgeφ5" style="font-weight:lighter; text-align:center"></td>
+                    <td colspan="2" style="display:none;" id="Bridgeφ6" style="font-weight:lighter; text-align:center"></td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <h4 id='q' style="color:rgb(73, 73, 73); font-weight:bold; text-align: left;"></h4>
+                    </td>
+                    <td colspan="2">
+                        <h6 id='p' style="font-style:italic; color:rgb(73, 73, 73); font-weight:bold; text-align: center;"></h4>
+                    </td>
+                </tr>
+                <tr id="IntrinsicValuesRow" class="OpinionFour">
+                    <td colspan="2"><h6>Common Shares' Intrinsic Value</h6></td>
+                    <td colspan="2"><input id="IntrinsicValuesPosts1" class="IntrinsicValuesPosts1" style="font-weight:bold;" onfocusout="Compile()" value="` + IV1 + `"></input></td>
+                    <td colspan="2"><input id="IntrinsicValuesPosts2" class="IntrinsicValuesPosts2"  onfocusout="Compile()" value="` + IV2 + `"></input></td>
+                    <td colspan="2" style="display:none;" ><input id="IntrinsicValuesPosts3" class="IntrinsicValuesPosts3"  onfocusout="Compile()" value="` + IV3 + `"></input></td>
+                    <td colspan="2" style="display:none;" ><input id="IntrinsicValuesPosts4" class="IntrinsicValuesPosts4"  onfocusout="Compile()" value="` + IV4 + `"></input></td>
+                    <td colspan="2" style="display:none;"><input id="IntrinsicValuesPosts5" onfocusout="Compile()"></input></td>
+                    <td colspan="2" style="display:none;"><input id="IntrinsicValuesPosts6" onfocusout="Compile()"></input></td>
+                </tr>
+                <tr id="MarketCapitalizationRow" class="OpinionFour">
+                    <td colspan="2"><h6>Market Capitalization Attributable To Common Shares</h6></td>
+                    <td colspan="2"><input id="MarketCapitalizationPosts1" class="MarketCapitalizationPosts1" style="font-weight:bold;" onfocusout="Compile()" value="` + MC1 + `"></input></td>
+                    <td colspan="2"><input id="MarketCapitalizationPosts2" class="MarketCapitalizationPosts2" onfocusout="Compile()" value="` + MC2 + `"></input></td>
+                    <td colspan="2" style="display:none;" ><input id="MarketCapitalizationPosts3" class="MarketCapitalizationPosts3" onfocusout="Compile()" value="` + MC3 + `"></input></td>
+                    <td colspan="2" style="display:none;" ><input id="MarketCapitalizationPosts4" class="MarketCapitalizationPosts4" onfocusout="Compile()" value="` + MC4 + `"></input></td>
+                    <td colspan="2" style="display:none;"><input id ="MarketCapitalizationPosts5" onfocusout="Compile()"></input></td>
+                    <td colspan="2" style="display:none;"><input id ="MarketCapitalizationPosts6" onfocusout="Compile()"></input></td>
+                </tr>
+                <tr id="IntrinsicValueOfACommonSharesRow" class="Price">
+                    <td colspan="2"><h6 id="CommonShareIntrinsicValuePerUnit">${contents.tradingSymbol} Common Share Intrinsic Value Per Unit</h6></td>
+                    <td colspan="2"><input id="IntrinsicValueOfACommonShares1" class="IntrinsicValueOfACommonShares1" style="font-weight:bold;" value="` + iv1 + `"></td>
+                    <td colspan="2"><input id="IntrinsicValueOfACommonShares2" class="IntrinsicValueOfACommonShares1" value="` + iv2 + `"></td>
+                    <td colspan="2" style="display:none;" ><input id="IntrinsicValueOfACommonShares3" class="IntrinsicValueOfACommonShares1" value="` + iv3 + `"></td>
+                    <td colspan="2" style="display:none;" ><input id="IntrinsicValueOfACommonShares4" class="IntrinsicValueOfACommonShares1" value="` + iv4 + `"></td>
+                    <td colspan="2" style="display:none;"><input id="IntrinsicValueOfACommonShares5"></td>
+                    <td colspan="2" style="display:none;"><input id="IntrinsicValueOfACommonShares6"></td>
+                </tr>
+                <tr id="SharePriceRow" class="Price">
+                    <td colspan="2"><h6 id="CommonSharePricePerUnit">${contents.tradingSymbol} Common Share Price Per Unit</h6></td>
+                    <td colspan="2"><input class="Price" id="SharePrice1" style="font-weight:bold;" onfocusout="Compile()" onchange='FormatCell()' value="` + price1 + `"></input></td>
+                    <td colspan="2"><input class="Price" id="SharePrice2" onfocusout="Compile()" onchange='FormatCell()' value="` + price2 + `"></input></td>
+                    <td colspan="2" style="display:none;" ><input class="Price" id="SharePrice3" onfocusout="Compile()" onchange='FormatCell()' value="` + price3 + `"></input></td>
+                    <td colspan="2" style="display:none;" ><input class="Price" id="SharePrice4" onfocusout="Compile()" onchange='FormatCell()' value="` + price4 + `"></input></td>
+                    <td colspan="2" style="display:none;"><input id="SharePrice5" onfocusout="Compile()"></input></td>
+                    <td colspan="2" style="display:none;"><input id="SharePrice6" onfocusout="Compile()"></input></td>
+                </tr>
+                <tr id="CommonSharesOutstandingRow" class="OpinionFour">
+                    <td colspan="2"><h6>Adjusted Number Of Common Shares Outstanding</h6></td>
+                    <td colspan="2"><input class='Clock' id="CommonSharesOutstanding1" class="CommonSharesOutstanding1" style="font-weight:bold;" onfocusout="Compile()" onchange='FormatCell()' value="` + shares1 + `"></input></td>
+                    <td colspan="2"><input class='Clock' id="CommonSharesOutstanding2" class="CommonSharesOutstanding2" onfocusout="Compile()" onchange='FormatCell()' value="` + shares2 + `"></input></td>
+                    <td colspan="2" style="display:none;" ><input class='Clock' id="CommonSharesOutstanding3" class="CommonSharesOutstanding3" onfocusout="Compile()" onchange='FormatCell()' value="` + shares3 + `"></input></td>
+                    <td colspan="2" style="display:none;" ><input class='Clock' id="CommonSharesOutstanding4" class="CommonSharesOutstanding4" onfocusout="Compile()" onchange='FormatCell()' value="` + shares4 + `"></input></td>
+                    <td colspan="2" style="display:none;"><input id="CommonSharesOutstanding5" onfocusout="Compile()"></input></td>
+                    <td colspan="2" style="display:none;"><input id="CommonSharesOutstanding6" onfocusout="Compile()"></input></td>
+                </tr>
+            </tbody>
+        </table>
+    </span>
+</section>

@@ -1,0 +1,5071 @@
+<!-- OnePageApp -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.3/Chart.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.1/papaparse.min.js"></script>
+
+<script type="text/javascript">
+
+    // general notifications
+
+	const GENERAL_NOTIFICATION_INTERVAL = 4000
+	const GENERAL_NOTIFICATION_TIMEOUT = 5000
+
+	var generalCachedNotifList = new List([])
+
+	function submitGeneralNotificationToCache(notification){
+		var result = generalCachedNotifList.filter(function(n){ 
+			return n['notification_id'] === notification['notification_id']
+		})
+		if(result.length == 0){
+			generalCachedNotifList.push(notification)
+
+			appendBottomGeneralNotification(notification)
+		}
+		else{
+			refreshGeneralNotificationsList(notification)
+		}
+	}
+
+	function refreshGeneralNotificationsList(notification){
+		notificationContainer = document.getElementById("id_general_notifications_container")
+
+		if(notificationContainer != null){
+			divs = notificationContainer.childNodes
+
+			divs.forEach(function(card){
+				if(card.id == ("id_notification_" + notification['notification_id'])){
+					
+					switch(notification['notification_type']) {
+
+						case "FriendRequest":
+							refreshFriendRequestCard(card, notification)
+							break;
+
+						case "FriendList":
+							refreshFriendListCard(card, notification)
+							break;
+
+						default:
+					}
+				}
+			})
+		}
+	}
+
+	function handleGeneralNotificationsData(notifications, new_page_number){
+		if(notifications.length > 0){
+			clearNoGeneralNotificationsCard()
+			notifications.forEach(notification => {
+
+				submitGeneralNotificationToCache(notification)
+
+				setGeneralOldestTimestamp(notification['timestamp'])
+				setGeneralNewestTimestamp(notification['timestamp'])
+			})
+			setGeneralPageNumber(new_page_number)
+		}
+	}
+
+	function handleNewGeneralNotificationsData(notifications){
+    	if(notifications.length > 0){
+    		clearNoGeneralNotificationsCard()
+    		notifications.forEach(notification => {
+
+    			submitNewGeneralNotificationToCache(notification)
+
+				setGeneralOldestTimestamp(notification['timestamp'])
+				setGeneralNewestTimestamp(notification['timestamp'])
+			})
+	    }
+	}
+
+	function submitNewGeneralNotificationToCache(notification){
+		var result = generalCachedNotifList.filter(function(n){ 
+			return n['notification_id'] === notification['notification_id']
+		})
+		if(result.length == 0){
+			generalCachedNotifList.push(notification)
+
+			appendTopGeneralNotification(notification)
+		}
+		else{
+			refreshGeneralNotificationsList(notification)
+		}
+	}
+
+	function refreshGeneralNotificationsData(notifications){
+		if(notifications.length > 0){
+			clearNoGeneralNotificationsCard()
+			notifications.forEach(notification => {
+
+				submitGeneralNotificationToCache(notification)
+
+				setGeneralOldestTimestamp(notification['timestamp'])
+				setGeneralNewestTimestamp(notification['timestamp'])
+			})
+		}
+	}
+
+    function appendTopGeneralNotification(notification){
+
+		switch(notification['notification_type']) {
+
+			case "FriendRequest":
+				notificationContainer = document.getElementById("id_general_notifications_container")
+				card = createFriendRequestElement(notification)
+				notificationContainer.insertBefore(card, notificationContainer.childNodes[0]);
+				break;
+
+			case "FriendList":
+				notificationContainer = document.getElementById("id_general_notifications_container")
+				card = createFriendListElement(notification)
+				notificationContainer.insertBefore(card, notificationContainer.childNodes[0]);
+				break;
+
+			default:
+				// code block
+		}
+
+		preloadImage(notification['from']['image_url'], assignGeneralImgId(notification))
+	}
+
+	function appendBottomGeneralNotification(notification){
+
+		switch(notification['notification_type']) {
+
+			case "FriendRequest":
+				notificationContainer = document.getElementById("id_general_notifications_container")
+				card = createFriendRequestElement(notification)
+				notificationContainer.appendChild(card)
+				break;
+
+			case "FriendList":
+				notificationContainer = document.getElementById("id_general_notifications_container")
+				card = createFriendListElement(notification)
+				notificationContainer.appendChild(card)
+				break;
+
+			default:
+				// code block
+		}
+		preloadImage(notification['from']['image_url'], assignGeneralImgId(notification))
+	}
+
+	function refreshFriendRequestCard(card, notification){
+		card.childNodes.forEach(function(element){
+
+			// DIV1
+			if(element.id == ("id_general_div1_" + notification['notification_id'])){
+				element.childNodes.forEach(function(child){
+					if(child.id == ("id_general_verb_" + notification['notification_id'])){
+						// found verb
+						child.innerHTML = notification['verb']
+					}
+				})
+			}
+				
+			// DIV2
+			if (element.id == ("id_general_div2_" + notification['notification_id'])){
+				if(notification['is_active'] == "True"){
+						// do nothing
+				}
+				else{
+					// remove buttons b/c it has been answered
+					card.removeChild(element)
+				}
+			}
+
+			// TIMESTAMP
+			if (element.id == ("id_timestamp_" + notification['notification_id'])){
+				element.innerHTML = notification['natural_timestamp']
+			}
+		})
+	}
+
+	function refreshFriendListCard(card, notification){
+		card.childNodes.forEach(function(element){
+
+			// DIV1
+			if(element.id == ("id_general_div1_" + notification['notification_id'])){
+				element.childNodes.forEach(function(child){
+					if(child.id == ("id_general_verb_" + notification['notification_id'])){
+						// found verb
+						child.innerHTML = notification['verb']
+					}
+				})
+			}
+
+			// TIMESTAMP
+			if (element.id == ("id_timestamp_" + notification['notification_id'])){
+				element.innerHTML = notification['natural_timestamp']
+			}
+		})
+	}
+
+	function createFriendListElement(notification){
+		card = createGeneralNotificationCard()
+		card.id = assignGeneralCardId(notification)
+		card.addEventListener("click", function(){
+			generalRedirect(notification['actions']['redirect_url'])
+		})
+
+		var div1 = document.createElement("div")
+		div1.classList.add("d-flex", "flex-row", "align-items-start")
+		div1.id = assignGeneralDiv1Id(notification)
+
+		img = createGeneralProfileImageThumbnail(notification)
+		div1.appendChild(img)
+
+		span = document.createElement("span")
+		span.classList.add("align-items-start", "pt-1", "m-auto")
+		if(notification['verb'].length > 50){
+			span.innerHTML = notification['verb'].slice(0, 50) + "..."
+		}
+		else{
+			span.innerHTML = notification['verb']
+		}
+		span.id = assignGeneralVerbId(notification)
+		div1.appendChild(span)
+		card.appendChild(div1)
+		card.appendChild(createGeneralTimestampElement(notification))
+
+		return card
+	}
+
+	function createFriendRequestElement(notification){
+		card = createGeneralNotificationCard()
+
+		// assign id b/c we need to find this div if they accept/decline the friend request
+		card.id = assignGeneralCardId(notification)
+		//
+		card.addEventListener("click", function(){
+			a = notification['actions'].redirect_url
+			a = a.replace(window.location.origin,'')
+			a = a.replaceAll('/','')
+			a = a.replaceAll('account','')
+			a = a.replaceAll('profile','')
+			url = '/' + a + '/profile/'
+			window.open(url, '_self');
+		})
+
+		// Is the friend request PENDING? (not answered yet)
+		if(notification['is_active'] == "True"){
+
+			//console.log("found an active friend request")
+			div1 = document.createElement("div")
+			div1.classList.add("d-flex", "flex-row", "align-items-start")
+			div1.id = assignGeneralDiv1Id(notification)
+			
+			img = createGeneralProfileImageThumbnail(notification)
+			div1.appendChild(img)
+
+			span = document.createElement("span")
+			span.classList.add("m-auto")
+			span.innerHTML = notification['verb']
+			span.id = assignGeneralVerbId(notification)
+			div1.appendChild(span)
+			card.appendChild(div1)
+
+			div2 = document.createElement("div")
+			div2.classList.add("d-flex", "flex-row", "mt-2")
+			div2.id = assignGeneralDiv2Id(notification)
+
+			pos_action = document.createElement("a")
+			pos_action.classList.add("btn", "btn-primary", "mr-2")
+			pos_action.href = "#"
+			pos_action.innerHTML = "Accept"
+			pos_action.addEventListener("click", function(e){
+				e.stopPropagation();
+				sendAcceptFriendRequestToSocket(notification['notification_id'])
+			})
+			pos_action.id = assignGeneralPosActionId(notification)
+			div2.appendChild(pos_action)
+
+			neg_action = document.createElement("a")
+			neg_action.classList.add("btn", "btn-secondary")
+			neg_action.href = "#"
+			neg_action.innerHTML = "Decline"
+			neg_action.addEventListener("click", function(e){
+				e.stopPropagation();
+				sendDeclineFriendRequestToSocket(notification['notification_id'])
+			})
+			neg_action.id = assignGeneralNegActionId(notification)
+			div2.appendChild(neg_action)
+			card.appendChild(div2)
+		}
+		// The friend request has been answered (Declined or accepted)
+		else{
+			var div1 = document.createElement("div")
+			div1.classList.add("d-flex", "flex-row", "align-items-start")
+			div1.id = assignGeneralDiv1Id(notification)
+
+			img = createGeneralProfileImageThumbnail(notification)
+			img.id = assignGeneralImgId(notification)
+			div1.appendChild(img)
+
+			span = document.createElement("span")
+			span.classList.add("m-auto")
+			span.innerHTML = notification['verb']
+			span.id = assignGeneralVerbId(notification)
+			div1.appendChild(span)
+			card.appendChild(div1)
+		}
+		card.appendChild(createGeneralTimestampElement(notification))
+
+		return card
+	}
+
+	function setupGeneralNotificationsMenu(){
+		var notificationContainer = document.getElementById("id_general_notifications_container")
+
+		if(notificationContainer != null){
+			card = createGeneralNotificationCard("id_no_general_notifications")
+
+			var div = document.createElement("div")
+			div.classList.add("d-flex", "flex-row", "align-items-start")
+
+			span = document.createElement("span")
+			span.classList.add("align-items-start", "pt-1", "m-auto")
+			span.innerHTML = "You have no notifications."
+			div.appendChild(span)
+			card.appendChild(div)
+			notificationContainer.appendChild(card)
+		}
+	}
+
+	function clearNoGeneralNotificationsCard(){
+		var element = document.getElementById("id_no_general_notifications")
+		if(element != null && element != "undefined"){
+			document.getElementById("id_general_notifications_container").removeChild(element)
+		}
+	}
+
+	function createGeneralNotificationCard(cardId){
+		var card = document.createElement("div")
+		if(cardId != "undefined"){
+			card.id = cardId
+		}
+		card.classList.add("d-flex", "flex-column", "align-items-start", "general-card", "p-4")
+		return card
+	}
+
+	function createGeneralProfileImageThumbnail(notification){
+		var img = document.createElement("img")
+		img.classList.add("notification-thumbnail-image", "img-fluid", "rounded-circle", "mr-2")
+		img.src = "/static/clockdb/dummy_image.png/"
+		img.id = assignGeneralImgId(notification)
+		return img
+	}
+
+	function createGeneralTimestampElement(notification){
+		var timestamp = document.createElement("p")
+		timestamp.classList.add("small", "pt-2", "timestamp-text")
+		timestamp.innerHTML = notification['natural_timestamp']
+		timestamp.id = assignGeneralTimestampId(notification)
+		return timestamp
+	}
+
+	function updateGeneralNotificationDiv(notification){
+		notificationContainer = document.getElementById("id_general_notifications_container")
+
+		if(notificationContainer != null){
+			divs = notificationContainer.childNodes
+
+			divs.forEach(function(element){
+				if(element.id == ("id_notification_" + notification['notification_id'])){
+					
+					// Replace current div with updated one
+					updatedDiv = createFriendRequestElement(notification)
+					element.replaceWith(updatedDiv)
+				}
+			})
+		}
+	}
+
+	function setOnGeneralNotificationScrollListener(){
+		var menu = document.getElementById("id_general_notifications_container")
+		if(menu != null ){
+			menu.addEventListener("scroll", function(e){
+
+				if ((menu.scrollTop) >= (menu.scrollHeight - menu.offsetHeight)) {
+					getNextGeneralNotificationsPage()
+				}
+			});
+		}
+	}
+
+	setOnGeneralNotificationScrollListener()
+
+	function setGeneralPaginationExhausted(){
+		//console.log("general pagination exhausted.")
+		setGeneralPageNumber("-1")
+	}
+
+	function setGeneralPageNumber(pageNumber){
+		document.getElementById("id_general_page_number").innerHTML = pageNumber
+	}
+
+	function setGeneralOldestTimestamp(timestamp){
+		element = document.getElementById("id_general_oldest_timestamp")
+		current = element.innerHTML
+		if(Date.parse(timestamp) < Date.parse(current)){
+			element.innerHTML = timestamp
+		}
+	}
+
+	function setGeneralNewestTimestamp(timestamp){
+		element = document.getElementById("id_general_newest_timestamp")
+		current = element.innerHTML
+		if(Date.parse(timestamp) > Date.parse(current)){
+			element.innerHTML = timestamp
+		}
+		else if(current == ""){
+			element.innerHTML = timestamp
+		}
+	}
+
+	function setUnreadGeneralNotificationsCount(count){
+		var countElement = document.getElementById("id_general_notifications_count")
+		if(count > 0){
+			countElement.style.display = "contents"
+			countElement.innerHTML = count
+		}
+		else{
+			countElement.style.background = "transparent"
+			countElement.style.display = "none"
+		}
+	}
+
+	function getUnreadGeneralNotificationsCount(){
+		if("{{request.user.is_authenticated}}"){
+			notificationSocket.send(JSON.stringify({
+				"command": "get_unread_general_notifications_count",
+			}));
+		}
+	}
+
+	function setGeneralNotificationsAsRead(){
+		if("{{request.user.is_authenticated}}"){
+			oldestTimestamp = document.getElementById("id_general_oldest_timestamp").innerHTML
+			notificationSocket.send(JSON.stringify({
+				"command": "mark_notifications_read",
+			}));
+			getUnreadGeneralNotificationsCount()
+		}
+	}
+
+	function getFirstGeneralNotificationsPage(){
+		if("{{request.user.is_authenticated}}"){
+			notificationSocket.send(JSON.stringify({
+				"command": "get_general_notifications",
+				"page_number": "1",
+			}));
+		}
+	}
+
+	function sendAcceptFriendRequestToSocket(notification_id){
+		notificationSocket.send(JSON.stringify({
+			"command": "accept_friend_request",
+			"notification_id": notification_id,
+		}));
+	}
+
+	function sendDeclineFriendRequestToSocket(notification_id){
+		notificationSocket.send(JSON.stringify({
+			"command": "decline_friend_request",
+			"notification_id": notification_id,
+		}));
+	}
+
+	function getNextGeneralNotificationsPage(){
+		var pageNumber = document.getElementById("id_general_page_number").innerHTML
+		// -1 means exhausted or a query is currently in progress
+		if("{{request.user.is_authenticated}}" && pageNumber != "-1"){
+			notificationSocket.send(JSON.stringify({
+				"command": "get_general_notifications",
+				"page_number": pageNumber,
+			}));
+		}
+	}
+
+	function refreshGeneralNotifications(){
+		oldestTimestamp = document.getElementById("id_general_oldest_timestamp").innerHTML
+		newestTimestamp = document.getElementById("id_general_newest_timestamp").innerHTML
+		if("{{request.user.is_authenticated}}"){
+			notificationSocket.send(JSON.stringify({
+				"command": "refresh_general_notifications",
+				"oldest_timestamp": oldestTimestamp,
+				"newest_timestamp": newestTimestamp,
+			}));
+		}
+	}
+
+	function startGeneralNotificationService(){
+		if("{{request.user.is_authenticated}}" == "True"){
+			setInterval(refreshGeneralNotifications, GENERAL_NOTIFICATION_INTERVAL)
+			setInterval(getNewGeneralNotifications, GENERAL_NOTIFICATION_INTERVAL)
+			setInterval(getUnreadGeneralNotificationsCount, GENERAL_NOTIFICATION_INTERVAL)
+		}
+	}
+
+	startGeneralNotificationService()
+
+	function getNewGeneralNotifications(){
+		newestTimestamp = document.getElementById("id_general_newest_timestamp").innerHTML
+		if("{{request.user.is_authenticated}}"){
+			notificationSocket.send(JSON.stringify({
+				"command": "get_new_general_notifications",
+				"newest_timestamp": newestTimestamp,
+			}));
+		}
+	}
+
+	function generalRedirect(url){
+		window.location.href = url
+	}
+
+	function assignGeneralDiv1Id(notification){
+		return "id_general_div1_" + notification['notification_id']
+	}
+
+	function assignGeneralImgId(notification){
+		return "id_general_img_" + notification['notification_id']
+	}
+
+	function assignGeneralVerbId(notification){
+		return "id_general_verb_" + notification['notification_id']
+	}
+
+	function assignGeneralDiv2Id(notification){
+		return "id_general_div2_" + notification['notification_id']
+	}
+
+	function assignGeneralPosActionId(notification){
+		return "id_general_pos_action_" + notification['notification_id']
+	}
+
+	function assignGeneralNegActionId(notification){
+		return "id_general_neg_action_" + notification['notification_id']
+	}
+
+	function assignGeneralTimestampId(notification){
+		return "id_timestamp_" + notification['notification_id']
+	}
+
+	function assignGeneralCardId(notification){
+		return "id_notification_" + notification['notification_id']
+	}
+
+	function setInitialTimestamp(){
+		// ('%Y-%m-%d %H:%M:%S.%f')
+		var today = new Date();
+		var month = today.getMonth()+1
+		if(month.toString().length == 1){
+			month = "0" + month
+		}
+		var day = today.getDate()
+		if(day.toString().length == 1){
+			day = "0" + day
+		}
+		var hours = today.getHours()
+		if(hours.toString().length == 1){
+			hours = "0" + hours
+		}
+		var minutes = today.getMinutes()
+		if(minutes.toString().length == 1){
+			minutes = "0" + minutes
+		}
+		var seconds = today.getSeconds()
+		if(seconds.toString().length == 1){
+			seconds = "0" + seconds
+		}
+		var ms = "000000"
+		var date = today.getFullYear()+'-'+month+'-'+day + " " + hours + ":" + minutes + ":" + seconds + "." + ms
+		document.getElementById("id_general_oldest_timestamp").innerHTML = date
+		document.getElementById("id_general_newest_timestamp").innerHTML = date
+	}
+
+	setInitialTimestamp()
+
+    // header	
+	var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+	{% if debug_mode %}
+		var ws_path = ws_scheme + '://' + window.location.host + "/"; // development
+	{% else %}
+		var ws_path = ws_scheme + '://' + window.location.host + ":8001"; // production
+	{% endif %}
+	var notificationSocket = new WebSocket(ws_path);
+
+	notificationSocket.onmessage = function(message) {
+		var data = JSON.parse(message.data);
+		//console.log(data)
+		//console.log("Got general notification websocket message. " + data.general_msg_type);
+		//console.log("Got chat notification websocket message. " + data.chat_msg_type);
+
+		/*
+			GENERAL NOTIFICATIONS
+		*/
+		// new 'general' notifications data payload
+		if(data.general_msg_type == 0){
+			handleGeneralNotificationsData(data['notifications'], data['new_page_number'])
+		}
+
+		// "General" Pagination exhausted. No more results.
+		if(data.general_msg_type == 1){
+			setGeneralPaginationExhausted()
+		}
+
+		// Refresh [newest_timestamp >= NOTIFICATIONS >= oldest_timestamp]
+		if(data.general_msg_type == 2){
+			refreshGeneralNotificationsData(data['notifications'])
+		}
+
+		if(data.general_msg_type == 3){
+			handleNewGeneralNotificationsData(data['notifications'])
+		}
+
+		if(data.general_msg_type == 4){
+			setUnreadGeneralNotificationsCount(data['count'])
+		}
+
+		if(data.general_msg_type == 5){
+			updateGeneralNotificationDiv(data['notification'])
+		}
+
+		/*
+			CHAT NOTIFICATIONS
+		*/
+		// new 'chat' notifications data payload
+		if(data.chat_msg_type == 10){
+			handleChatNotificationsData(data['notifications'], data['new_page_number'])
+		}
+		// "Chat" Pagination exhausted. No more results.
+		if(data.chat_msg_type == 11){
+			setChatPaginationExhausted()
+		}
+		// refreshed chat notifications
+		if(data.chat_msg_type == 13){
+			handleNewChatNotificationsData(data['notifications'])
+		}
+		if(data.chat_msg_type == 14){
+			setChatNotificationsCount(data['count'])
+		}
+	}
+
+	notificationSocket.onclose = function(e) {
+		console.error('Notification Socket closed unexpectedly');
+	};
+
+	notificationSocket.onopen = function(e){
+		//console.log("Notification Socket on open: " + e)
+		setupGeneralNotificationsMenu()
+		getFirstGeneralNotificationsPage()
+		getUnreadGeneralNotificationsCount()
+
+		setupChatNotificationsMenu()
+		getFirstChatNotificationsPage()
+	}
+
+	notificationSocket.onerror = function(e){
+		console.log('Notification Socket error', e)
+	}
+
+	if (notificationSocket.readyState == WebSocket.OPEN) {
+		//console.log("Notification Socket OPEN complete.")
+	} 
+	else if (notificationSocket.readyState == WebSocket.CONNECTING){
+		//console.log("Notification Socket connecting..")
+	}
+
+    // chat notifications
+    
+	setOnChatNotificationScrollListener()
+	onChatNotificationsPaginationTriggerListener()
+
+	const CHAT_NOTIFICATION_INTERVAL = 4000
+	var chatCachedNotifList = new List([])
+
+	function submitNewChatNotificationToCache(notification){
+		var result = chatCachedNotifList.filter(function(n){ 
+			return n['notification_id'] === notification['notification_id']
+		})
+		// This notification does not already exist in the list
+		if(result.length == 0){
+			chatCachedNotifList.push(notification)
+
+			// append to top of list
+			appendTopChatNotification(notification)
+		}
+		// This notification already exists in the list
+		else{
+			// find the div and update it.
+			refreshChatNotificationsList(notification)
+		}
+	}
+
+	function submitChatNotificationToCache(notification){
+		var result = chatCachedNotifList.filter(function(n){ 
+			return n['notification_id'] === notification['notification_id']
+		})
+		// This notification does not already exist in the list
+		if(result.length == 0){
+			chatCachedNotifList.push(notification)
+
+			// append to bottom of list
+			appendBottomChatNotification(notification)
+		}
+		// This notification already exists in the list
+		else{
+			// find the div and update it.
+			refreshChatNotificationsList(notification)
+		}
+	}
+
+	function handleNewChatNotificationsData(notifications){
+		if(notifications.length > 0){
+			clearNoChatNotificationsCard()
+			notifications.forEach(notification => {
+
+				submitNewChatNotificationToCache(notification)
+
+				setChatNewestTimestamp(notification['timestamp'])
+			})
+		}
+	}
+
+	function setChatNewestTimestamp(timestamp){
+		element = document.getElementById("id_chat_newest_timestamp")
+		current = element.innerHTML
+		if(Date.parse(timestamp) > Date.parse(current)){
+			element.innerHTML = timestamp
+		}
+		else if(current == "" || current == null || current == "undefined"){
+			element.innerHTML = timestamp
+		}
+		//console.log("setChatNewestTimestamp: " + element.innerHTML)
+	}
+
+	function setupChatDropdownHeader(){
+		var notificationContainer = document.getElementById("id_chat_notifications_container")
+
+		if(notificationContainer != null){
+
+			var div = document.createElement("div")
+			div.classList.add("chat-dropdown-header", "d-flex", "flex-row", "justify-content-end", "m-auto", "align-items-end")
+
+		}
+	}
+
+	function chatRedirect(url){
+		window.location.href = url
+	}
+
+	function setupChatNotificationsMenu(){
+		var notificationContainer = document.getElementById("id_chat_notifications_container")
+
+		if(notificationContainer != null){
+			setupChatDropdownHeader()
+
+			card = createChatNotificationCard("id_no_chat_notifications")
+
+			var div = document.createElement("div")
+			div.classList.add("d-flex", "flex-row", "align-items-start")
+
+			span = document.createElement("span")
+			span.classList.add("align-items-start", "pt-1", "m-auto")
+			span.innerHTML = "You have no notifications."
+			div.appendChild(span)
+			card.appendChild(div)
+			notificationContainer.appendChild(card)
+
+			setChatNotificationsCount([])
+		}
+	}
+
+	function clearNoChatNotificationsCard(){
+		var element = document.getElementById("id_no_chat_notifications")
+		if(element != null && element != "undefined"){
+			document.getElementById("id_chat_notifications_container").removeChild(element)
+		}
+	}
+
+	function createChatNotificationCard(cardId){
+		var card = document.createElement("div")
+		if(cardId != "undefined"){
+			card.id = cardId
+		}
+		card.classList.add("d-flex", "flex-column", "align-items-start", "chat-card","p-4")
+		card.style = "width: 100%"
+		return card
+	}
+
+	function createChatProfileImageThumbnail(notification){
+		img = document.createElement("img")
+		img.classList.add("notification-thumbnail-image", "img-fluid", "rounded-circle", "mr-2")
+		img.src = notification['from']['image_url']
+		img.id = assignChatImgId(notification['notification_id'])
+		return img
+	}
+
+	function createChatTimestampElement(notification){
+		var timestamp = document.createElement("p")
+		timestamp.classList.add("small", "pt-2", "timestamp-text")
+		timestamp.innerHTML = notification['natural_timestamp']
+		timestamp.id = assignChatTimestampId(notification)
+		return timestamp
+	}
+
+	function createUnreadChatRoomMessagesElement(notification){
+		card = createChatNotificationCard()
+		card.id = assignChatCardId(notification)
+		card.addEventListener("click", function(){
+			//chatRedirect(notification['actions']['redirect_url'])
+			user_id = document.getElementById('user_id').innerHTML
+			a = notification['from'].image_url
+			a = a.replace(window.location.origin,'')
+			this_user_id = a.split('/')[3]
+			redirect('messages', user_id, this_user_id)
+			Messenger('On');
+		})
+
+		var div1 = document.createElement("div")
+		div1.classList.add("d-flex", "flex-row", "align-items-start")
+		div1.id = assignChatDiv1Id(notification)
+
+		img = createChatProfileImageThumbnail(notification)
+		img.id = assignChatImgId(notification)
+		div1.appendChild(img)
+
+		var div2 = document.createElement("div")
+		div2.classList.add("d-flex", "flex-column")
+		div2.id = assignChatDiv2Id(notification)
+		
+		var title = document.createElement("span")
+		title.classList.add("align-items-start")
+		title.innerHTML = notification['from']['title']
+		title.id = assignChatTitleId(notification)
+		div2.appendChild(title)
+
+		var chatRoomMessage = document.createElement("span")
+		chatRoomMessage.id = assignChatroomMessageId(notification)
+		chatRoomMessage.classList.add("align-items-start", "pt-1", "small", "notification-chatroom-msg")
+		if(notification['verb'].length > 50){
+			chatRoomMessage.innerHTML = notification['verb'].slice(0, 50) + "..."
+		}
+		else{
+			chatRoomMessage.innerHTML = notification['verb']
+		}
+		div2.appendChild(chatRoomMessage)
+		div1.appendChild(div2)
+		card.appendChild(div1)
+		card.appendChild(createChatTimestampElement(notification))
+		return card
+	}
+
+	function appendTopChatNotification(notification){
+		switch(notification['notification_type']) {
+
+			case "UnreadChatRoomMessages":
+				chatNotificationContainer = document.getElementById("id_chat_notifications_container")
+				card = createUnreadChatRoomMessagesElement(notification)
+
+				if(chatNotificationContainer.childNodes.length > 2){
+					// Append as the SECOND child. First child is the "go to chatroom" button
+					// var index = chatNotificationContainer.childNodes.length - 1
+					var index = 2
+					chatNotificationContainer.insertBefore(card, chatNotificationContainer.childNodes[index]);
+				}
+				else {
+					chatNotificationContainer.appendChild(card)
+				}
+				
+				break;
+
+			default:
+				// code block
+		}
+	}
+
+	function appendBottomChatNotification(notification){
+
+		switch(notification['notification_type']) {
+
+			case "UnreadChatRoomMessages":
+				chatNotificationContainer = document.getElementById("id_chat_notifications_container")
+				card = createUnreadChatRoomMessagesElement(notification)
+				chatNotificationContainer.appendChild(card)
+				break;
+
+			default:
+				// code block
+		}
+	}
+
+    function handleChatNotificationsData(notifications, new_page_number){
+    	if(notifications.length > 0){
+    		clearNoChatNotificationsCard()
+    		
+    		notifications.forEach(notification => {
+
+				submitChatNotificationToCache(notification)
+
+				setChatNewestTimestamp(notification['timestamp'])
+			})
+			setChatPageNumber(new_page_number)
+	    }
+	}
+
+	function refreshChatNotificationsList(notification){
+		notificationContainer = document.getElementById("id_chat_notifications_container")
+
+		if(notificationContainer != null){
+			divs = notificationContainer.childNodes
+
+			divs.forEach(function(card){
+				// card
+				if(card.id == ("id_notification_" + notification['notification_id'])){
+					
+					if(notification['notification_type'] == "UnreadChatRoomMessages"){
+						refreshUnreadChatRoomMessagesCard(card, notification)
+					}
+				}
+			})
+		}
+	}
+
+	function refreshUnreadChatRoomMessagesCard(card, notification){
+
+		card.childNodes.forEach(function(element){
+
+			// DIV1
+			if(element.id == ("id_chat_div1_" + notification['notification_id'])){
+				element.childNodes.forEach(function(child){
+
+					// DIV2
+					if(child.id == ("id_chat_div2_" + notification['notification_id'])){
+						child.childNodes.forEach(function(nextChild){
+							if(nextChild.id == ("id_chat_title_" + notification['notification_id'])){
+								// found title
+								nextChild.innerHTML = notification['from']['title']
+							}
+							if(nextChild.id == ("id_chat_message_" + notification['notification_id'])){
+								// found chat message
+								if(notification['verb'].length > 50){
+									nextChild.innerHTML = notification['verb'].slice(0, 50) + "..."
+								}
+								else{
+									nextChild.innerHTML = notification['verb']
+								}
+							}
+						})
+					}
+				})
+			}
+
+			// TIMESTAMP
+			if (element.id == ("id_timestamp_" + notification['notification_id'])){
+				element.innerHTML = notification['natural_timestamp']
+			}
+		})
+	}
+
+	function setChatPaginationExhausted(){
+		setChatPageNumber("-1")
+	}
+
+	function setChatPageNumber(pageNumber){
+		document.getElementById("id_chat_page_number").innerHTML = pageNumber
+	}
+
+	function onChatNotificationsPaginationTriggerListener(){
+		window.onscroll = function(ev) {
+			// because of rounding we need to add 2. 1 might be OK but I'm using 2.
+			if ((window.innerHeight + window.scrollY + 2) >= document.body.scrollHeight) {
+				getNextChatNotificationsPage()
+			}
+		};
+	}
+
+	function setOnChatNotificationScrollListener(){
+		var menu = document.getElementById("id_chat_notifications_container")
+		if(menu != null ){
+			menu.addEventListener("scroll", function(e){
+
+				if ((menu.scrollTop) >= (menu.scrollHeight - menu.offsetHeight)) {
+					getNextChatNotificationsPage()
+				}
+			});
+		}
+		
+	}
+
+	function setChatNotificationsCount(count){
+		var countElement = document.getElementById("id_chat_notifications_count")
+		if(count > 0){
+			countElement.style.display = "contents"
+			countElement.innerHTML = count
+		}
+		else{
+			countElement.style.background = "transparent"
+			countElement.style.display = "none"
+		}
+	}
+
+	function getUnreadChatNotificationsCount(){
+		if("{{request.user.is_authenticated}}"){
+			notificationSocket.send(JSON.stringify({
+				"command": "get_unread_chat_notifications_count",
+			}));
+		}
+	}
+
+	function getNextChatNotificationsPage(){
+		var pageNumber = document.getElementById("id_chat_page_number").innerHTML
+		// -1 means exhausted or a query is currently in progress
+		if("{{request.user.is_authenticated}}" && pageNumber != "-1"){
+			notificationSocket.send(JSON.stringify({
+				"command": "get_chat_notifications",
+				"page_number": pageNumber,
+			}));
+		}
+	}
+	
+	function getNewChatNotifications(){
+		newestTimestamp = document.getElementById("id_chat_newest_timestamp").innerHTML
+		//console.log("NEWEST TS: " + newestTimestamp)
+		if("{{request.user.is_authenticated}}"){
+			notificationSocket.send(JSON.stringify({
+				"command": "get_new_chat_notifications",
+				"newest_timestamp": newestTimestamp,
+			}));
+		}
+	}
+
+	function getFirstChatNotificationsPage(){
+		if("{{request.user.is_authenticated}}"){
+			notificationSocket.send(JSON.stringify({
+				"command": "get_chat_notifications",
+				"page_number": "1",
+			}));
+			getUnreadChatNotificationsCount()
+		}
+	}
+
+	function startChatNotificationService(){
+		if("{{request.user.is_authenticated}}" == "True"){
+			setInterval(getNewChatNotifications, CHAT_NOTIFICATION_INTERVAL)
+			setInterval(getUnreadChatNotificationsCount, CHAT_NOTIFICATION_INTERVAL)
+		}
+	}
+
+	startChatNotificationService()
+
+    function assignChatDiv1Id(notification){
+		return "id_chat_div1_" + notification['notification_id']
+	}
+
+	function assignChatImgId(notification){
+		return "id_chat_img_" + notification['notification_id']
+	}
+
+	function assignChatTitleId(notification){
+		return "id_chat_title_" + notification['notification_id']
+	}
+
+	function assignChatroomMessageId(notification){
+		return "id_chat_message_" + notification['notification_id']
+	}
+
+	function assignChatDiv2Id(notification){
+		return "id_chat_div2_" + notification['notification_id']
+	}
+
+	function assignChatTimestampId(notification){
+		return "id_timestamp_" + notification['notification_id']
+	}
+
+	function assignChatCardId(notification){
+		return "id_notification_" + notification['notification_id']
+	}
+
+	function setChatInitialTimestamp(){
+		// ('%Y-%m-%d %H:%M:%S.%f')
+		var today = new Date();
+		var date = today.getFullYear() + "-01-01 01:00:00.000000"
+		document.getElementById("id_chat_newest_timestamp").innerHTML = date
+	}
+
+	setChatInitialTimestamp() 
+
+    // chat messages and notifications
+
+    var chatSocket = null;
+    var roomId = null;
+
+    function ChatMessagesAndNotificationsOnStart(){
+        {% if m_and_f %}
+            onSelectFriend("{{m_and_f.0.friend.id}}")
+        {% endif %}
+        {% for x in m_and_f %}
+            preloadImage("{{x.friend.profile_image.url|safe}}", "id_friend_img_{{x.friend.id}}")
+        {% endfor %}
+    }
+
+    function messagesSend() {
+        const messageInputDom = document.getElementById('id_chat_message_input');
+        const message = messageInputDom.value;
+        chatSocket.send(JSON.stringify({
+            "command": "send",
+            "message": message,
+            "room": roomId
+        }));
+        messageInputDom.value = '';
+    }
+
+    function messageFrom(this_user_id) {
+        const user_id = document.getElementById('user_id').innerHTML
+        page = 'messages'
+        redirect(page, user_id, this_user_id)
+		Messenger('On');
+    }
+
+    function onSelectFriend(id){
+		payload = {
+			"csrfmiddlewaretoken": "{{ csrf_token }}",
+			"user2_id": id,
+		}
+		$.ajax({
+			type: 'POST',
+			dataType: "json",
+			url: "{% url 'create-or-return-private-chat' %}", // production
+			data: payload,
+			timeout: 5000,
+			success: function(data) {
+				//console.log("SUCCESS", data)
+				if(data['response'] == "Successfully got the chat."){
+					setupWebSocket(data['chatroom_id'])
+				}
+				else if(data['response'] != null){
+					alert(data['response'])
+				}
+			},
+			error: function(data) {
+				console.error("ERROR...", data)
+				alert("Something went wrong.")
+			},
+		});
+		clearHighlightedFriend();
+		highlightFriend(id);
+		Messenger('On');
+    }
+
+    function closeWebSocket(){
+        if(chatSocket != null){
+            chatSocket.close()
+            chatSocket = null
+            clearChatLog()
+            setPageNumber("1")
+            disableChatLogScrollListener()
+        }
+    }
+
+    function setupWebSocket(room_id){
+
+        //console.log("setupWebSocket: " + room_id)
+
+        roomId = room_id
+
+        // close previous socket if one is open
+        closeWebSocket()
+
+        // Correctly decide between ws:// and wss://
+        var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+        {% if debug_mode %}
+            var ws_path = ws_scheme + '://' + window.location.host + "/chat/" + roomId + "/"; // development
+        {% else %}
+            var ws_path = ws_scheme + '://' + window.location.host + ":8001/chat/" + roomId + "/"; // production
+        {% endif %}
+        
+        
+        // console.log("Connecting to " + ws_path);
+        chatSocket = new WebSocket(ws_path);
+
+        // Handle incoming messages
+        chatSocket.onmessage = function(message) {
+            // Decode the JSON
+            // console.log("Got chat websocket message " + message.data);
+            //console.log("Got websocket message.");
+            var data = JSON.parse(message.data);
+
+            // display the progress bar?
+            displayChatroomLoadingSpinner(data.display_progress_bar)
+
+            // Handle errors (ClientError)
+            if (data.error) {
+                console.error(data.error + ": " + data.message)
+                showClientErrorModal(data.message)
+                return;
+            }
+            // Handle joining (Client perspective)
+            if (data.join) {
+                //console.log("Joining room " + data.join);
+                getUserInfo()
+                getRoomChatMessages()
+                enableChatLogScrollListener()
+            }
+            // Handle leaving (client perspective)
+            if (data.leave) {
+                // do nothing
+                //console.log("Leaving room " + data.leave);
+            }
+
+            // user info coming in from backend
+            if(data.user_info){
+                handleUserInfoPayload(data.user_info)
+            }
+
+            // Handle getting a message
+            if (data.msg_type == 0 || data.msg_type == 1 || data.msg_type == 2) {
+                appendChatMessage(data, false, true)
+            }
+
+            // new payload of messages coming in from backend
+            if(data.messages_payload){
+                handleMessagesPayload(data.messages, data.new_page_number)
+            }
+        };
+
+        chatSocket.addEventListener("open", function(e){
+            //console.log("ChatSocket OPEN")
+            // join chat room
+            if("{{request.user.is_authenticated}}"){
+                chatSocket.send(JSON.stringify({
+                    "command": "join",
+                    "room": roomId
+                }));
+            }
+        })
+
+        chatSocket.onclose = function(e) {
+            //console.log('Chat socket closed.');
+        };
+
+        chatSocket.onOpen = function(e){
+            //console.log("ChatSocket onOpen", e)
+        }
+
+        chatSocket.onerror = function(e){
+            //console.log('ChatSocket error', e)
+        }
+
+        if (chatSocket.readyState == WebSocket.OPEN) {
+            //console.log("ChatSocket OPEN")
+        } else if (chatSocket.readyState == WebSocket.CONNECTING){
+            //console.log("ChatSocket connecting..")
+        }
+    }
+
+    function getUserInfo(){
+        chatSocket.send(JSON.stringify({
+            "command": "get_user_info",
+            "room_id": roomId,
+        }));
+    }
+
+    function handleUserInfoPayload(user_info){
+        document.getElementById("id_other_username").innerHTML = user_info['username']
+        document.getElementById("id_other_user_profile_image").classList.remove("d-none")
+        document.getElementById("id_user_info_container").href= "/" + user_info['id'] + '/profile/'
+        preloadImage(user_info['profile_image'], "id_other_user_profile_image")
+    }
+
+    function showClientErrorModal(message){
+        document.getElementById("id_client_error_modal_body").innerHTML = message
+        document.getElementById("id_trigger_client_error_modal").click()
+    }
+
+    function appendChatMessage(data, maintainPosition, isNewMessage){
+        messageType = data['msg_type']
+        msg_id = data['msg_id']
+        message = data['message']
+        uName = data['username']
+        user_id = data['user_id']
+        profile_image = data['profile_image']
+        timestamp = data['natural_timestamp']
+        //console.log("append chat message: " + messageType)
+        
+        var msg = "";
+        var username = ""
+
+        // determine what type of msg it is
+        switch (messageType) {
+            case 0:
+                // new chatroom msg
+                username = uName + ": "
+                msg = message + '\n'
+                createChatMessageElement(msg, msg_id, username, profile_image, user_id, timestamp, maintainPosition, isNewMessage)
+                break;
+            case 1:
+                // User joined room
+                createConnectedDisconnectedElement(message, msg_id, profile_image, user_id)
+                break;
+            case 2:
+                // User left room
+                createConnectedDisconnectedElement(message, msg_id, profile_image, user_id)
+                break;
+            default:
+                console.log("Unsupported message type!");
+                return;
+        }
+    }
+
+    function createChatMessageElement(msg, msg_id, username, profile_image, user_id, timestamp, maintainPosition, isNewMessage){
+        var chatLog = document.getElementById("id_chat_log")
+
+        var newMessageDiv = document.createElement("div")
+        newMessageDiv.classList.add("d-flex")
+        newMessageDiv.classList.add("flex-row")
+        newMessageDiv.classList.add("message-container")
+
+        var profileImage = document.createElement("img")
+        profileImage.addEventListener("click", function(e){
+            selectUser(user_id)
+        })
+        profileImage.classList.add("profile-image-messages")
+        profileImage.classList.add("rounded-circle")
+        profileImage.classList.add("img-fluid")
+        profileImage.src = "static/clockdb/dummy_image.png/"
+        var profile_image_id = "id_profile_image_" + msg_id
+        profileImage.id = profile_image_id
+        newMessageDiv.appendChild(profileImage)
+
+        var div1 = document.createElement("div")
+        div1.classList.add("d-flex")
+        div1.classList.add("flex-column")
+
+        var div2 = document.createElement("div")
+        div2.classList.add("d-flex")
+        div2.classList.add("flex-row")
+
+        var usernameSpan = document.createElement("span")
+        usernameSpan.innerHTML = username
+        usernameSpan.classList.add("username-span-messages")
+        usernameSpan.addEventListener("click", function(e){
+            selectUser(user_id)
+        })
+        div2.appendChild(usernameSpan)
+
+        var timestampSpan = document.createElement("span")
+        timestampSpan.innerHTML = timestamp
+        timestampSpan.classList.add("timestamp-span")
+        timestampSpan.classList.add("d-flex")
+        timestampSpan.classList.add("align-items-center")
+        timestampSpan.addEventListener("click", function(e){
+            selectUser(user_id)
+        })
+        div2.appendChild(timestampSpan)
+
+        div1.appendChild(div2)
+
+        var msgP = document.createElement("p")
+        msgP.innerHTML = validateText(msg)
+        msgP.style="line-break: normal;"
+        div1.appendChild(msgP)
+
+        newMessageDiv.appendChild(div1)
+
+        if(isNewMessage){
+            chatLog.insertBefore(newMessageDiv, chatLog.firstChild)
+        }
+        else{
+            chatLog.appendChild(newMessageDiv)
+        }
+        
+        if(!maintainPosition){
+            chatLog.scrollTop = chatLog.scrollHeight
+        }
+
+        preloadImage(profile_image, profile_image_id)
+    }
+
+    function createConnectedDisconnectedElement(msg, msd_id, profile_image, user_id){
+        var chatLog = document.getElementById("id_chat_log")
+
+        var newMessageDiv = document.createElement("div")
+        newMessageDiv.classList.add("d-flex")
+        newMessageDiv.classList.add("flex-row")
+        newMessageDiv.classList.add("message-container")
+
+        var profileImage = document.createElement("img")
+        profileImage.addEventListener("click", function(e){
+            selectUser(user_id)
+        })
+        profileImage.classList.add("profile-image-messages")
+        profileImage.classList.add("rounded-circle")
+        profileImage.classList.add("img-fluid")
+        profileImage.src = "static/clockdb/dummy_image.png/"
+        var profile_image_id = "id_profile_image_" + msg_id
+        profileImage.id = profile_image_id
+        newMessageDiv.appendChild(profileImage)
+
+        var usernameSpan = document.createElement("span")
+        usernameSpan.innerHTML = msg
+        usernameSpan.classList.add("username-span-messages")
+        usernameSpan.addEventListener("click", function(e){
+            selectUser(user_id)
+        })
+        newMessageDiv.appendChild(usernameSpan)
+
+        chatLog.insertBefore(newMessageDiv, chatLog.firstChild)
+
+        preloadImage(profile_image, profile_image_id)
+    }
+
+    function setPageNumber(pageNumber){
+        document.getElementById("id_page_number").innerHTML = pageNumber
+    }
+
+    function clearChatLog(){
+        document.getElementById("id_chat_log").innerHTML = ""
+    }
+
+    function setPaginationExhausted(){
+        setPageNumber("-1")
+    }
+
+    function getRoomChatMessages(){
+        var pageNumber = document.getElementById("id_page_number").innerHTML
+        if(pageNumber != "-1"){
+            setPageNumber("-1") // loading in progress
+            chatSocket.send(JSON.stringify({
+                "command": "get_room_chat_messages",
+                "room_id": roomId,
+                "page_number": pageNumber,
+            }));
+        }
+    }
+
+    function handleMessagesPayload(messages, new_page_number){
+        if(messages != null && messages != "undefined" && messages != "None"){
+            setPageNumber(new_page_number)
+            messages.forEach(function(message){
+                appendChatMessage(message, true, false)
+            })
+        }
+        else{
+            setPaginationExhausted() // no more messages
+        }
+    }
+
+    function selectUser(user_id){
+        // Weird work-around for passing arg to url
+        //var win = window.open(url, "_blank")
+        //win.focus()
+    }
+
+    function chatLogScrollListener(e) {
+        var chatLog = document.getElementById("id_chat_log")
+        if ((Math.abs(chatLog.scrollTop) + 2) >= (chatLog.scrollHeight - chatLog.offsetHeight)) {
+            getRoomChatMessages()
+        }
+    }
+
+    function enableChatLogScrollListener(){
+        document.getElementById("id_chat_log").addEventListener("scroll", chatLogScrollListener);
+    }
+
+    function disableChatLogScrollListener(){
+        document.getElementById("id_chat_log").removeEventListener("scroll", chatLogScrollListener)
+    }
+
+    function displayChatroomLoadingSpinner(isDisplayed){
+        //console.log("displayChatroomLoadingSpinner: " + isDisplayed)
+        var spinner = document.getElementById("id_chatroom_loading_spinner")
+        if(isDisplayed){
+            spinner.style.display = "block"
+        }
+        else{
+            spinner.style.display = "none"
+        }
+    }
+
+    function highlightFriend(userId){
+        // select new friend
+        document.getElementById("id_friend_container_" + userId).style.background = "#f2f2f2"
+    }
+
+    function clearHighlightedFriend(){
+        {% if m_and_f %}
+            {% for x in m_and_f %}
+                document.getElementById("id_friend_container_{{x.friend.id}}").style.background = ""
+            {% endfor %}
+        {% endif %}
+
+        // clear the profile image and username of current chat
+        document.getElementById("id_other_user_profile_image").classList.add("d-none")
+        document.getElementById("id_other_user_profile_image").src = "/static/clockdb/dummy_image.png/"
+        document.getElementById("id_other_username").innerHTML = ""
+    }
+
+    function messageInputFocus() {
+        a = document.getElementById('id_chat_message_input')
+        a.focus()
+    }
+
+    // friends requests
+    
+	function onFriendRequestAccepted(){
+		location.reload();
+	}
+
+	function onFriendRequestDeclined(){
+		location.reload();
+	}
+
+	function triggerAcceptFriendRequest(friend_request_id){
+		acceptFriendRequest(friend_request_id, onFriendRequestAccepted)
+	}
+
+	function triggerDeclineFriendRequest(friend_request_id){
+		declineFriendRequest(friend_request_id, onFriendRequestDeclined)
+	}
+
+    function onFriendRemoved(){
+        location.reload();
+    }
+
+    function onFriendRequestAccepted(){
+        location.reload();
+    }
+
+    function onFriendRequestDeclined(){
+        location.reload();
+    }
+
+	function sendFriendRequest(id){
+		payload = {
+			"csrfmiddlewaretoken": "{{ csrf_token }}",
+			"receiver_user_id": id,
+		}
+		$.ajax({
+			type: 'POST',
+			dataType: "json",
+			url: "{% url 'friend-request' %}",
+			timeout: 5000,
+			data: payload,
+			success: function(data) {
+				//console.log("SUCCESS", data)
+				if(data['response'] == "Friend request sent."){
+					// ui is updated
+				}
+				else if(data['response'] != null){
+					alert(data['response'])
+				}
+			},
+			error: function(data) {
+				console.error("ERROR...", data)
+				alert("Something went wrong.")
+			},
+			complete: function(data){}
+		});
+	}
+
+	function cancelFriendRequest(id){
+		payload = {
+			"csrfmiddlewaretoken": "{{ csrf_token }}",
+			"receiver_user_id": id,
+		}
+		$.ajax({
+			type: 'POST',
+			dataType: "json",
+			url: "{% url 'friend-request-cancel' %}",
+			data: payload,
+			timeout: 5000,
+			success: function(data) {
+				//console.log("SUCCESS", data)
+				if(data['response'] == "Friend request canceled."){
+					// ui is updated
+				}
+				else if(data['response'] != null){
+					alert(data['response'])
+				}
+			},
+			error: function(data) {
+				console.error("ERROR...", data)
+				alert("Something went wrong.")
+			},
+			complete: function(data){}
+		});
+	}
+
+	try {
+		var removeFriendBtn = document.getElementById("id_unfriend_btn")
+		if (removeFriendBtn != null){
+			removeFriendBtn.addEventListener("click", function(){
+				removeFriend("{{id}}", onFriendRemoved)
+			})
+		}
+	} catch {}
+
+	function removeFriend(id, uiUpdateFunction){
+		payload = {
+			"csrfmiddlewaretoken": "{{ csrf_token }}",
+			"receiver_user_id": id,
+		}
+		$.ajax({
+			type: 'POST',
+			dataType: "json",
+			timeout: 5000,
+			url: "{% url 'remove-friend' %}",
+			data: payload,
+			success: function(data) {
+				//console.log("SUCCESS", data)
+				if(data.response == "Successfully removed that friend."){
+					// UI gets updated
+				}
+				else if(data.response != null){
+					alert(data.response)
+				}
+			},
+			error: function(data) {
+				console.error("ERROR...", data)
+				alert("Something went wrong." + data)
+			},
+			complete: function(data){
+				uiUpdateFunction()
+			}
+		});
+	}
+
+    function triggerAcceptFriendRequest(friend_request_id){
+        acceptFriendRequest(friend_request_id, onFriendRequestAccepted)
+    }
+
+	function acceptFriendRequest(friend_request_id, uiUpdateFunction){
+		var url = "{% url 'friend-request-accept' friend_request_id=53252623623632623 %}".replace("53252623623632623", friend_request_id)
+		$.ajax({
+			type: 'GET',
+			dataType: "json",
+			url: url,
+			timeout: 5000,
+			success: function(data) {
+				//console.log("SUCCESS", data)
+				if(data['response'] == "Friend request accepted."){
+					// ui is updated
+				}
+				else if(data['response'] != null){
+					alert(data['response'])
+				}
+			},
+			error: function(data) {
+				console.error("ERROR...", data)
+				alert("Something went wrong: " + data)
+			},
+			complete: function(data){
+				uiUpdateFunction()
+			}
+		});
+	}
+
+    function triggerDeclineFriendRequest(friend_request_id){
+        declineFriendRequest(friend_request_id, onFriendRequestDeclined)
+    }
+
+	function declineFriendRequest(friend_request_id, uiUpdateFunction){
+		var url = "{% url 'friend-request-decline' friend_request_id=53252623623632623 %}".replace("53252623623632623", friend_request_id)
+		$.ajax({
+			type: 'GET',
+			dataType: "json",
+			url: url,
+			timeout: 5000,
+			success: function(data) {
+				//console.log("SUCCESS", data)
+				if(data['response'] == "Friend request declined."){
+					// ui is updated
+				}
+				else if(data['response'] != null){
+					alert(data['response'])
+				}
+			},
+			error: function(data) {
+				console.error("ERROR...", data)
+				alert("Something went wrong: " + data)
+			},
+			complete: function(data){
+				uiUpdateFunction()
+			}
+		});
+	}
+	    
+	function friendRequestButtonsOnStart() {
+		FR = "{{ friends_requests }}"
+		FR = FR.replace('[','')
+		FR = FR.replace(']','')
+		i = 0
+		id = 0
+		while (id != undefined) {
+			try {
+				id = FR.split(', ')[i]
+				document.getElementsByName(id)[0].innerHTML = 'Cancel Friend Request';
+				document.getElementsByName(id)[0].id = 'id_cancel_friend_request_btn_profiles';
+				document.getElementsByName(id)[0].className = 'btn btn-danger';
+				document.getElementsByName(id)[1].innerHTML = 'Cancel Friend Request';
+				document.getElementsByName(id)[1].id = 'id_cancel_friend_request_btn_profiles';
+				document.getElementsByName(id)[1].className = 'btn btn-danger';
+			} catch {}
+			i = i + 1
+		}
+	}
+	
+    // Network
+
+    function Network(search) {
+        search = search.toLowerCase()
+        showPage('Network')
+        historyPush('Network')
+        network = document.getElementsByClassName('profile-container')
+        for(let i = 0; i < network.length; i++) {
+            r = '';
+            profile = network[i].getElementsByClassName('card-title')[0]
+            c = profile.innerHTML
+            c = c.toLowerCase()
+            test = c.includes(search)
+            if (test == false) {
+                r = 'none';
+            }
+            c = profile.parentElement.parentElement.parentElement.parentElement
+			//
+			c.style.display = r
+        }
+    }   
+
+	document.addEventListener('DOMContentLoaded', function() {
+		try {
+			friendRequestButtonsOnStart();
+			ChatMessagesAndNotificationsOnStart();
+			controlPanel();
+		} catch {}
+		try {
+			b = window.location.href.replace(window.location.origin,'')
+			b = b.split('/')[2]
+			if (b == 'WorkingPaper') {
+				document.getElementsByClassName('header')[0].style.position = 'absolute';
+				document.getElementsByClassName('panelHeader')[0].style.position = 'absolute';
+				DisplayWorkingPaper();
+				REF();
+				innerWidthColumn();
+				Compile();
+			} else {
+				controlPanelTitles();
+				hideIndustrySEC();
+				Posts();
+			}
+		} catch {}
+
+	})
+	
+	function DisplayWorkingPaper() {
+		for (let i = 0; i < document.querySelectorAll('.Clock').length; i++) {
+			var numUSD = new Intl.NumberFormat("en-US", {
+				format: "number",
+			});
+			var m = document.getElementsByClassName("Clock")[i].value;
+			document.getElementsByClassName('Clock')[i].value = numUSD.format(m);
+		};
+		for (let i = 0; i < document.querySelectorAll('.Proportion').length; i++) {
+				var numUSD = new Intl.NumberFormat("en-US", {
+					format: "number",
+					minimumFractionDigits: 1,
+					maximumFractionDigits: 1
+				});
+				var m = document.getElementsByClassName("Proportion")[i].value;
+				document.getElementsByClassName('Proportion')[i].value = numUSD.format(m);
+		};
+		for (let i = 0; i < document.querySelectorAll('.ClockRate').length; i++) {
+				var numUSD = new Intl.NumberFormat("en-US", {
+					style: 'percent',
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2
+				});
+				var m = document.getElementsByClassName("ClockRate")[i].value;
+				document.getElementsByClassName('ClockRate')[i].value = numUSD.format(m);
+		};
+		for (let i = 0; i < document.querySelectorAll('.Price').length; i++) {
+				var numUSD = new Intl.NumberFormat("en-US", {
+					format: "currency",
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2
+				});
+				var m = document.getElementsByClassName("Price")[i].value;
+				document.getElementsByClassName('Price')[i].value = numUSD.format(m);
+		};
+	};
+
+	function FormatCell() {
+		var Clock = new Intl.NumberFormat("en-US", {
+			format: "number",
+		});
+		var Proportion = new Intl.NumberFormat("en-US", {
+			format: "number",
+			minimumFractionDigits: 1,
+			maximumFractionDigits: 1
+		});
+		var ClockRate = new Intl.NumberFormat("en-US", {
+			style: 'percent',
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
+		});
+		var Price = new Intl.NumberFormat("en-US", {
+			format: "currency",
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
+		});
+		if (event.target.className == 'Clock') {
+			var m = parseInt(event.target.value.replaceAll(/,/g, ''));
+			document.getElementById(event.target.id).value = Clock.format(m);
+		}
+		if (event.target.className == 'Proportion') {
+			var m = event.target.value;
+			document.getElementById(event.target.id).value = Proportion.format(m);
+		}
+		if (event.target.className == 'ClockRate') {
+			var m = event.target.value.replace('%','') / 100;
+			document.getElementById(event.target.id).value = ClockRate.format(m);
+		}
+		if (event.target.className == 'Price') {
+			var m = event.target.value;
+			document.getElementById(event.target.id).value = price.format(m);
+		}
+	}
+
+	function REF() {
+		CurrentAssetsREF();
+		NonCurrentAssetsREF();
+		CurrentLiabilitiesREF();
+		NonCurrentLiabilitiesREF();
+		ShareholdersEquityREF();
+		GrossMarginREF();
+		OperatingExpensesREF();
+		ImpairmentAndRestructuringREF();
+		NonOperatingExpensesREF();
+		EquityMethodInvesteesIncomeREF();
+		DiscontinuedOperationsREF();
+		IncomeTaxesREF();
+		OtherComprehensiveIncomeREF();
+		OperatingActivitiesREF();
+		InvestingActivitiesREF();
+		FinancingActivitiesREF();
+		MissionREF();
+		MaterialityREF();
+		BalanceSheetsProcedureREF();
+		IncomeStatementsProcedureREF();
+		ComprehensiveIncomeProcedureREF();
+		ShareholdersEquityProcedureREF();
+		CashFlowProcedureREF();
+		AnomaliesREF();
+		OpinionREF();
+	}
+
+	function CurrentAssetsREF() {
+		for (let i = 0; i < document.querySelectorAll('.CurrentAssetsFiles').length; i++) {
+			document.getElementsByClassName('CurrentAssetsFiles')[i].innerHTML = document.getElementById("CurrentAssetsREF6").value
+		}
+	}
+
+	function NonCurrentAssetsREF() {
+		for (let i = 0; i < document.querySelectorAll('.NonCurrentAssetsFiles').length; i++) {
+			document.getElementsByClassName('NonCurrentAssetsFiles')[i].innerHTML = document.getElementById("NonCurrentAssetsREF6").value
+		}
+	}
+
+	function CurrentLiabilitiesREF() {
+		for (let i = 0; i < document.querySelectorAll('.CurrentLiabilitiesFiles').length; i++) {
+			document.getElementsByClassName('CurrentLiabilitiesFiles')[i].innerHTML = document.getElementById("CurrentLiabilitiesREF6").value
+		}
+	}
+
+	function NonCurrentLiabilitiesREF() {
+		for (let i = 0; i < document.querySelectorAll('.NonCurrentLiabilitiesFiles').length; i++) {
+			document.getElementsByClassName('NonCurrentLiabilitiesFiles')[i].innerHTML = document.getElementById("NonCurrentLiabilitiesREF6").value
+		}
+	}
+
+	function ShareholdersEquityREF() {
+		for (let i = 0; i < document.querySelectorAll('.ShareholdersEquityFiles').length; i++) {
+			document.getElementsByClassName('ShareholdersEquityFiles')[i].innerHTML = document.getElementById("ShareholdersEquityREF6").value
+		}
+	}
+
+	function GrossMarginREF() {
+		for (let i = 0; i < document.querySelectorAll('.GrossMarginFiles').length; i++) {
+			document.getElementsByClassName('GrossMarginFiles')[i].innerHTML = document.getElementById("GrossMarginREF6").value
+		}
+	}
+
+	function OperatingExpensesREF() {
+		for (let i = 0; i < document.querySelectorAll('.OperatingExpensesFiles').length; i++) {
+			document.getElementsByClassName('OperatingExpensesFiles')[i].innerHTML = document.getElementById("OperatingExpensesREF6").value
+		}
+	}
+
+	function ImpairmentAndRestructuringREF() {
+		for (let i = 0; i < document.querySelectorAll('.ImpairmentAndRestructuringFiles').length; i++) {
+			document.getElementsByClassName('ImpairmentAndRestructuringFiles')[i].innerHTML = document.getElementById("ImpairmentAndRestructuringREF6").value
+		}
+	}
+
+	function NonOperatingExpensesREF() {
+		for (let i = 0; i < document.querySelectorAll('.NonOperatingExpensesFiles').length; i++) {
+			document.getElementsByClassName('NonOperatingExpensesFiles')[i].innerHTML = document.getElementById("NonOperatingExpensesREF6").value
+		}
+	}
+
+	function EquityMethodInvesteesIncomeREF() {
+		for (let i = 0; i < document.querySelectorAll('.EquityMethodInvesteesIncomeFiles').length; i++) {
+			document.getElementsByClassName('EquityMethodInvesteesIncomeFiles')[i].innerHTML = document.getElementById("EquityMethodInvesteesIncomeREF6").value
+		}
+	}
+
+	function DiscontinuedOperationsREF() {
+		for (let i = 0; i < document.querySelectorAll('.DiscontinuedOperationsFiles').length; i++) {
+			document.getElementsByClassName('DiscontinuedOperationsFiles')[i].innerHTML = document.getElementById("DiscontinuedOperationsREF6").value
+		}
+	}
+
+	function IncomeTaxesREF() {
+		for (let i = 0; i < document.querySelectorAll('.IncomeTaxFiles').length; i++) {
+			document.getElementsByClassName('IncomeTaxFiles')[i].innerHTML = document.getElementById("IncomeTaxesREF6").value
+		}
+	}
+
+	function OtherComprehensiveIncomeREF() {
+		for (let i = 0; i < document.querySelectorAll('.OtherComprehensiveIncomeFiles').length; i++) {
+			document.getElementsByClassName('OtherComprehensiveIncomeFiles')[i].innerHTML = document.getElementById("OtherComprehensiveIncomeREF6").value
+		}
+	}
+
+	function OperatingActivitiesREF() {
+		for (let i = 0; i < document.querySelectorAll('.OperatingActivitiesFiles').length; i++) {
+			document.getElementsByClassName('OperatingActivitiesFiles')[i].innerHTML = document.getElementById("OperatingActivitiesREF6").value
+		}
+	}
+
+	function InvestingActivitiesREF() {
+		for (let i = 0; i < document.querySelectorAll('.InvestingActivitiesFiles').length; i++) {
+			document.getElementsByClassName('InvestingActivitiesFiles')[i].innerHTML = document.getElementById("InvestingActivitiesREF6").value
+		}
+	}
+
+	function FinancingActivitiesREF() {
+		for (let i = 0; i < document.querySelectorAll('.FinancingActivitiesFiles').length; i++) {
+			document.getElementsByClassName('FinancingActivitiesFiles')[i].innerHTML = document.getElementById("FinancingActivitiesREF6").value
+		}
+	}
+
+	function EffectOfExchangeRateOnCashREF() {
+		for (let i = 0; i < document.querySelectorAll('.EffectOfExchangeRateOnCashFiles').length; i++) {
+			document.getElementsByClassName('EffectOfExchangeRateOnCashFiles')[i].innerHTML = document.getElementById("EffectOfExchangeRateOnCashREF6").value
+		}
+	}
+
+	function MissionREF() {
+		for (let i = 0; i < document.querySelectorAll('.MissionFiles').length; i++) {
+			document.getElementsByClassName('MissionFiles')[i].innerHTML = document.getElementById("MissionREF6").value
+		}
+	}
+
+	function MaterialityREF() {
+		for (let i = 0; i < document.querySelectorAll('.MaterialityFiles').length; i++) {
+			document.getElementsByClassName('MaterialityFiles')[i].innerHTML = document.getElementById("MaterialityREF6").value
+		}
+	}
+
+	function BalanceSheetsProcedureREF() {
+		for (let i = 0; i < document.querySelectorAll('.BalanceSheetsProcedureFiles').length; i++) {
+			document.getElementsByClassName('BalanceSheetsProcedureFiles')[i].innerHTML = document.getElementById("BalanceSheetsProcedureREF6").value
+		}
+	}
+
+	function IncomeStatementsProcedureREF() {
+		for (let i = 0; i < document.querySelectorAll('.IncomeStatementsProcedureFiles').length; i++) {
+			document.getElementsByClassName('IncomeStatementsProcedureFiles')[i].innerHTML = document.getElementById("IncomeStatementsProcedureREF6").value
+		}
+	}
+
+	function ComprehensiveIncomeProcedureREF() {
+		for (let i = 0; i < document.querySelectorAll('.ComprehensiveIncomeProcedureFiles').length; i++) {
+			document.getElementsByClassName('ComprehensiveIncomeProcedureFiles')[i].innerHTML = document.getElementById("ComprehensiveIncomeProcedureREF6").value
+		}
+	}
+
+	function ShareholdersEquityProcedureREF() {
+		for (let i = 0; i < document.querySelectorAll('.ShareholdersEquityProcedureFiles').length; i++) {
+			document.getElementsByClassName('ShareholdersEquityProcedureFiles')[i].innerHTML = document.getElementById("ShareholdersEquityProcedureREF6").value
+		}
+	}
+
+	function CashFlowProcedureREF() {
+		for (let i = 0; i < document.querySelectorAll('.CashFlowProcedureFiles').length; i++) {
+			document.getElementsByClassName('CashFlowProcedureFiles')[i].innerHTML = document.getElementById("CashFlowProcedureREF6").value
+		}
+	}
+
+	function AnomaliesREF() {
+		for (let i = 0; i < document.querySelectorAll('.AnomaliesFiles').length; i++) {
+			document.getElementsByClassName('AnomaliesFiles')[i].innerHTML = document.getElementById("AnomaliesREF6").value
+		}
+	}
+
+	function OpinionREF() {
+		for (let i = 0; i < document.querySelectorAll('.OpinionFiles').length; i++) {
+			document.getElementsByClassName('OpinionFiles')[i].innerHTML = document.getElementById("OpinionREF6").value
+		}
+	}
+
+	function hideIndustrySEC() {
+		g = document.getElementsByName('Industry_SEC')
+		for(let i = 0; i < g.length; i++) {
+			g[i].style.display = 'none';
+		}
+	}
+
+	function controlPanelTitles() {
+		// marker
+		marker = `
+		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+			<path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
+			<path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
+		</svg>
+		`
+		// Sort
+		try {
+			a = document.getElementById('Sort')
+			a = a.options[a.selectedIndex].text
+			if (a == '') {
+				a = 'Sort';
+			} else {
+				a = marker + 'Sort by ' + a;
+			}
+			c = document.getElementById('SortButton')
+			c.innerHTML = a;
+		} catch {}
+		// Order
+		try {
+			a = document.getElementById('Order')
+			a = a.options[a.selectedIndex].text
+			if (a == '') {
+				a = 'Order'
+			} else {
+				a = marker + a;
+			}
+			c = document.getElementById('OrderButton')
+			c.innerHTML = a;
+		} catch {}
+		// Industry
+		try {
+			a = document.getElementById('Industry')
+			a = a.options[a.selectedIndex].text
+			if (a == '') {
+				a = 'Industry'
+			} else {
+				a = marker + a;
+			}
+			c = document.getElementById('IndustryButton')
+			c.innerHTML = a;
+		} catch {}
+		// Region
+		try {
+			a = document.getElementById('Region')
+			a = a.options[a.selectedIndex].text
+			if (a == '') {
+				a = 'Region'
+			} else {
+				a = marker + a;
+			}
+			c = document.getElementById('RegionButton')
+			c.innerHTML = a;
+		} catch {}
+		// Period
+		try {
+			a = document.getElementById('Period')
+			a = a.options[a.selectedIndex].text
+			if (a == '') {
+				a = 'Year Ending'
+			} else {
+				a = marker + a;
+			}
+			c = document.getElementById('PeriodButton')
+			c.innerHTML = a;
+		} catch {}
+		// Work In Progress
+		try {		
+			a = document.getElementById('WorkInProgress')
+			a = a.options[a.selectedIndex].text
+			if (a == 'Include Work In Progress') {
+				a = 'Include Work In Progress'
+			} else {
+				a = marker + a;
+			}
+			c = document.getElementById('WorkInProgressButton')
+			c.innerHTML = a;
+		} catch {}
+	}
+
+	function IndustryChange() {
+		try {
+			controlPanelTitles();
+			hideIndustrySEC();
+			e = document.getElementById('Industry').value
+			e = document.getElementById(e)
+			e = e.parentElement
+			e = e.parentElement
+			e = e.parentElement
+			e.style.display = 'block';
+		} catch {}
+	}
+
+	function IndustrySECChange(e) {
+		id = e.id.replace('m','')
+		a = document.getElementById(id)
+        for(let i = 0; i < a.length; i++) {
+			if (a.options[i].value == a.value) {
+				gg = a.options[i].innerHTML
+			}
+		}
+		if (gg != '') {
+			gg = `
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+					<path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
+					<path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
+				</svg>
+			` + gg
+			id = 'IndustryButton_' + id
+			document.getElementById(id).innerHTML = gg
+		}
+	}
+
+	function OptionsSelection() {
+		e = event.target
+		a = document.getElementById(e.name)
+		a.value = e.id.replace('Option', '')
+		e.parentElement.style.display = 'none';
+		controlPanelTitles();
+		hideIndustrySEC();
+		try {
+			IndustryChange();
+			IndustrySECChange(e);
+		} catch {}
+	}
+
+	function OptionsSection(c) {
+		f = c + 'OptionsSection'
+		f = document.getElementsByClassName(f)[0]
+		d = f.style.display
+		if (d == 'none') {
+			d = 'block';
+		} else {
+			d = 'none';
+		}
+		f.style.display = d;
+		//
+		a = document.getElementById(c).options
+		//
+        for(let i = 0; i < a.length; i++) {
+			o = a[i].innerHTML
+			if (o == '') {
+				o = 'any'
+			}
+			option = `<button id="` + a[i].value + `Option` + `" class="` + `options` + `" name="` + c + `" onclick="OptionsSelection()">` + o + `</button>`
+			optionsO = optionsO + option
+		}
+	}
+
+	function SortAndOrderOptions(c) {
+		optionsO = ''
+		OptionsSection(c, optionsO)
+		a = c + 'OptionsSection'
+		a = document.getElementsByClassName(a)[0]
+		a.innerHTML = optionsO
+	}
+
+	function SortAndOrder(id) {
+		c = id.replace('Button','')
+		if (c == 'Sort') {
+			SortAndOrderOptions(c)
+		}
+		if (c == 'Order') {
+			SortAndOrderOptions(c)
+		}
+		if (c == 'filterFor') {
+			filterForRefresh();
+		}
+		if (c == 'Industry') {
+			SortAndOrderOptions(c)
+		}
+		if (c == 'Region') {
+			SortAndOrderOptions(c)
+		}
+		if (c == 'Period') {
+			SortAndOrderOptions(c)
+		}
+		if (c == 'WorkInProgress') {
+			WorkInProgressToggle()
+		}
+		c = id.slice(15)
+		if (id.replace(c,'') == 'IndustryButton_') {
+			SortAndOrderOptions(c)
+		}
+	}
+
+	function filterForRefresh() {
+		document.getElementById('Industry').value = 'any'
+		document.getElementById('Region').value = 'any'
+		document.getElementById('Period').value = 'any'
+		controlPanelTitles();
+		hideIndustrySEC();
+	}
+
+	function WorkInProgressToggle() {
+		a = document.getElementById('WorkInProgress').value
+		if (a == '21') {
+			a = 'any';
+		} else {
+			a = '21';
+		}
+		document.getElementById('WorkInProgress').value = a;
+		controlPanelTitles();
+	}
+
+	// Open
+
+	function UploadConfirm() {
+		var numUSD = new Intl.NumberFormat("en-US", {
+            format: "number"
+        });
+		document.getElementById('UnhideCheckbox').checked = true
+		CheckUnhideCheckbox();
+		try {
+			var list = document.getElementById('FilesDetails');
+			list.innerHTML = '';
+			Rows = document.getElementsByClassName('Reference');
+			Row = 1
+			Papa.parse(document.getElementById('Upload').files[0], 
+				{
+				download: true,
+				header: true,
+				skipEmptyLines: true, 
+				complete: function(results) {
+					for (var k in results.data) {
+						var a = results.data[k].Value
+						var b = results.data[k].Reference
+						var c = results.data[k].Type
+						var Reference = results.data[k].FileReference
+						var Status = results.data[k].Status
+						var WorkInProgress = results.data[k].WorkInProgress
+						var Prepared = results.data[k].Prepared
+						var DatePrepared = results.data[k].DatePrepared
+						var Reviewed = results.data[k].Reviewed
+						var DateReviewed = results.data[k].DateReviewed
+						if (a == 'NaN') {
+							a = '';
+						}
+						if (c == 'Checkbox') {
+							if (a == 'true') {
+								document.getElementById(b).checked = true;
+								document.getElementById(b).style.visibility = 'visible';
+							} else {}
+						}
+						if (c == 'ClockRate') {
+							document.getElementById(b).value = a;
+						}
+						if (c == 'Context') {
+							document.getElementById(b).value = a;
+						}
+						if (c == 'ContextDate') {
+							document.getElementById(b).value = a;
+						}
+						if (c == 'Date') {
+							document.getElementById(b).value = a;
+						}
+						if (c == 'Directory') {
+							document.getElementById(b).value = a;
+						}
+						if (c == 'Header') {
+							document.getElementById(b).value = a;
+						}
+						if (c == 'Opinion') {
+							document.getElementById(b).value = numUSD.format(a);
+						}
+						if (c == 'OpinionThree') {
+							document.getElementById(b).value = numUSD.format(a);
+						}
+						if (c == 'OpinionFour') {
+							document.getElementById(b).value = numUSD.format(a);
+						}
+						if (c == 'Proportion') {
+							document.getElementById(b).value = a;
+						}
+						if (c == 'Price') {
+							document.getElementById(b).value = a;
+						}
+						if (c == 'REF') {
+							document.getElementById(b).value = a;
+						}
+						if (c == 'Reference') {
+							var tr = document.createElement('tr');
+							tr.className = "Reference"
+							var r = "FileProperty" + Row;
+							tr.id = r + '.Row'
+							var name = a;
+							var b = 1
+							AddFile(name, tr, b, r, list, Reference, Status, WorkInProgress, Prepared, DatePrepared, Reviewed, DateReviewed);
+							tr.innerHTML = html
+							list.appendChild(tr) 
+							Row = Row + 1
+						}
+						if (c == 'ShareholdersEquityBeginningBalance') {
+							document.getElementById(b).value = numUSD.format(a);
+						}
+						if (c == 'TrialBalance') {
+							document.getElementById(b).value = numUSD.format(a);
+						}
+					}
+				}
+			});
+			document.getElementById('FilesDetails').innerHTML = list.innerHTML;
+		} catch {}
+		showPage('Context')
+		historyPush('Context')
+		Compile();
+		document.getElementById('UploadConfirm').style.display = 'none';
+    };
+
+	// Rollover
+
+	function Rollover() {
+        var numUSD = new Intl.NumberFormat("en-US", {
+            format: "number"
+        });
+        Save();
+        var d = document.getElementById('ContextDate1').value
+        d = new Date(d)
+        day = d.getDate();
+        month = d.getMonth();
+        year = d.getFullYear() + 1
+        d = new Date(year, month, day).toDateString()
+        d = d.split(' ')
+        d = d[1] + '. ' + d[2] + ', ' + d[3]
+        document.getElementById('ContextDate6').value = document.getElementById('ContextDate5').value
+        document.getElementById('ContextDate5').value = document.getElementById('ContextDate4').value
+        document.getElementById('ContextDate4').value = document.getElementById('ContextDate3').value
+        document.getElementById('ContextDate3').value = document.getElementById('ContextDate2').value
+        document.getElementById('ContextDate2').value = document.getElementById('ContextDate1').value
+        document.getElementById('ContextDate1').value = d
+        //
+        rows = document.querySelectorAll('tr');
+        //
+        RowClass = [
+            'Date',
+            'Clock',
+            'ClockRate',
+            'Context',
+            'Opinion',
+            'OpinionThree',
+            'OpinionFour',
+            'Price',
+            'Proportion',
+            'TrialBalance',
+            'ShareholdersEquityBeginningBalance',
+        ]
+        //
+        for(let i = 0; i < rows.length; i++) {
+            trid = rows[i].id
+            trclass = rows[i].className
+            if(RowClass.includes(trclass)) {
+                row = trid.slice(0, -3);
+                //
+                input1 = row + 1
+                input2 = row + 2
+                input3 = row + 3
+                input4 = row + 4
+                input5 = row + 5
+                input6 = row + 6
+                //
+                if (trclass == 'OpinionFour') {
+                } else {
+                    document.getElementById(input6).value = document.getElementById(input5).value;
+                    document.getElementById(input5).value = document.getElementById(input4).value;
+                }
+                if (trclass == 'OpinionThree') {
+                } else {
+                    document.getElementById(input4).value = document.getElementById(input3).value;
+                    document.getElementById(input3).value = document.getElementById(input2).value;
+                    document.getElementById(input2).value = document.getElementById(input1).value;
+                }
+                try {
+                    var a = parseInt(document.getElementById(input1).value.replaceAll(/,/g, ''));
+                } catch {}
+                if (Math.abs(a) > 1) {
+                    document.getElementById(input1).value = 0
+                }
+                var a = document.getElementById(trid).className
+                //
+                if (a == 'Context') {
+                    document.getElementById(input1).value = '';
+                }
+                if (a == 'Date') {
+                    document.getElementById(input1).value = '';
+                }
+                if (a == 'ShareholdersEquityBeginningBalance') {
+                    b = input1.replace('TrialBalance','')
+                    b = document.getElementById(b).value.replaceAll(/,/g, '');
+                    document.getElementById(input1).value = numUSD.format(-b);
+                }
+            }
+        };
+		Compile();
+	};
+
+	// Open File Name
+
+	function OpenFileName() {
+		a = document.getElementById('Upload').files[0].name
+		document.getElementById('OpenFileName').innerHTML = a;
+		document.getElementById('UploadConfirm').style.display = 'block';
+	}
+
+	// Save
+
+    function Save() {
+        //
+        var FileData = [  
+            //
+            // settings
+            ['UnhideCheckbox', document.getElementById('UnhideCheckbox').checked, 'Checkbox'],
+            ['OpenEditor', document.getElementById('OpenEditor').checked, 'Checkbox'],
+        ];  
+        RowClass = [
+            'Checkbox',
+            'ClockRate',
+            'Context',
+            'ContextDate',
+            'Date',
+            'Header',
+            'Opinion',
+            'OpinionThree',
+            'OpinionFour',
+            'Price',
+            'Proportion',
+            'REF',
+            'ShareholdersEquityBeginningBalance',
+            'TrialBalance',
+        ]
+        ClockClass = [
+            'Opinion',
+            'OpinionFour',
+            'ShareholdersEquityBeginningBalance',
+            'TrialBalance',
+        ]
+        FourColumns = [
+            'OpinionFour',
+        ]
+        ThreeColumns = [
+            'OpinionThree',
+        ]
+        rows = document.querySelectorAll('tr');
+        FileDataExtension = []
+        //
+        for(let i = 0; i < rows.length; i++) {
+            trid = rows[i].id
+            trclass = rows[i].className
+            if(RowClass.includes(trclass)) {
+                row = trid.slice(0, -3);
+                input1 = row + 1
+                input2 = row + 2
+                input3 = row + 3
+                input4 = row + 4
+                input5 = row + 5
+                input6 = row + 6
+                checkbox1 = row + 'Checkbox'
+                checkbox2 = row + 'Checkbox' + 2
+                a = document.getElementById(input1).value;
+                b = document.getElementById(input2).value;
+                c = document.getElementById(input3).value;
+                d = document.getElementById(input4).value;
+                e = document.getElementById(input5).value;
+                f = document.getElementById(input6).value;
+                try {
+                    g = document.getElementById(checkbox1).checked;
+                    h = document.getElementById(checkbox2).checked;
+                } catch {}
+                if (ClockClass.includes(trclass)) {
+                    a = parseInt(a.replaceAll(/,/g, ''));
+                    b = parseInt(b.replaceAll(/,/g, ''));
+                    c = parseInt(c.replaceAll(/,/g, ''));
+                    d = parseInt(d.replaceAll(/,/g, ''));
+                    e = parseInt(e.replaceAll(/,/g, ''));
+                    f = parseInt(f.replaceAll(/,/g, ''));
+                }
+                a = [input1, a, trclass]
+                b = [input2, b, trclass]
+                c = [input3, c, trclass]
+                d = [input4, d, trclass]
+                e = [input5, e, trclass]
+                f = [input6, f, trclass]
+                try {
+                    g = [checkbox1, g, 'Checkbox']
+                    h = [checkbox2, h, 'Checkbox']
+                } catch {}
+                FileDataExtension.push(a)
+                FileDataExtension.push(b)
+                FileDataExtension.push(c)
+                try {
+                    FileDataExtension.push(g)
+                    FileDataExtension.push(h)
+                } catch {}
+
+                if (FourColumns.includes(trclass)) {
+                    FileDataExtension.push(d)
+                } else {
+                    if (ThreeColumns.includes(trclass)) {
+                    } else {
+                        FileDataExtension.push(d)
+                        FileDataExtension.push(e)
+                        FileDataExtension.push(f)
+                    };
+                };
+            };
+        };
+        ReferenceFileDataExtension = []
+        Rows = document.getElementsByClassName('Reference')
+            for (let i = 0; i < Rows.length; i++) {
+                try {
+                    //
+                    a = Rows[i].id.replace('.Row', '.1');
+                    b = Rows[i].id.replace('.Row', '.2');
+                    c = Rows[i].id.replace('.Row', '.3');
+                    d = Rows[i].id.replace('.Row', '.4');
+                    e = Rows[i].id.replace('.Row', '.5');
+                    f = Rows[i].id.replace('.Row', '.6');
+                    g = Rows[i].id.replace('.Row', '.7');
+                    h = Rows[i].id.replace('.Row', '.8');
+                    //
+                    aa = document.getElementById(a).value;
+                    bb = document.getElementById(b).value;
+                    cc = document.getElementById(c).value;
+                    dd = document.getElementById(d).value;
+                    ee = document.getElementById(e).value;
+                    ff = document.getElementById(f).value;
+                    gg = document.getElementById(g).value;
+                    hh = document.getElementById(h).value;
+                    //
+                    a = [Rows[i].id, aa, 'Reference', bb, cc, dd, ee, ff, gg, hh]
+                    //
+                    ReferenceFileDataExtension.push(a)
+                } catch {}
+            }
+        //
+        var db = 'Reference|Value|Type|FileReference|Status|WorkInProgress|Prepared|DatePrepared|Reviewed|DateReviewed\n';  
+
+        FileData.forEach(function(row) {  
+            db += row.join('|');  
+            db += "\n";  
+        });  
+        FileDataExtension.forEach(function(row) {  
+            db += row.join('|');  
+            db += "\n";  
+        });  
+        ReferenceFileDataExtension.forEach(function(row) {  
+            db += row.join('|');  
+            db += "\n";  
+        });  
+        var hiddenElement = document.createElement('a');  
+        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(db);  
+        hiddenElement.target = '_blank';  
+        //
+        var d = document.getElementById('ContextDate1').value
+        var d = new Date(d)
+        //
+        var month = '' + (d.getMonth() + 1);
+        var day = '' + d.getDate();
+        var year = d.getFullYear();
+        //
+        if (month.length < 2) 
+            month = '0' + month;
+        if (day.length < 2) 
+            day = '0' + day;
+        var formateddate = year + '-' + month + '-' + day;
+        //
+        b = document.getElementById('Amend1').value
+        if (b == "") {
+            a = ""
+        }
+        //
+        var file_name = document.getElementById('TradingSymbol1').value + " " + formateddate + a + b + ".db"
+        hiddenElement.download = file_name;
+        hiddenElement.click();
+    }
+
+	// Print
+
+    function Print() {
+		Control('Off')
+		LineChart();
+        document.getElementsByClassName('header')[0].style.display = 'none';
+        window.print();
+        document.getElementsByClassName('header')[0].style.display = '';
+        showPage('Graph');
+		historyPush('Graph');
+		Control('On')
+    };
+
+	// Unhide Rows
+
+	function UnhideRows() {
+		rows = document.querySelectorAll('tr');
+		for(let i = 1; i <= rows.length; i++) {
+			try {
+				row = rows[i];
+				row.style.display = '';
+			} catch {}
+		}
+	}
+
+	function CheckUnhideCheckbox() {
+		var a = document.getElementById("UnhideCheckbox").checked
+		if (a == true) {
+			UnhideRows();
+			document.getElementById('UnhideCheckboxOff').style.display = 'contents';
+			document.getElementById('UnhideCheckboxOn').style.display = 'none';
+		} else {
+			document.getElementById('UnhideCheckboxOff').style.display = 'none';
+			document.getElementById('UnhideCheckboxOn').style.display = 'contents';
+		}
+		Compile();
+	}
+
+	function UnhideCheckbox() {
+		a = document.getElementById('UnhideCheckbox').checked
+		if (a == true) {
+			a = false
+		} else {
+			a = true
+		}
+		document.getElementById('UnhideCheckbox').checked = a
+		CheckUnhideCheckbox();
+	}
+
+	// open editor
+
+	function OpenEditor() {
+		a = document.getElementById('OpenEditor').checked
+		if (a == true) {
+			a = false
+			b = 'none';
+		} else {
+			a = true
+			b = 'contents';
+		}
+		document.getElementById('OpenEditor').checked = a;
+		document.getElementById('OpenEditorIcon').style.display = b;
+	}
+
+	// clear checkboxes
+
+	function ClearCheckboxes() {
+		a = document.querySelectorAll('input')
+		for(let i = 0; i < a.length; i++) {
+			b = a[i].id
+			if (b != 'UnhideCheckbox') {
+				c = b.slice(b.length - 8)
+				if (c == 'Checkbox') {
+					a[i].checked = false
+					a[i].style.visibility = 'hidden'
+				}
+				c = b.slice(b.length - 9)
+				if (c == 'Checkbox2') {
+					a[i].checked = false
+					a[i].style.visibility = 'hidden'
+				}
+			}
+		}
+	}
+
+    // checkboxes
+    document.addEventListener('keydown', (event) => {
+        keys = [49, 50]
+        if (keys.includes(event.keyCode)) {
+            position = event.target
+            row = position.id.slice(0, -1)
+            if (event.keyCode == 49 && (event.altKey || event.metaKey)) {
+                event.preventDefault();
+                checkbox = document.getElementById(row + 'Checkbox')
+            }
+            if (event.keyCode == 50 && (event.altKey || event.metaKey)) {
+                event.preventDefault();
+                checkbox = document.getElementById(row + 'Checkbox2')
+            }
+            if (checkbox.checked == true) {
+                checkbox.checked = false;
+                checkbox.style.visibility = 'hidden'
+            } else {
+                checkbox.checked = true;
+                checkbox.style.visibility = 'visible'
+            }
+        }
+    });
+
+    // edit profile
+
+	try {
+		var cropper;
+		var imageFile;
+		var base64ImageString;
+		var cropX;
+		var cropX;
+		var cropWidth;
+		var cropHeight;
+		enableImageOverlay()
+	} catch {}
+
+	function enableImageOverlay(){
+		var text = document.getElementById("id_text")
+		text.style.backgroundColor = "#0D47A1"
+		text.style.color = "white"
+		text.style.fontSize = "16px"
+		text.style.padding = "16px 32px"
+		text.style.cursor = "pointer"
+
+		var profileImage = document.getElementById("id_profile_image_edit_profile")
+		profileImage.style.opacity = "1"
+		profileImage.style.display = "block"
+		profileImage.style.width = "100%"
+		profileImage.style.height = "auto"
+		profileImage.style.transition = ".5s ease"
+		profileImage.style.backfaceVisibility  = "hidden"
+		profileImage.style.cursor = "pointer"
+
+		var middleContainer = document.getElementById("id_middle_container")
+		middleContainer.style.transition = ".5s ease"
+		middleContainer.style.opacity = "0"
+		middleContainer.style.position = "absolute"
+		middleContainer.style.top = "50%"
+		middleContainer.style.left = "50%"
+		middleContainer.style.transform = "translate(-50%, -50%)"
+		middleContainer.style.textAlign = "center"
+
+		var imageContainer = document.getElementById("id_image_container")
+		imageContainer.addEventListener("mouseover", function( event ) { 
+			profileImage.style.opacity = "0.3"
+			middleContainer.style.opacity = "1"
+		})
+
+		imageContainer.addEventListener("mouseout", function( event ) { 
+			profileImage.style.opacity = "1"
+			middleContainer.style.opacity = "0"
+		})
+
+		imageContainer.addEventListener("click", function(event){
+			document.getElementById('id_profile_image_edit_profile').click();
+		});
+
+		var cropConfirm = document.getElementById("id_image_crop_confirm")
+		cropConfirm.classList.remove("d-flex")
+		cropConfirm.classList.remove("flex-row")
+		cropConfirm.classList.remove("justify-content-between")
+		cropConfirm.classList.add("d-none")
+		
+	}
+
+	function disableImageOverlay(){
+		var profileImage = document.getElementById("id_profile_image_edit_profile_display")
+		var middleContainer = document.getElementById("id_middle_container")
+		var imageContainer = document.getElementById("id_image_container")
+		var text = document.getElementById("id_text")
+
+		imageContainer.removeEventListener("mouseover", function( event ) { 
+			profileImage.style.opacity = "0.3"
+			middleContainer.style.opacity = "1"
+		})
+
+		imageContainer.removeEventListener("mouseout", function( event ) { 
+			profileImage.style.opacity = "1"
+			middleContainer.style.opacity = "0"
+		})
+
+		profileImage.style.opacity = "1"
+		middleContainer.style.opacity = "0"
+		text.style.cursor = "default"
+		text.style.opacity = "0"
+
+		document.getElementById('id_image_container').removeEventListener("click", function(event){
+			event.preventDefault();
+			// do nothing
+		});
+		document.getElementById('id_profile_image_edit_profile').addEventListener("click", function(event){
+			event.preventDefault();
+			// do nothing
+		});
+
+		var cropConfirm = document.getElementById("id_image_crop_confirm")
+		cropConfirm.classList.remove("d-none")
+		cropConfirm.classList.add("d-flex")
+		cropConfirm.classList.add("flex-row")
+		cropConfirm.classList.add("justify-content-between")
+
+		var confirm = document.getElementById("id_confirm")
+		confirm.addEventListener("click", function(event){
+			//console.log("Sending crop data for processing...")
+			cropImage(
+				imageFile, 
+				cropX, 
+				cropY, 
+				cropWidth,
+				cropHeight
+			)
+			document.getElementById('edit').style.display = 'none';
+			document.getElementById('CloseMessenger').click()
+		})
+
+		var cancel = document.getElementById("id_cancel")
+		cancel.addEventListener("click", function(event){
+			console.log("Reloading window...")
+			window.location.reload();
+		})
+	}
+
+	function isImageSizeValid(image){
+		console.log("max size: {{DATA_UPLOAD_MAX_MEMORY_SIZE}}")
+		var startIndex = image.indexOf("base64,") + 7;
+		var base64str = image.substr(startIndex);
+		var decoded = atob(base64str);
+		console.log("FileSize: " + decoded.length);
+		if(decoded.length>= "{{DATA_UPLOAD_MAX_MEMORY_SIZE}}"){
+			return null
+		}
+		return base64str
+	}
+
+	function cropImage(image, x, y, width, height){
+        base64ImageString = isImageSizeValid(image)
+        if(base64ImageString != null){
+            var requestData = {
+                "csrfmiddlewaretoken": "{{ csrf_token }}",
+                "image": base64ImageString,
+                "cropX": cropX,
+                "cropY": cropY,
+                "cropWidth": cropWidth,
+                "cropHeight": cropHeight
+            }
+            displayLoadingSpinner(true)
+            $.ajax({
+                type: 'POST',
+                dataType: "json",
+                url: "{% url 'crop_image' user_id=form.initial.id %}",
+                data: requestData,
+                timeout: 10000,
+                success: function(data) {
+                    if(data.result == "success"){
+                        document.getElementById("id_cancel").click()
+                        // window.location.reload()
+                    }
+                    else if(data.result == "error"){
+                        alert(data.exception)
+                        document.getElementById("id_cancel").click()
+                    }
+                },
+                error: function(data) {
+                    console.error("ERROR...", data)
+                },
+                complete: function(data){
+                    displayLoadingSpinner(false)
+                }
+            });
+        }
+        else{
+            alert("Upload an image smaller than 10 MB");
+            document.getElementById("id_cancel").click()
+        }
+	}
+
+	function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+            	disableImageOverlay()
+            	var image = e.target.result
+            	var imageField = document.getElementById('id_profile_image_edit_profile_display')
+                imageField.src = image
+				cropper = new Cropper(imageField, {
+					aspectRatio: 1/1,
+					crop(event) {
+						//console.log("CROP START")
+						//console.log("x: " + event.detail.x);
+						//console.log("y: " + event.detail.y);
+						//console.log("width: " + event.detail.width);
+						//console.log("height: " + event.detail.height);
+						setImageCropProperties(
+							image,
+							event.detail.x,
+							event.detail.y,
+							event.detail.width,
+							event.detail.height
+						)
+					},
+				});
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
+
+    function setImageCropProperties(image, x, y, width, height){
+		imageFile = image
+		cropX = x
+		cropY = y
+		cropWidth = width
+		cropHeight = height
+	}
+
+    // redirect
+
+    function redirect(page, user_id, this_user_id) {
+        z = 0
+        b = window.location.href.replace(window.location.origin,'')
+        a = b.split('/')[1]
+        b = b.split('/')[2]
+        if (a == user_id) {
+            if (page == 'profile') {
+                z = 1
+            }
+        } else {
+            if (a == user_id) {
+                z = 1
+            }
+        }
+        if (page == 'messages') {
+            onSelectFriend(this_user_id)
+			Messenger('On')
+        } else {
+			if (z == 1) {
+				showPage(page)
+				historyPush(page)
+			} else {
+				url = window.location.origin + '/' + user_id + '/' + page;
+				window.open(url, '_self');
+				showPage(page)
+				historyPush(page)
+			}
+		}
+    }
+
+    // history push
+
+    function historyPush(page) {
+        user_id = window.location.href.replace(window.location.origin,'');
+        user_id = user_id.split('/')[1];
+        a = 1
+        try {
+            ts = document.getElementById('TradingSymbol1').value
+            w = window.location.href
+            o = window.location.origin
+            w = w.replace(o, '')
+            o = w.split('/')[2]
+        } catch {}
+        try {
+            if (o == 'WorkingPaper') {
+                history.pushState({page}, ``, `/${user_id}/WorkingPaper/${ts}/${page}/`);
+                document.title = 'Clockdb | ' + ts + ' | ' + page;
+                a = 0
+            }
+            else {}
+        } catch {}
+        if (a == 1) {
+            history.pushState({page}, ``, `/${user_id}/${page}/`);
+            document.title = 'Clockdb | ' + page;
+        }
+    }
+
+    // onScroll posts & entities
+
+	window.onscroll = () => {
+		var loading = document.getElementById('id_loading_spinner')
+		if (loading.style.display == 'none') {
+			//
+			if (document.getElementById('Posts').style.display != 'none') {
+				Posts_Offset = document.getElementsByClassName('post')[0].getElementsByClassName('φ')[0].offsetHeight * (parseInt(localStorage.counter) + 6);
+				if (window.scrollY >= Posts_Offset) {
+					counter = parseInt(localStorage.counter) + 10
+					localStorage.setItem('counter', counter)
+					localStorage.setItem('quantity', 10)
+					load(url);
+				}
+			}
+			if (document.getElementById('Entities').style.display != 'none') {
+				Entities_Offset = parseInt(document.getElementsByClassName('Entity-main')[0].offsetHeight) * (parseInt(localStorage.entities_counter) + 6);
+				if (window.scrollY >= Entities_Offset) {
+					entities_counter = parseInt(localStorage.entities_counter) + 10
+					localStorage.setItem('entities_counter', entities_counter)
+					localStorage.setItem('entities_quantity', 10)
+					entities_load(url, 'skip');
+				}
+			}
+		}
+	};
+
+	// Posts
+
+	function Posts() {
+		url = '/entities/'
+		PostsUrl(url)
+		localStorage.setItem('counter', 1);
+		localStorage.setItem('quantity', 10);
+		load(url)
+	}
+
+	function ClearPosts() {
+		document.getElementById('main_posts').innerHTML = '';
+	}
+
+	function PostsUrl() {
+		p = 0
+		url = '/posts/'
+		cc = '/'
+		a = document.getElementById('Industry')
+		a = a.options[a.selectedIndex];
+		url = url + a.value + '/'
+		if (a.value != 'any') {
+			cc = a.innerHTML + '/'
+		}
+		g = document.getElementsByName('Industry_SEC')
+		z = 0
+		for(let i = 0; i < g.length; i++) {
+			if (g[i].style.display == 'block') {
+				a = g[i].getElementsByClassName('select')[0]
+				a = a.options[a.selectedIndex];
+				url = url + a.value + '/'
+				if (a.value != 'any') {
+					cc = cc + a.innerHTML + '/'
+				}
+				z = 1
+			}
+		}
+		if (z == 0) {
+			url = url + 'any' + '/'
+		}
+		a = document.getElementById('Period')
+		a = a.options[a.selectedIndex];
+		url = url + a.value + '/'
+		if (a.value != 'any') {
+			cc = cc + a.innerHTML + '/'
+		}
+		a = document.getElementById('WorkInProgress')
+		a = a.options[a.selectedIndex];
+		url = url + a.value + '/'
+		if (a.value != 'any') {
+			cc = cc + a.innerHTML + '/'
+		}
+		a = document.getElementById('Region')
+		a = a.options[a.selectedIndex];
+		url = url + a.value + '/'
+		if (a.value != 'any') {
+			cc = cc + a.innerHTML + '/'
+		}
+		a = document.getElementById('Order')
+		a = a.options[a.selectedIndex];
+		url = url + a.value + '/'
+		if (a.value != 'any') {
+			cc = cc + a.innerHTML + '/'
+		}
+		a = document.getElementById('Sort')
+		a = a.options[a.selectedIndex];
+		url = url + a.value + '/'
+		if (a.value != 'any') {
+			cc = cc + a.innerHTML + '/'
+		}
+		if (cc == '/') {
+			cc = ''
+		}
+		document.getElementsByClassName('posts_search_criterias')[0].innerHTML = cc;
+	}
+
+	function load(url) {
+		const loading = document.getElementById('id_loading_spinner');
+		loading.style.display = 'block';
+		counter = parseInt(localStorage.counter)
+		quantity = parseInt(localStorage.quantity)
+		const start = counter;
+		var end = start + quantity - 1;
+		url = url + start + '/' + end + '/'
+		fetch(url)
+			.then(response => response.json())
+			.then(data => {
+				d = data.len
+				if (d > 1) {
+					a = d + ' results'
+				} else {
+					if (d == 0) {
+						a = 'No result'
+					} else {
+						a = d + ' result'
+					}
+				}
+				document.getElementsByClassName('posts_search_len')[0].innerHTML = a
+				data.posts.forEach(add_post);
+				LineChart();
+				Puck();
+				loading.style.display = 'none';
+			});
+        };
+	
+	function add_post(contents) {
+		var numUSD = new Intl.NumberFormat("en-US", {
+			format: "number"
+		})
+		var Price = new Intl.NumberFormat("en-US", {
+			format: "currency",
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
+		});
+		const post = document.createElement('span');
+		post.className = 'post';
+		//
+		date(contents.lastyear);
+		lastyear = d;
+		date(contents.secondlastyear);
+		secondlastyear = d;
+		date(contents.thirdlastyear);
+		thirdlastyear = d;
+		date(contents.fourthlastyear)
+		fourthlastyear = d;
+		//
+		amendlastyear = contents.amendlastyear
+		amendsecondlastyear = contents.amendsecondlastyear
+		amendthirdlastyear = contents.amendthirdlastyear
+		amendfourthlastyear = contents.amendfourthlastyear
+		//
+		datetime(contents.SecuritiesUpdate);
+		securitiesupdate = 'Shares Price as of ' + d;
+		//
+		Opinion1 = contents.OpinionφLastYear
+		if (Opinion1 == null) {
+			Opinion1 = ''
+		}
+		Opinion2 = contents.OpinionφSecondLastYear
+		if (Opinion2 == null) {
+			Opinion2 = ''
+		}
+		Opinion3 = contents.OpinionφThirdLastYear
+		if (Opinion3 == null) {
+			Opinion3 = ''
+		}
+		Opinion4 = contents.OpinionφFourthLastYear
+		if (Opinion4 == null) {
+			Opinion4 = ''
+		}
+		Clock1 = contents.ClockφLastYear
+		if (Clock1 == null) {
+			Clock1 = ''
+		} else {
+			Clock1 = Clock1 + '%'
+		}
+		Clock2 = contents.ClockφSecondLastYear
+		if (Clock2 == null) {
+			Clock2 = ''
+		} else {
+			Clock2 = Clock2 + '%'
+		}
+		Clock3 = contents.ClockφThirdLastYear
+		if (Clock3 == null) {
+			Clock3 = ''
+		} else {
+			Clock3 = Clock3 + '%'
+		}
+		Clock4 = contents.ClockφFourthLastYear
+		if (Clock4 == null) {
+			Clock4 = ''
+		} else {
+			Clock4 = Clock4 + '%'
+		}
+		//
+		Bridge1 = contents.BridgeφLastYear
+		Bridge2 = contents.BridgeφSecondLastYear
+		Bridge3 = contents.BridgeφThirdLastYear
+		Bridge4 = contents.BridgeφFourthLastYear
+		//
+		IV1 = numUSD.format(contents.CommonSharesIntrinsicValueLastYear);
+		IV2 = numUSD.format(contents.CommonSharesIntrinsicValueSecondLastYear);
+		IV3 = numUSD.format(contents.CommonSharesIntrinsicValueThirdLastYear);
+		IV4 = numUSD.format(contents.CommonSharesIntrinsicValueFourthLastYear);
+		//
+		MC1 = numUSD.format(contents.MarketCapitalizationLastYear);
+		MC2 = numUSD.format(contents.MarketCapitalizationSecondLastYear);
+		MC3 = numUSD.format(contents.MarketCapitalizationThirdLastYear);
+		MC4 = numUSD.format(contents.MarketCapitalizationFourthLastYear);
+		//
+		iv1 = Price.format(contents.CommonShareIntrinsicValueLastYear);
+		iv2 = Price.format(contents.CommonShareIntrinsicValueSecondLastYear);
+		iv3 = Price.format(contents.CommonShareIntrinsicValueThirdLastYear);
+		iv4 = Price.format(contents.CommonShareIntrinsicValueFourthLastYear);
+		//
+		price1 = Price.format(contents.CommonSharePriceLastYear);
+		price2 = Price.format(contents.CommonSharePriceSecondLastYear);
+		price3 = Price.format(contents.CommonSharePriceThirdLastYear);
+		price4 = Price.format(contents.CommonSharePriceFourthLastYear);
+		//
+		shares1 = numUSD.format(contents.CommonSharesOutstandingLastYear);
+		shares2 = numUSD.format(contents.CommonSharesOutstandingSecondLastYear);
+		shares3 = numUSD.format(contents.CommonSharesOutstandingThirdLastYear);
+		shares4 = numUSD.format(contents.CommonSharesOutstandingFourthLastYear);
+		//
+		post.id = contents.tradingSymbol;
+		post.innerHTML = `
+			{% include 'search/Post.html' %}
+		`;
+		document.querySelector('#main_posts').append(post);
+	};
+	
+	document.addEventListener('click', event => {
+		const element = event.target;
+		if (element.className === 'hide') {
+			c = element.parentElement.parentElement.parentElement.parentElement.parentElement;
+			c.style.animationPlayState = 'running';
+			c.addEventListener('animationend', () =>  {
+				c.remove();
+			});
+		}
+		if (element.className === 'facebook') {
+			a = element.parentElement.id
+			if (a == '') {
+				a = element.parentElement.parentElement.id
+			}
+			a = a.replace('Share', '')
+			sharer = 'https://www.facebook.com/sharer/sharer.php?u='
+			app = 'www.clockdb.com/' + a + '/'
+			window.open(sharer + app)
+		}
+		if (element.className === 'messenger') {
+			a = element.parentElement.id
+			if (a == '') {
+				a = element.parentElement.parentElement.id
+			}
+			a = a.replace('Share', '')
+			sharer = ''
+			app = 'www.clockdb.com/' + a + '/'
+			window.open(sharer + app)
+		}
+		if (element.className === 'twitter') {
+			a = element.parentElement.id
+			if (a == '') {
+				a = element.parentElement.parentElement.id
+			}
+			a = a.replace('Share', '')
+			sharer = 'http://www.twitter.com/share?url='
+			app = 'www.clockdb.com/' + a + '/'
+			window.open(sharer + app)
+		}
+		if (element.className === 'linkedin') {
+			a = element.parentElement.id
+			if (a == '') {
+				a = element.parentElement.parentElement.id
+			}
+			a = a.replace('Share', '')
+			sharer = 'https://www.linkedin.com/sharing/share-offsite/?url={'
+			app = 'www.clockdb.com/' + a + '/' + '}'
+			window.open(sharer + app)
+		}
+		if (element.className === 'reddit') {
+			a = element.parentElement.id
+			if (a == '') {
+				a = element.parentElement.parentElement.id
+			}
+			a = a.replace('Share', '')
+			sharer = 'http://www.reddit.com/submit?url='
+			app = 'www.clockdb.com/' + a + '/'
+			window.open(sharer + app)
+		}
+		if (element.className === 'instagram') {
+			a = element.parentElement.id
+			if (a == '') {
+				a = element.parentElement.parentElement.id
+			}
+			a = a.replace('Share', '')
+			sharer = ''
+			app = 'www.clockdb.com/' + a + '/'
+			window.open(sharer + app)
+		}
+		if (element.className === 'messages') {
+			a = element.parentElement.id
+			if (a == '') {
+				a = element.parentElement.parentElement.id
+			}
+			a = a.replace('Share', '')
+			sharer = ''
+			app = 'www.clockdb.com/' + a + '/'
+			window.open(sharer + app)
+		}
+		if (element.className === 'email') {
+			a = element.parentElement.id
+			if (a == '') {
+				a = element.parentElement.parentElement.id
+			}
+			a = a.replace('Share', '')
+			sharer = ''
+			app = 'www.clockdb.com/' + a + '/'
+			location.href = "mailto:"
+		}
+		if (element.className === 'copylink') {
+			a = element.parentElement.id
+			if (a == '') {
+				a = element.parentElement.parentElement.id
+			}
+			a = a.replace('Share', '')
+			app = 'www.clockdb.com/' + a + '/'
+			navigator.clipboard.writeText(app)
+		}
+	});
+
+	function LineChartButton() {
+		a = event.target.id
+		a = a.replace('Button','')
+		document.getElementById(a).style.display = 'block';
+		a = a.replace('LineChart','')
+		b = 'Opinion' + a
+		document.getElementById(b).style.display = 'none';
+		b = 'Share' + a
+		document.getElementById(b).style.display = 'none';
+		b = 'Comments' + a
+		document.getElementById(b).style.display = 'none';
+	}
+
+	function OpinionButton() {
+		a = event.target.id
+		a = a.replace('Button','')
+		document.getElementById(a).style.display = 'block';
+		a = a.replace('Opinion','')
+		b = 'LineChart' + a
+		document.getElementById(b).style.display = 'none';
+		b = 'Share' + a
+		document.getElementById(b).style.display = 'none';
+		b = 'Comments' + a
+		document.getElementById(b).style.display = 'none';
+	}
+
+	function date(date) {
+		d = new Date(date)
+		day = d.getDate();
+		month = d.getMonth();
+		year = d.getFullYear()
+		d = new Date(year, month, day).toDateString()
+		d = d.split(' ')
+		d = d[1] + '. ' + d[2] + ', ' + d[3]
+	};
+
+	function datetime(datetime) {
+		//
+		date(datetime);
+		//
+		t = new Date(datetime);
+		hours = t.getHours();
+		if (hours > 12) {
+			hours = hours - 12;
+			z = 'p.m.';
+		} else {
+			z = 'a.m.';
+		}
+		minutes = t.getMinutes();
+		//
+		if (minutes.toString().length == 1) {
+			minutes = '0' + minutes;
+		}
+		d = d + ', ' + hours + ':' + minutes + ' ' + z;
+	}
+
+	function LineChart(lsc) {
+		//
+		a = window.location.href.replace(window.location.origin, '').split('/')[2]
+		if (a != 'WorkingPaper') {
+			//
+			lsc = parseInt(localStorage.counter) - 1
+			//
+			l = document.querySelectorAll('.EntityRegistrantNamePosts')
+			//
+			//
+			for (let q = lsc; q < l.length; q++) {
+				//
+				a = 0
+				a = Math.max(a, parseInt(document.getElementsByClassName('IntrinsicValuesPosts1')[q].value.replaceAll(/,/g, '')));
+				if (Number.isNaN(Number(a))) {
+					a = 1
+				}
+				//
+				b = 0
+				b = Math.max(b, parseInt(document.getElementsByClassName('IntrinsicValuesPosts2')[q].value.replaceAll(/,/g, '')));
+				if (Number.isNaN(Number(b))) {
+					b = 1
+				}
+				//
+				c = 0
+				c = Math.max(c, parseInt(document.getElementsByClassName('IntrinsicValuesPosts3')[q].value.replaceAll(/,/g, '')));
+				if (Number.isNaN(Number(c))) {
+					c = 1
+				}
+				//
+				d = 0
+				d = Math.max(d, parseInt(document.getElementsByClassName('IntrinsicValuesPosts4')[q].value.replaceAll(/,/g, '')));
+				if (Number.isNaN(Number(d))) {
+					d = 1
+				}
+				//
+				e = 0
+				e = Math.max(e, parseInt(document.getElementsByClassName('MarketCapitalizationPosts1')[q].value.replaceAll(/,/g, '')));
+				if (Number.isNaN(Number(e))) {
+					e = 1
+				}
+				//
+				f = 0
+				f = Math.max(f, parseInt(document.getElementsByClassName('MarketCapitalizationPosts2')[q].value.replaceAll(/,/g, '')));
+				if (Number.isNaN(Number(f))) {
+					f = 1
+				}
+				//
+				g = 0
+				g = Math.max(g, parseInt(document.getElementsByClassName('MarketCapitalizationPosts3')[q].value.replaceAll(/,/g, '')));
+				if (Number.isNaN(Number(g))) {
+					g = 1
+				}
+				//
+				h = 0
+				h = Math.max(h, parseInt(document.getElementsByClassName('MarketCapitalizationPosts4')[q].value.replaceAll(/,/g, '')));
+				if (Number.isNaN(Number(h))) {
+					h = 1
+				}
+				//
+				i = Math.max(a, b, c, d, e, f, g, h)
+				//
+				if (i/1000000000 > 1) {
+					dad = 1000000000;
+					scale = '(in billions)';
+				} else {
+					if (i/1000000 > 1) {
+						dad = 1000000;
+						scale = '(in millions)';
+					} else {
+						dad = 1000;
+						scale = '(in thousands)';
+					}
+				}
+				//
+				const lastyear = document.getElementsByClassName('DateSummary1')[q].innerHTML.replaceAll(/,/g, '');
+				const secondlastyear = document.getElementsByClassName('DateSummary2')[q].innerHTML.replaceAll(/,/g, '');
+				const thirdlastyear = document.getElementsByClassName('DateSummary3')[q].innerHTML.replaceAll(/,/g, '');
+				const fourthlastyear = document.getElementsByClassName('DateSummary4')[q].innerHTML.replaceAll(/,/g, '');
+				//
+				if (a == 0) {
+					a = NaN
+				} else {
+					a = a / dad;
+				}
+				let lastyearIntrinsicValue = Math.round(a * 1000)/1000
+				//
+				if (b == 0) {
+					a = NaN
+				} else {
+					a = b / dad;
+				}
+				let secondlastyearIntrinsicValue = Math.round(a * 1000)/1000
+				//
+				if (c == 0) {
+					a = NaN
+				} else {
+					a = c / dad;
+				}
+				let thirdlastyearIntrinsicValue = Math.round(a * 1000)/1000
+				//
+				if (d == 0) {
+					a = NaN
+				} else {
+					a = d / dad;
+				}
+				let fourthlastyearIntrinsicValue = Math.round(a * 1000)/1000
+				//
+				if (e == 0) {
+					a = NaN
+				} else {
+					a = e / dad;
+				}
+				let lastyearMarketCap = Math.round(a * 1000)/1000
+				//
+				if (f == 0) {
+					a = NaN
+				} else {
+					a = f / dad;
+				}
+				let secondlastyearMarketCap = Math.round(a * 1000)/1000
+				//
+				if (g == 0) {
+					a = NaN
+				} else {
+					a = g / dad;
+				}
+				let thirdlastyearMarketCap = Math.round(a * 1000)/1000
+				//
+				if (h == 0) {
+					a = NaN
+				} else {
+					a = h / dad;
+				}
+				let fourthlastyearMarketCap = Math.round(a * 1000)/1000
+				//
+				const charty = document.getElementsByClassName('LineChartPosts')[q];
+				charty.width = window.innerWidth * 0.6;
+				charty.height = window.innerHeight * 0.3;
+				//
+				let lineChart = new Chart(charty, {
+					type: 'line',
+					options: {
+						scales: {
+							yAxes: [{
+								ticks: {
+									beginAtZero: true,
+								}
+							}]
+						}
+					},
+					data: {
+						labels: [lastyear, secondlastyear, thirdlastyear, fourthlastyear],
+						datasets: [
+							{
+								label: 'intrinsic value ' + scale,
+								fill: false,
+								lineTension: 0.5,
+								borderColor: '#0D47A1',
+								borderCapStyle: 'butt',
+								borderDash: [],
+								borderDashOffset: 0.0,
+								borderJoinStyle: 'miter',
+								pointBorderColor: 'rgba(75,192,192,1)',
+								pointBackgroundColor: '#fff',
+								pointBorderWidth: 1,
+								pointBorderRadius: 5,
+								pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+								pointHoverBorderColor: 'rgba(75,192,192,1)',
+								pointHoverBorderWidth: 2,
+								pointHitRadius: 10,
+								data: [lastyearIntrinsicValue, secondlastyearIntrinsicValue, thirdlastyearIntrinsicValue, fourthlastyearIntrinsicValue],
+							},
+							{
+								label: 'market capitalization ' + scale,
+								fill: false,
+								lineTension: 0.5,
+								borderColor: 'red',
+								borderCapStyle: 'butt', 
+								borderDash: [],
+								borderDashOffset: 0.0,
+								borderJoinStyle: 'miter',
+								pointBorderColor: 'rgba(75,192,192,1)',
+								pointBackgroundColor: '#fff',
+								pointBorderWidth: 1,
+								pointBorderRadius: 5,
+								pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+								pointHoverBorderColor: 'rgba(75,192,192,1)',
+								pointHoverBorderWidth: 2,
+								pointRadius: 1,
+								pointHitRadius: 10,
+								data: [lastyearMarketCap, secondlastyearMarketCap, thirdlastyearMarketCap, fourthlastyearMarketCap],
+							},
+						]
+					}
+				});
+			}
+		} else {
+			//
+			a = 0
+			a = Math.max(a, parseInt(document.getElementById('IntrinsicValues1').value.replaceAll(/,/g, '')));
+			if (Number.isNaN(Number(a))) {
+				a = 1
+			}
+			//
+			b = 0
+			b = Math.max(b, parseInt(document.getElementById('IntrinsicValues2').value.replaceAll(/,/g, '')));
+			if (Number.isNaN(Number(b))) {
+				b = 1
+			}
+			//
+			c = 0
+			c = Math.max(c, parseInt(document.getElementById('IntrinsicValues3').value.replaceAll(/,/g, '')));
+			if (Number.isNaN(Number(c))) {
+				c = 1
+			}
+			//
+			d = 0
+			d = Math.max(d, parseInt(document.getElementById('IntrinsicValues4').value.replaceAll(/,/g, '')));
+			if (Number.isNaN(Number(d))) {
+				d = 1
+			}
+			//
+			e = 0
+			e = Math.max(e, parseInt(document.getElementById('MarketCapitalization1').value.replaceAll(/,/g, '')));
+			if (Number.isNaN(Number(e))) {
+				e = 1
+			}
+			//
+			f = 0
+			f = Math.max(f, parseInt(document.getElementById('MarketCapitalization2').value.replaceAll(/,/g, '')));
+			if (Number.isNaN(Number(f))) {
+				f = 1
+			}
+			//
+			g = 0
+			g = Math.max(g, parseInt(document.getElementById('MarketCapitalization3').value.replaceAll(/,/g, '')));
+			if (Number.isNaN(Number(g))) {
+				g = 1
+			}
+			//
+			h = 0
+			h = Math.max(h, parseInt(document.getElementById('MarketCapitalization4').value.replaceAll(/,/g, '')));
+			if (Number.isNaN(Number(h))) {
+				h = 1
+			}
+			//
+			i = Math.max(a, b, c, d, e, f, g, h)
+			//
+			if (i/1000000000 > 1) {
+				dad = 1000000000;
+				scale = '(in billions)';
+			} else {
+				if (i/1000000 > 1) {
+					dad = 1000000;
+					scale = '(in millions)';
+				} else {
+					dad = 1000;
+					scale = '(in thousands)';
+				}
+			}
+			//
+			const lastyear = document.getElementById('DateSummary1').innerHTML.replaceAll(/,/g, '');
+			const secondlastyear = document.getElementById('DateSummary2').innerHTML.replaceAll(/,/g, '');
+			const thirdlastyear = document.getElementById('DateSummary3').innerHTML.replaceAll(/,/g, '');
+			const fourthlastyear = document.getElementById('DateSummary4').innerHTML.replaceAll(/,/g, '');
+			//
+			if (a == 0) {
+				a = NaN
+			} else {
+				a = a / dad;
+			}
+			let lastyearIntrinsicValue = Math.round(a * 1000)/1000
+			//
+			if (b == 0) {
+				a = NaN
+			} else {
+				a = b / dad;
+			}
+			let secondlastyearIntrinsicValue = Math.round(a * 1000)/1000
+			//
+			if (c == 0) {
+				a = NaN
+			} else {
+				a = c / dad;
+			}
+			let thirdlastyearIntrinsicValue = Math.round(a * 1000)/1000
+			//
+			if (d == 0) {
+				a = NaN
+			} else {
+				a = d / dad;
+			}
+			let fourthlastyearIntrinsicValue = Math.round(a * 1000)/1000
+			//
+			if (e == 0) {
+				a = NaN
+			} else {
+				a = e / dad;
+			}
+			let lastyearMarketCap = Math.round(a * 1000)/1000
+			//
+			if (f == 0) {
+				a = NaN
+			} else {
+				a = f / dad;
+			}
+			let secondlastyearMarketCap = Math.round(a * 1000)/1000
+			//
+			if (g == 0) {
+				a = NaN
+			} else {
+				a = g / dad;
+			}
+			let thirdlastyearMarketCap = Math.round(a * 1000)/1000
+			//
+			if (h == 0) {
+				a = NaN
+			} else {
+				a = h / dad;
+			}
+			let fourthlastyearMarketCap = Math.round(a * 1000)/1000
+			//
+			const chart = document.getElementById('LineChart');
+			chart.width = window.innerWidth * 0.6;
+			chart.height = window.innerHeight * 0.3;
+			//
+			let lineChart = new Chart(chart, {
+				type: 'line',
+				options: {
+					scales: {
+						yAxes: [{
+							ticks: {
+								beginAtZero: true,
+							}
+						}]
+					}
+				},
+				data: {
+					labels: [lastyear, secondlastyear, thirdlastyear, fourthlastyear],
+					datasets: [
+						{
+							label: 'intrinsic value ' + scale,
+							fill: false,
+							lineTension: 0.5,
+							borderColor: '#0D47A1',
+							borderCapStyle: 'butt',
+							borderDash: [],
+							borderDashOffset: 0.0,
+							borderJoinStyle: 'miter',
+							pointBorderColor: 'rgba(75,192,192,1)',
+							pointBackgroundColor: '#fff',
+							pointBorderWidth: 1,
+							pointBorderRadius: 5,
+							pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+							pointHoverBorderColor: 'rgba(75,192,192,1)',
+							pointHoverBorderWidth: 2,
+							pointHitRadius: 10,
+							data: [lastyearIntrinsicValue, secondlastyearIntrinsicValue, thirdlastyearIntrinsicValue, fourthlastyearIntrinsicValue],
+						},
+						{
+							label: 'market capitalization ' + scale,
+							fill: false,
+							lineTension: 0.5,
+							borderColor: 'red',
+							borderCapStyle: 'butt', 
+							borderDash: [],
+							borderDashOffset: 0.0,
+							borderJoinStyle: 'miter',
+							pointBorderColor: 'rgba(75,192,192,1)',
+							pointBackgroundColor: '#fff',
+							pointBorderWidth: 1,
+							pointBorderRadius: 5,
+							pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+							pointHoverBorderColor: 'rgba(75,192,192,1)',
+							pointHoverBorderWidth: 2,
+							pointRadius: 1,
+							pointHitRadius: 10,
+							data: [lastyearMarketCap, secondlastyearMarketCap, thirdlastyearMarketCap, fourthlastyearMarketCap],
+						},
+					]
+				}
+			});
+		}
+	};
+
+	function Puck() {
+		//
+		a = window.location.href.replace(window.location.origin, '').split('/')[2]
+		if (a != 'WorkingPaper') {
+			l = document.querySelectorAll('.EntityRegistrantNamePosts').length
+			for (let i = parseInt(localStorage.counter) - 1; i < l; i++) {
+				a = document.getElementsByClassName('Opinionφ1')[i].innerHTML
+				b = document.getElementsByClassName('Bridgeφ1')[i].innerHTML
+				if (b.length === 98) {
+					m = ''
+					if (a == 'Hedge For A Loss In Value') {
+						m = 'red';
+					}
+					if (a == 'Buy') {
+						m = '#0D47A1'
+					}
+					if (a == 'None') {
+						m = 'gold'
+					}
+					document.getElementsByClassName('o')[i].style.color = m;
+				}
+			}
+		} else {
+			a = document.getElementById('Opinionφ1').innerHTML;
+			b = document.getElementById('Bridgeφ1').innerHTML;
+			if (b.length === 98) {
+				if (a == 'Hedge For A Loss In Value') {
+					m = 'red';
+				}
+				if (a == 'Buy') {
+					m = '#0D47A1';
+				}
+				if (a == '') {
+					m = 'gold';
+				}
+				document.getElementById('o').style.color = m;
+			}
+		}
+	}
+		
+    // Entities
+
+    function Entities(search) {
+		if (search != '') {
+			search = search.toLowerCase()
+			document.getElementById('entities_posts').innerHTML = ''
+			showPage('Entities')
+			historyPush('Entities')
+			url = '/entities/' + search
+			localStorage.setItem('entities_counter', 1);
+			localStorage.setItem('entities_quantity', 10);
+			entities_load(url, search)
+		}
+    }
+
+	function entities_load(url, search) {
+		const loading = document.getElementById('id_loading_spinner');
+		loading.style.display = 'block';
+		entities_counter = parseInt(localStorage.entities_counter)
+		entities_quantity = parseInt(localStorage.entities_quantity)
+		const start = entities_counter;
+		var end = start + entities_quantity - 1;
+		url = url + '/' + start + '/' + end
+		fetch(url)
+			.then(response => response.json())
+			.then(data => {
+				d = data.len
+				if (d > 1) {
+					a = d + ' results'
+				} else {
+					if (d == 0) {
+						a = 'No result'
+					} else {
+						a = d + ' result'
+					}
+				}
+				if (search != 'skip') {
+					a = a + " for " + "<b><i>" + search + "</i></b>"
+					document.getElementsByClassName('entities_search_len')[0].innerHTML = a
+				}
+				data.entities.forEach(add_entities_post);
+				loading.style.display = 'none';
+			});
+        };
+
+	function add_entities_post(contents) {
+		const entities_post = document.createElement('div');
+		try {
+			entities_post.innerHTML = `
+				{% include 'search/Entity.html' %}
+			`;
+		} catch {}
+		document.querySelector('#entities_posts').append(entities_post);
+	};
+
+	// popstate
+	
+	function positionpopstate() {
+		try {
+			a = document.getElementById(localStorage.position)
+			a.focus()
+			a.select()
+		} catch {}
+	}
+
+    window.onpopstate = function(event) {
+        showPage(event.state.page);
+		positionpopstate();
+    }
+
+	function historyBack() {
+		window.history.back();
+		positionpopstate();
+	}
+
+	function historyForward() {
+		window.history.forward();
+		positionpopstate();		
+	}
+
+    // showPage
+
+	function showPage(page) {
+		const loading = document.getElementById('id_loading_spinner')
+		const searchBar = document.getElementById('SearchBar')
+		const searchUsersBar = document.getElementById('SearchUsersBar')
+		loading.style.display = 'block';
+		searchBar.value = '';
+		searchUsersBar.value = '';
+        document.querySelectorAll('div').forEach(div => {
+			hideDiv(div)
+        })
+        try {
+            document.getElementById(page).style.display = 'block';
+    		window.scrollTo(0, 0)
+        } catch {}
+		loading.style.display = 'none';
+    }
+
+	// references
+
+	function FilingsReferences() {
+		document.getElementById('EntityRegistrantNameReferenceMap').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        FilingsHref();
+        FilingsHrefTrialBalances();
+        FilingsHrefBalanceSheets();
+        FilingsHrefIncomeStatements();
+        FilingsHrefStatementsOfComprehensiveIncome();
+        FilingsHrefStatementsOfShareholders();
+        FilingsHrefStatementsOfCashFlow();
+        FilingsHrefRatios();
+        FilingsHrefAdditionalInformation();
+        FilingsHrefCapitalizationRate();
+        FilingsHrefCapitalizedCashFlow();
+        FilingsHrefCapitalizedIncome();
+        FilingsHrefIntrinsicValues();
+        FilingsHrefSummary();
+        FilingsHrefProcedureAnnualBalanceSheets();
+        FilingsHrefProcedureAnnualBalanceSheetsii();
+        FilingsHrefProcedureAnnualBalanceSheetsiii();
+        FilingsHrefProcedureAnnualIncomeStatements();
+        FilingsHrefProcedureAnnualIncomeStatementsi();
+        FilingsHrefProcedureAnnualComprehensiveIncome();
+        FilingsHrefProcedureAnnualComprehensiveIncomeStatements();
+        FilingsHrefProcedureAnnualShareholdersEquityiii();
+        FilingsHrefProcedureAnnualShareholdersEquity();
+        FilingsHrefProcedureAnnualShareholdersEquityi();
+        FilingsHrefProcedureAnnualCashFlow();
+        FilingsHrefProcedureAnnualCashFlowClassification();
+        FilingsHrefAnomalies();
+        FilingsHrefAuditSummary();
+	}
+	
+    function ReferenceVisibility() {
+        a = document.getElementsByClassName('Reference')
+        if (a.length > 0) {
+            document.getElementById('ReferenceHeaderRow').style.display = '';
+            for(let i = 0; i < a.length; i++) {
+                a[i].style.display = '';
+            }
+        }
+    }
+    
+	// files
+
+	function Files() {
+		document.getElementById('EntityRegistrantNameFiles').innerHTML = document.getElementById('EntityRegistrantName1').value;
+	}
+
+	function FilesFunction() {
+        document.getElementById('FilesDetails').innerHTML = '';
+        files = document.getElementById('Files1').files;
+        var list = document.getElementById('FilesDetails');
+        var c = files.length
+        if (c > 0) {
+            for(let i = 1; i <= c; i++) {
+                b = 1
+                var tr = document.createElement('tr');
+                tr.className = "Reference";
+                var r = "FileProperty" + i;
+                tr.id = r + '.Row';
+                n = i - 1
+                var name = files[n].name;
+                var Reference = '';
+                var Status = '';
+                var WorkInProgress = '';
+                var Prepared = '';
+                var DatePrepared = '';
+                var Reviewed = '';
+                var DateReviewed = '';
+                AddFile(name, tr, b, r, list, Reference, Status, WorkInProgress, Prepared, DatePrepared, Reviewed, DateReviewed);
+                list.appendChild(tr)
+                document.getElementById('FilesDetails').innerHTML = list.innerHTML;
+            };
+        }
+        ReferenceVisibility();
+        //
+        a = document.getElementById('FileProperty1.2');
+        a.focus();
+        a.select();
+    };
+
+	// add file
+
+	function AddLine() {
+        //
+        document.getElementById('FilesLabel').innerHTML = "FILES"
+        //
+        var trLength = document.getElementById('FilesDetails').getElementsByTagName("tr").length
+        //
+        var ref = {}
+        //
+        for(let i = 1; i <= trLength; i++) {
+            a = 'FileProperty' + i + '.1';
+            a = document.getElementById(a).value;
+            b = 'FileProperty' + i + '.2';
+            b = document.getElementById(b).value;
+            c = 'FileProperty' + i + '.3';
+            c = document.getElementById(c).value;
+            d = 'FileProperty' + i + '.4';
+            d = document.getElementById(d).value;
+            e = 'FileProperty' + i + '.5';
+            e = document.getElementById(e).value;
+            f = 'FileProperty' + i + '.6';
+            f = document.getElementById(f).value;
+            g = 'FileProperty' + i + '.7';
+            g = document.getElementById(g).value;
+            h = 'FileProperty' + i + '.8';
+            h = document.getElementById(h).value;
+            ref[i] = [a, b, c, d, e, f, g, h]
+            focus = i + 1;
+        }
+        files = document.getElementById('AddLineInputFile').files;
+        //
+        for(let gg = 0; gg < files.length; gg++) {
+            //
+            var c = document.getElementsByClassName('Reference').length;
+            c = c + 1
+            var list = document.getElementById('FilesDetails');
+            var name = files[gg].name;
+            var tr = document.createElement('tr');
+            tr.className = "Reference";
+            var r = "FileProperty" + c;
+            tr.id = r + '.Row';
+            b = 1 
+            var Reference = '';
+            var Status = '';
+            var WorkInProgress = '';
+            var Prepared = '';
+            var DatePrepared = '';
+            var Reviewed = '';
+            var DateReviewed = '';
+            AddFile(name, tr, b, r, list, Reference, Status, WorkInProgress, Prepared, DatePrepared, Reviewed, DateReviewed);
+            list.appendChild(tr)
+        }
+        document.getElementById('FilesDetails').innerHTML = list.innerHTML;
+        //
+        for(let i = 1; i <= trLength; i++) {
+            a = 'FileProperty' + i + '.1';
+            document.getElementById(a).value = ref[i][0]
+            a = 'FileProperty' + i + '.2';
+            document.getElementById(a).value = ref[i][1]
+            a = 'FileProperty' + i + '.3';
+            document.getElementById(a).value = ref[i][2]
+            a = 'FileProperty' + i + '.4';
+            document.getElementById(a).value = ref[i][3]
+            a = 'FileProperty' + i + '.5';
+            document.getElementById(a).value = ref[i][4]
+            a = 'FileProperty' + i + '.6';
+            document.getElementById(a).value = ref[i][5]
+            a = 'FileProperty' + i + '.7';
+            document.getElementById(a).value = ref[i][6]
+            a = 'FileProperty' + i + '.8';
+            document.getElementById(a).value = ref[i][7]
+        }
+        //
+        ReferenceVisibility();
+        //
+        a = 'FileProperty' + focus + '.2'
+        a = document.getElementById(a);
+        a.focus()
+        a.select()
+    }
+
+	function AddFile(name, tr, b, r, list, Reference, Status, WorkInProgress, Prepared, DatePrepared, Reviewed, DateReviewed) {
+        // Description
+        var td = "<td style='text-align:center'>"
+        var input = "<input style='text-align:left;' " + " value='" + name + "'" + " id='" + r + '.' + b + "'>"
+        b = b + 1
+        html = '<td colspan="3">' + input + "</input></td>" + td 
+        // Reference
+        const input_base = "<input style='text-align:center;' value='"
+        var input = input_base + Reference + "' " + "id='" + r + '.' + b + "'>"
+        b = b + 1
+        html = html + input + "</input></td>" + td
+        // Status
+        var input = input_base + Status + "' " + "id='" + r + '.' + b + "'>"
+        b = b + 1
+        html = html + input + "</input></td>" + td
+        // Work In Progress
+        var input = input_base + WorkInProgress + "' " + "id='" + r + '.' + b + "'>"
+        b = b + 1
+        html = html + input + "</input></td>" + td
+        // Prepared
+        var input = input_base + Prepared + "' " + "id='" + r + '.' + b + "'>"
+        b = b + 1
+        html = html + input + "</input></td>" + td
+        // Date
+        var input = input_base + DatePrepared + "' " + "id='" + r + '.' + b + "'>"
+        b = b + 1
+        html = html + input + "</input></td>" + td
+        // Reviewed
+        var input = input_base + Reviewed + "' " + "id='" + r + '.' + b + "'>"
+        b = b + 1
+        html = html + input + "</input></td>" + td
+        // Date
+        var input = input_base + DateReviewed + "' " + "id='" + r + '.' + b + "'>"
+        b = b + 1
+        html = html + input + "</input></td>"
+        tr.innerHTML = html
+    }
+    
+    function New() {
+        a = document.getElementById('New').style.visibility;
+        if (a == 'visible') {
+            a = 'hidden';
+        } else {
+            a = 'visible';
+        }
+        document.getElementById('New').style.visibility = a;
+    }
+    
+    function HideNewDirectoryButton() {
+        document.getElementById('New').style.visibility = 'hidden';
+    }
+
+	//
+    // analysis
+
+    function Compile() {
+		b = window.location.href.replace(window.location.origin,'')
+		b = b.split('/')[2]
+		if (b == 'WorkingPaper') {
+			Context();
+			TrialBalances();		
+			BalanceSheets();
+			IncomeStatements();
+			ComprehensiveIncome();
+			ShareholdersEquity();
+			CashFlow();
+			FinancialRatios();
+			AdditionalInformation();
+			CapitalizationRates();
+			CapitalizedCashFlow();
+			CapitalizedIncome();
+			IntrinsicValues();
+			Opinion();
+			Mission();
+			Materiality();
+			ProceduresBalanceSheets();
+			ProceduresIncomeStatements();
+			ProceduresComprehensiveIncome();
+			ProceduresShareholdersEquity();
+			ProceduresCashFlow();
+			Anomalies();
+			Summary();
+			Graph();
+			FilingsReferences();
+			Files();
+		}
+		LineChart();
+    }
+
+	function Context() {
+		document.getElementById('EntityRegistrantNameContext').innerHTML = document.getElementById('EntityRegistrantName1').value;
+	}
+
+	function TrialBalances() {
+		document.getElementById('EntityRegistrantNameTrialBalances').innerHTML = document.getElementById('EntityRegistrantName1').value;
+		DateTrialBalances();
+        TrialBalancesAmend();
+        Balance();	
+	}
+
+	function BalanceSheets() {
+		document.getElementById('EntityRegistrantNameBalanceSheets').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateBalanceSheets();
+        BalanceSheetsAmend();
+        BalanceCash();
+        BalanceShortTermInvestments();
+        BalanceAccountsReceivable();
+        BalanceWorkInProgress();
+        BalanceInventories();
+        BalancePrepaidExpenses();
+        BalanceNonTradeReceivables();
+        BalancePrepaidTaxAssetsCurrent();
+        BalanceDeferredTaxAssetsCurrent();
+        BalanceRightOfUseAssetsCurrent();
+        BalanceOtherCurrentAssets();
+        BalanceDiscontinuedOperationsCurrent();
+        BalanceCurrentAssets();
+        BalanceLongTermReceivables();
+        BalanceDeferredCharges();
+        BalanceInvestments();
+        BalancePropertyPlantAndEquipment();
+        BalanceOperatingLeaseRightOfUseAssets();
+        BalanceFinanceLeaseRightOfUseAssets();
+        BalanceIntangibleAssets();
+        BalanceGoodwill();
+        BalanceRefundableTaxAssetsNonCurrent();
+        BalanceDeferredTaxAssetsNonCurrent();
+        BalanceDefinedBenefitPensionAndOtherSimilarPlans();
+        BalanceOtherNonCurrentAssets();
+        BalanceDiscontinuedOperationsNonCurrent();
+        BalanceNonCurrentAssets();
+        BalanceAccountsPayableAndAccruedLiabilities();
+        BalanceEmployeeCompensationCurrent();
+        BalanceOperatingLeasesCurrent();
+        BalanceFinanceLeasesCurrent();
+        BalanceDeferredRevenueAndDepositsCurrent();
+        BalanceAccruedTaxLiabilities();
+        BalanceDeferredTaxLiabilitiesCurrent();
+        BalanceCommercialPapers();
+        BalanceShortTermBorrowings();
+        BalanceOtherCurrentLiabilities();
+        BalanceDiscontinuedOperationsLiabilitiesCurrent();
+        BalanceDividendsPayable();
+        BalanceShortTermPortionOfLongTermDebt();
+        BalanceCurrentLiabilities();
+        BalanceLongTermDebt();
+        BalancePreferredSharesLiability();
+        BalanceRetirementBenefits();
+        BalanceOperatingLeasesNonCurrent();
+        BalanceFinanceLeasesNonCurrent();
+        BalanceLeaseIncentiveObligation();
+        BalanceContingentConsideration();
+        BalanceAccruedTaxLiabilitiesNonCurrent();
+        BalanceDeferredTaxLiabilitiesNonCurrent();
+        BalanceDeferredRevenueAndDepositsNonCurrent();
+        BalanceOtherNonCurrentLiabilities();
+        BalanceRedeemableNonControllingInterests();
+        BalanceDiscontinuedOperationsLiabilitiesNonCurrent();
+        BalanceNonCurrentLiabilities();		
+	}
+
+	function IncomeStatements() {
+		document.getElementById('EntityRegistrantNameIncomeStatements').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateStatementsOfIncome();
+        IncomeStatementsAmend();
+        BalanceSales();
+        BalanceCostOfSales();
+        BalanceGrossMargin();
+        BalanceResearchAndDevelopment();
+        BalanceSellingGeneralAdministrativeAndMarketing();
+        BalanceOperatingIncome();
+        BalanceImpairmentRestructuringAndOtherSpecialCharges();
+        BalanceNonOperatingIncomeExpense();
+        BalanceIncomeBeforeTaxes();
+        BalanceIncomeTaxExpenseBenefit();
+        BalanceEquityMethodInvesteesIncome();
+        BalanceNetIncomeFromDiscontinuedOperations();
+        BalanceNetIncome();
+	}
+
+	function ComprehensiveIncome() {
+		document.getElementById('EntityRegistrantNameComprehensiveIncome').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateStatementsOfComprehensiveIncome();
+        StatementsOfComprehensiveAmend();
+        BalanceNetIncomeLossComprehensiveIncome();
+        BalanceChangeInForeignCurrencyTranslationAdjustment();
+        BalanceChangeInUnrealizedGainsLossesOnDerivativeInstruments();
+        BalanceChangeInUnrealizedGainsLossesOnInvestments();
+        BalanceChangeInDefinedBenefitPensionAndOtherSimilarPlans();
+        BalanceIncomeTaxOnOtherComprehensiveIncome();
+        BalanceComprehensiveIncome();
+	}
+
+	function ShareholdersEquity() {
+		document.getElementById('EntityRegistrantNameShareholdersEquity').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateStatementsOfShareholdersEquity();
+        StatementsOfShareholdersAmend();
+        BalanceShareholdersEquityBeginning();
+        BalanceCommonSharesIssued();
+        BalanceShareBasedCompensation();
+        BalanceShareBasedCompensationRetainedEarnings();
+        BalanceDividendsAndDividendEquivalentsDeclared();
+        BalanceCommonSharesRepurchasedAndRetired();
+        BalanceEffectOfAdoptionOfNewAccountingPronouncementOrTaxCuts();
+        BalanceRetainedEarningsOthers();
+        BalancePurchaseAndSellOfTreasuryShares();
+        BalanceDividendsDeclaredToNonControllingInterests();
+        BalanceAcquisitionOfNonControllingInterests();
+        BalanceNonControllingInterestsOthers();
+        BalanceComprehensiveIncomeShareholdersEquity();
+        BalanceNetIncomeLossShareholdersEquity();
+        BalanceShareholdersEquity();
+	}
+
+	function CashFlow() {
+		document.getElementById('EntityRegistrantNameCashFlow').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateStatementsOfCashFlow();
+        StatementsOfCashFlowAmend();
+        EffectOfExchangeRateOnCashRow();
+        NetIncomeCashFlow();
+        DepreciationDepletionAndAmortizationRow();
+        GainRelatedToDisposalOrSaleRow();
+        RestructuringAndOtherSpecialChargesRow();
+        AccruedEmployeeCompensationRow();
+        ShareBasedCompensationOperatingActivitiesRow();
+        IncreaseDecreaseInIncomeTaxExpenseBenefitRow();
+        OtherNonCashIncomeExpenseRow();
+        IncreaseDecreaseInAccountsReceivableRow();
+        IncreaseDecreaseInPrepaidDeferredExpenseAndOtherAssetsRow();
+        IncreaseDecreaseInInventoriesRow();
+        IncreaseDecreaseInOtherReceivablesRow();
+        IncreaseDecreaseInAccountsPayableRow();
+        IncreaseDecreaseInContractWithCustomerLiabilityRow();
+        IncreaseDecreaseInRetirementBenefitsRow();
+        IncreaseDecreaseFinanceLeaseCurrentRow();
+        IncreaseDecreaseOperatingLeaseCurrentRow();
+        IncreaseDecreaseInFairValueOfDerivativesOperatingRow();
+        IncreaseDecreaseInOtherOperatingActivitiesRow();
+        OperatingActivities();
+        PaymentsToAcquireInvestmentsRow();
+        ProceedsOfInvestmentsRow();
+        PaymentsToAcquirePropertyPlantAndEquipmentRow();
+        ProceedsFromDisposalsOfPropertyAndEquipmentRow();
+        PaymentsToAcquireBusinessesAndIntangiblesRow();
+        ProceedsFromDisposalsOfBusinessesAndIntangiblesRow();
+        ProceedsRelatedToInsuranceSettlementRow();
+        ReveiptOfGovernmentGrantsRow();
+        EquityInvesteeAdvancesRepaymentsRow();
+        PaymentOfLicenseFeeRow();
+        OtherInvestingActivitiesRow();
+        InvestingActivitiesInDiscontinuedOperationsRow();
+        InvestingActivities();
+        FinanceLeasePrincipalPaymentsRow();
+        ProceedsFromIssuanceOfCommonSharesRow();
+        ProceedsFromSharePurchasePlanAndOptionsExerciceRow();
+        PaymentsRelatedToTaxWithholdingForShareBasedCompensationRow();
+        PaymentsForRepurchaseOfCommonSharesRow();
+        PaymentsOfDividendsRow();
+        IncreaseDecreaseDeferredContingentConsiderationRow();
+        ProceedsFromIssuanceOfLongTermDebtRow();
+        RepaymentsOfLongTermDebtRow();
+        FinancingCostsRow();
+        NetChangeInShortTermBorrowingsRow();
+        NetChangeInForwardAndHedgesClassifiedAsFinancingActivitiesRow();
+        NetChangeInNonControllingInterestsRow();
+        ProceedsFromRepaymentsOfCommercialPaperRow();
+        RepaymentsOfConvertibleRow();
+        IssuanceOfConvertibleRow();
+        OtherFinancingActivitiesRow();
+        FinancingActivities();
+        CashEndingBalance();
+	}
+
+	function FinancialRatios() {
+		document.getElementById('EntityRegistrantNameFinancialRatios').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateRatios();
+        RatiosAmend();
+        SharePriceUpdateRatio();
+        ReturnOnEquity();
+        ReturnOnAssets();
+        ProfitMargin();
+        OperatingMargin();
+        DividendPayments();
+        EarningsRetention();
+        BasicEarningPower();
+        DebtToEquity();
+        EquityMultiplier();
+        DegreeOfFinancialLeverage();
+        DebtToEBITDA();
+        InterestCoverage();
+        FixedChargeCoverage();
+        Current();
+        Quick();
+        InventoryTurnover();
+        DaysOfInventoryOnHand();
+        NumberOfDaysPayable();
+        FixedAssetsTurnover();
+        TotalAssetsTurnover();
+        DuPont();
+	}
+
+	function AdditionalInformation() {
+		document.getElementById('EntityRegistrantNameAdditionalInformation').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateAdditionalInformation();
+        AdditionalInformationAmend();		
+	}
+
+	function CapitalizationRates() {
+		document.getElementById('EntityRegistrantNameCapitalizationRates').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateCapitalizationRate();
+        CapitalizationRateAmend();
+        TotalAssetsExpectedReturn();
+        BalanceDividendPaidWeightedAverageCostOfTotalAssets();
+        BalanceAssetsWeightedAverageCostOfTotalAssets();
+        BalanceCostOfAssetsWeightedAverageCostOfTotalAssets();
+        BalanceInterestPaidWeightedAverageCostOfTotalAssets();
+        BalanceTaxDeductionWeightedAverageCostOfTotalAssets();
+        BalanceAssets2WeightedAverageCostOfTotalAssets();
+        BalanceCostOfLiabilitiesWeightedAverageCostOfTotalAssets();
+        BalanceWeightedAverageCostOfTotalAssets();
+        BalanceAverageReturnOnAssets();
+        BalanceDifferenceReturnOnAssetsVSAverage();
+        BalanceDifferenceReturnOnAssetsPriorYearVSAverage();
+        BalanceDifferenceReturnOnAssetsSecondPriorYearVSAverage();
+        BalanceSquareDifferenceReturnOnAssetsVSAverage();
+        BalanceSquareDifferenceReturnOnAssetsVSAveragePriorYear();
+        BalanceSquareDifferenceReturnOnAssetsVSAverageSecondPriorYear();
+        BalanceVariance();
+        BalanceStandardDeviation();
+        GrossMarginExpectedGrowthOnReturnOnAssetsPriorYear();
+        GrossMarginExpectedGrowthOnReturnOnAssetsSecondPriorYear();
+        GrossMarginGrowth();
+        GrossMarginGrowthPriorYear();
+        ExpectedGrowthNote();
+        BalanceDividendPaidCostOfTotalAssetsAccruingToCommonShareholders();
+        BalanceDividendPaidToMinorityInterestCostOfTotalAssetsAccruingToCommonShareholders();
+        BalanceDividendPaidToPreferredShareholdersCostOfTotalAssetsAccruingToCommonShareholders();
+        CostOfTotalAssetsAccruingToCommonShareholders();
+        BalanceCapitalizationRateBeforeGrowth();
+        BalancePreliminaryCapitalizationRate();
+        CapitalizationRateFloor();
+        GrowthRelatedRiskProvision();
+        BalanceCapitalizationRate();
+	}
+
+	function CapitalizedCashFlow() {
+		document.getElementById('EntityRegistrantNameCapitalizedCashFlow').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateCapitalizedCashFlow();
+        CapitalizedCashFlowAmend();
+        OperatingIncomeCCF();
+        DepreciationDepletionAndAmortizationCCF();
+        AnnualReinvestmentOfMaintenanceCCF();
+        TaxesCCF();
+        EquityMethodInvesteesIncomeCCF();
+        BalanceNormalizedOperatingCashFlowCCF();
+        BalanceNormalizedWeightedOperatingCashFlow();
+        BalanceCharacteristicCashFlow();
+        BalanceCapitalizationRateCCF();
+        BalanceCapitalizedCharacteristicCashFlowCCF();
+        BalanceExcessWorkingCapitalCCF();
+        BalanceInvestmentsExcessAssetsCCF();
+        BalanceDiscontinuedOperationsExcessAssetsCCF();
+        BalancePresentvalueOfTaxProtectionCCF();
+        BalanceBusinessValueCCF();
+        BalanceLongTermDebtAndLeaseObligation();
+        BalanceValueOfAllCategoryOfSharesCCF();
+        BalanceCommonSharesValueCCF();
+        BalanceNetAssetsCCF();
+        BalanceGoodwillFairValueCCF();
+	}
+
+	function CapitalizedIncome() {
+		document.getElementById('EntityRegistrantNameCapitalizedIncome').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateCapitalizedIncome();
+        CapitalizedIncomeAmend();
+        OperatingIncomeCI();
+        TaxesCI();
+        EquityMethodInvesteesIncomeCI();
+        BalanceNormalizedCashFlowBeforeTaxesCI();
+        BalanceNormalizedWeightedCashFlowBeforeTaxes();
+        BalanceCharacteristicIncomeBeforeInterestAfterTaxes();
+        BalanceCapitalizationRateCI();
+        BalanceCapitalizedCharacteristicCashFlowCI();
+        BalanceExcessWorkingCapitalCI();
+        BalanceInvestmentsExcessAssetsCI();
+        BalanceDiscontinuedOperationsExcessAssetsCI();
+        UnrealizedCapitalGainOnRealEstateNetOfTaxesCI();
+        BalancePresentvalueOfTaxProtectionCI();
+        BalanceBusinessValueCI();
+        BalanceLongTermDebtAndLeaseObligationCI();
+        BalanceValueOfAllCategoryOfSharesCI();
+        BalanceCommonSharesValueCI();
+        BalanceShareholdersEquityCI();
+        BalanceNetAssetsCI();
+        BalanceGoodwillFairValueCI();
+	}
+
+	function IntrinsicValues() {
+		document.getElementById('EntityRegistrantNameIntrinsicValues').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateIntrinsicValues();
+        IntrinsicValuesAmend();
+        BalanceIntrinsicValuesCCF();
+        BalanceGoowillFairValueCCF();
+        BalanceIntrinsicValuesCI();
+        BalanceGoowillFairValueCI();		
+	}
+
+	function Opinion() {
+		document.getElementById('EntityRegistrantNameOpinion').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateSummary();
+        SummaryAmend();
+        SharePriceUpdate();
+        BalanceIntrinsicValues();
+        BalanceMarketCapitalization();
+        PriceEarnings();
+        MarketToBook();
+        BalanceClock();
+        CommonShareIntrinsicValuePerUnitAndPricePerUnit();	
+	}
+
+	function Mission() {
+		document.getElementById('EntityRegistrantNameMission').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        Scope();
+	}
+
+	function Materiality() {
+		document.getElementById('EntityRegistrantNameMateriality').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        Scope();
+        BalanceContinuingOperationsMaterialityThreshold();
+        BalanceNetAssetMaterialityThreshold();
+        BalanceRevenuesMaterialityThreshold();
+        BalanceIntrinsicValueMaterialityThreshold();
+        MarketCapMaterialityThreshold();
+        BalanceMaterialityThresholdValue();
+	}
+
+	function ProceduresBalanceSheets() {
+		document.getElementById('EntityRegistrantNameProceduresBalanceSheets').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateProcedureAnnualBalanceSheets();
+        ProcedureAnnualBalanceSheetsAmend();
+        BalancePROAssets();
+        BalancePROLiabilitiesAndShareholdersEquity();
+        BalancePROAssetsLessLiabilitiesAndShareholdersEquity();
+        DateProcedureAnnualBalanceSheetsii();
+        ProcedureAnnualBalanceSheetsiiAmend();
+        BalancePROCurrentAssetsComponents();
+        BalancePROCurrentAssetsAnomaly();
+        BalancePRONonCurrentAssetsComponents();
+        BalancePRONonCurrentAssetsAnomaly();
+        BalancePROCurrentLiabilitiesComponents();
+        BalancePROCurrentLiabilitiesAnomalies();
+        BalancePRONonCurrentLiabilitiesComponents();
+        BalancePRONonCurrentLiabilitiesAnomalies();
+        BalancePROShareholdersEquityComponents();
+        BalancePROShareholdersEquityAnomalies();
+        DateProcedureAnnualBalanceSheetsiii();
+        ProcedureAnnualBalanceSheetsiiiAmend();
+	}
+
+	function ProceduresIncomeStatements() {
+		document.getElementById('EntityRegistrantNameProceduresIncomeStatements').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateProcedureAnnualIncomeStatements();
+        ProcedureAnnualIncomeStatementsAmend();
+        BalancePROGrossMarginComponents();
+        BalancePROGrossMarginAnomalies();
+        BalancePROOperatingIncomeComponents();
+        BalancePROOperatingIncomeAnomalies();
+        BalancePROIncomeLossBeforeTaxesComponents();
+        BalancePROIncomeLossBeforeTaxesAnomalies();
+        BalancePRONetIncomeComponents();
+        BalancePRONetIncomeAnomalies();
+        DateProcedureAnnualIncomeStatementsi();
+        ProcedureAnnualIncomeStatementsiAmend();
+	}
+
+	function ProceduresComprehensiveIncome() {
+		document.getElementById('EntityRegistrantNameProceduresComprehensiveIncome').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateProcedureAnnualComprehensiveIncome();
+        ProcedureAnnualComprehensiveIncomeAmend();
+        BalanceOtherComprehensiveIncomeComponents();
+        BalanceComprehensiveIncomeAnomalies();
+        DateProcedureAnnualComprehensiveIncomeStatements();
+        ProcedureAnnualComprehensiveIncomeStatementsAmend();
+	}
+	
+	function ProceduresShareholdersEquity() {
+		document.getElementById('EntityRegistrantNameProceduresShareholdersEquity').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateProcedureAnnualShareholdersEquityiii();
+        ProcedureAnnualShareholdersEquityiiiAmend();
+        BalanceShareholdersEquityBeginningi();
+        BalanceShareholdersEquityComponents();
+        BalanceShareholdersEquityAnomaliesi();
+        DateProcedureAnnualShareholdersEquity();
+        ProcedureAnnualShareholdersEquityAmend();
+        BalanceShareholdersEquityComponentsi();
+        BalanceShareholdersEquityAnomalies();
+        DateProcedureAnnualShareholdersEquityi();
+        ProcedureAnnualShareholdersEquityiAmend();
+	}
+
+	function ProceduresCashFlow() {
+		document.getElementById('EntityRegistrantNameProceduresCashFlow').innerHTML = document.getElementById('EntityRegistrantName1').value;	
+        DateProcedureAnnualCashFlow();
+        ProcedureAnnualCashFlowAmend();
+        CashFlowCashBeginning();
+        CashBalanceSheetsAudit();
+        CashFlowCashAnomaly();
+        DateProcedureAnnualCashFlowClassification();
+        ProcedureAnnualCashFlowClassificationAmend();	
+	}
+	
+	function Anomalies() {
+		document.getElementById('EntityRegistrantNameAnomalies').innerHTML = document.getElementById('EntityRegistrantName1').value;
+        DateAnomaliesi();
+        AnomaliesAmend();
+        BalanceAnomaliesCurrentAssets();
+        BalanceAnomaliesNonCurrentAssets();
+        BalanceAnomaliesCurrentLiabilities();
+        BalanceAnomaliesNonCurrentLiabilities();
+        AnomaliesShareholdersEquityi();
+        BalanceAnomaliesBalanceSheets();
+        BalanceAnomaliesGrossMargin();
+        BalanceAnomaliesOperatingIncome();
+        BalanceAnomaliesIncomeBeforeTaxes();
+        BalanceAnomaliesNetIncome();
+        BalanceAnomaliesIncomeStatements();
+        BalanceAnomaliesComprehensiveIncome();
+        BalanceAnomaliesShareholdersEquity();
+        BalanceAnomaliesCash();
+        DateAnomaliesii();
+	}
+
+	function Summary() {
+		document.getElementById('EntityRegistrantNameSummary').innerHTML = document.getElementById('EntityRegistrantName1').value;	
+        AuditSummaryAmend();
+        TrialBalanceAnomalySummary();
+        AccountingEquationAnomalySummary();
+        BalanceSheetsAnomalySummary();
+        IncomeAnomalySummary();
+        ComprehensiveIncomeAnomalySummary();
+        ShareholdersEquityAnomalySummary();
+        CashFlowAnomalySummary();
+        MarketCapitalizationAnomalySummary();
+        WorstCaseScenario();
+        BalanceAnomaliesMatherialityThreshold();
+        AnomaliesRatio();
+        AuditOpinion();
+        BalanceBridgeφ();
+	}
+
+	function Graph() {
+		document.getElementById('EntityRegistrantNameGraph').innerHTML = document.getElementById('EntityRegistrantName1').value;
+		LineChart();
+		Puck();
+	}
+
+	function Signatory() {
+		document.getElementById('SignatoryShortCut').innerHTML = document.getElementById('Signatory1').value;
+	}
+
+	function Scope() {
+		document.getElementById('Scope').innerHTML = document.getElementById('ContextDate1').value + ' and the five years prior.'
+	}
+
+    // enter key
+    document.addEventListener('keydown', (event) => {
+        keys = [13, 38, 40]
+        up = [38]
+        if (keys.includes(event.keyCode)) {
+            event.preventDefault()
+			a = window.location.href.replace(window.location.origin, '').split('/')[2]
+			// cell positioning
+			if (a == 'WorkingPaper') {
+				try {
+					//
+					cells = document.querySelectorAll('input');
+					cell = event.target;
+					column = cell.id.slice(-1);
+					for(let i = 0; i < cells.length; i++) {
+						if (cell === cells[i]) {
+							cellrank = i;
+						}
+					}
+					g = 1;
+					if (up.includes(event.keyCode)) {
+						g = -1;
+					}
+					if (event.shiftKey) {
+						o = -8 * g;
+					} else {
+						o = 8 * g;
+					}
+					p = cellrank + o
+					visiblerow = 0
+					while (visiblerow === 0) {
+						nextcell = cells[p].id
+						a = nextcell.slice(0, -1) + 'Row';
+						a = document.getElementById(a).style.display;
+						if (a == 'none') {
+							visiblerow = 0;
+							p = p + o
+						} else {
+							visiblerow = 1;
+						}
+					}
+					cells[p].focus()
+					cells[p].select()
+					//
+				} catch {}
+			}
+			//
+			e = event.target
+            user_id = document.getElementById('user_id').innerHTML
+			//
+            if (e.id == 'id_chat_message_input') {
+                messagesSend()
+            }
+            if (e.id == 'inputPassword') {
+                document.getElementById('Login').click()
+            }
+            if (e.id == 'inputPassword2') {
+                document.getElementById('Register').click()
+            }
+			// search entities
+			if (e.id == 'SearchBar') {
+                Entities(e.value);
+			}
+			// search user
+			if (e.id == 'SearchUsersBar') {
+                Network(e.value);
+			}
+		}
+    })
+
+    // tabulation key
+	document.addEventListener('keydown', (event) => {
+        keys = [9]
+        if (keys.includes(event.keyCode)) {
+			a = event.target.id
+            //
+			if (a == 'SearchBar') {
+				event.preventDefault();
+				b = document.getElementById('SearchUsersBar')
+	            b.select()
+				document.getElementsByClassName('HeaderMenu')[0].scrollTo(9999, 0)
+			}
+			if (a == 'SearchUsersBar') {
+				event.preventDefault();
+				b = document.getElementById('SearchBar')
+	            b.select()
+				document.getElementsByClassName('HeaderMenu')[0].scrollTo(0, 9999)
+			}
+		}
+	})
+
+	// escape key
+	document.addEventListener('keydown', (event) => {
+        keys = [27]
+        if (keys.includes(event.keyCode)) {
+            event.preventDefault();
+		}
+	})
+
+	function TogglePanel(direction) {
+		if (localStorage.Control == 'On') {
+			if (direction == 'up') {
+				Notifications('On')
+			} else {
+				Messenger('On')
+			}
+		} else {
+			if (localStorage.Messenger == 'On') {
+				if (direction == 'up') {
+					Control('On')
+				} else {
+					MessengerNotifications('On')
+				}
+			} else {
+				if (localStorage.MessengerNotifications == 'On') {
+					if (direction == 'up') {
+						Messenger('On')
+					} else {
+						Notifications('On')
+					}
+				} else {
+					if (localStorage.Notifications == 'On') {
+						if (direction == 'up') {
+							MessengerNotifications('On')
+						} else {
+							Control('On')
+						}
+					} else {
+						if (direction == 'up') {
+							Control('On')
+						} else {
+							Messenger('On')
+						}
+
+					}
+				}
+			}
+		}
+	}
+
+    // shortcut keys
+    document.addEventListener('keydown', (event) => {
+		b = window.location.href.replace(window.location.origin,'')
+		b = b.split('/')[2]
+		i = 110
+		ii = 37
+		iii = 38
+		iv = 39
+		v = 40
+		vi = 13
+		keys = [i, ii, iii, iv, v, vi]
+		if (keys.includes(event.keyCode) && (event.ctrlKey || event.metaKey)) {
+			event.preventDefault();
+			a = 0
+			// .
+			if (event.keyCode == i) {
+				if (b == 'WorkingPaper') {
+					page = 'Context';
+				}
+			}
+			// left
+			if (event.keyCode == ii) {
+				if (b == 'WorkingPaper') {
+					historyBack()
+					a = 1
+				}
+			}
+			// Up
+			if (event.keyCode == iii) {
+				TogglePanel('up')
+				a = 1
+			}
+			// right
+			if (event.keyCode == iv) {
+				if (b == 'WorkingPaper') {
+					historyForward()
+					a = 1
+				}
+			}
+			// down
+			if (event.keyCode == v) {
+				TogglePanel('down')
+				a = 1
+			}
+			// enter
+			if (event.keyCode == vi) {
+				if (b == 'WorkingPaper') {
+					page = 'Opinion';
+				}
+			}
+			if (a != 1) {
+				showPage(page);
+				historyPush(page);
+				window.scrollTo(0, 0);
+			}
+		}
+	});
+	
+	// column change
+	function columnSelect(k) {
+		if (k == 'ArrowLeft') {
+			k = -1
+		} else {
+			k = 1
+		}
+		var a = parseInt(localStorage.Column)
+		if (a == 1) {
+			if (k < 0) {
+				var d = 6
+			} else {
+				var d = a + k
+			}
+		} else {
+			if (a == 6) {
+				if (k > 0) {
+					var d = 1
+				} else {
+					var d = a + k
+				}
+			} else {
+				var d = a + k
+			}
+		}
+		displaySelectedColumn(a, d);
+	}
+
+	function displaySelectedColumn(a, d) {
+		var b = "C" + a
+		var c = document.getElementsByClassName(b);
+		for(let i = 0; i < c.length; i++) { 
+			document.getElementsByClassName(b)[i].style.display = 'none';
+		};
+		var b = "C" + d
+		var c = document.getElementsByClassName(b);
+		for(let i = 0; i < c.length; i++) { 
+			document.getElementsByClassName(b)[i].style.display = '';
+		};
+		localStorage.setItem('Column', d)
+	}
+    
+    // alt + arrows
+    document.addEventListener('keydown', (event) => {
+		b = window.location.href.replace(window.location.origin,'')
+		b = b.split('/')[2]
+		if (b == 'WorkingPaper') {
+			i = 'ArrowRight'
+			ii = 'ArrowLeft'
+			keys = [i, ii]			
+			if (keys.includes(event.code) && (event.ctrlKey || event.metaKey)) {
+			} else {
+				if (keys.includes(event.code) && (event.altKey || event.metaKey)) {
+					event.preventDefault();
+					if (window.innerWidth < 799) {
+						if (event.code == i) {
+							columnSelect(i)
+						}
+						if (event.code == ii) {
+							columnSelect(ii)
+						}
+					}
+				}
+			}
+		}
+		i = 'ArrowUp'
+		ii = 'ArrowDown'
+		keys = [i, ii]
+		if (keys.includes(event.code) && (event.altKey || event.metaKey)) {
+			event.preventDefault();
+			if (event.code == i) {
+				TogglePanel('up')
+			}
+			if (event.code == ii) {
+				TogglePanel('down')
+			}
+		}
+    });
+
+    // alt valuations shortcut 
+    document.addEventListener('keydown', (event) => {
+		b = window.location.href.replace(window.location.origin,'')
+		b = b.split('/')[2]
+		i = ['MetaLeft']
+		ii = ['ControlLeft']
+		keys = [i, ii]
+		if (keys.includes(event.code)) {
+		} else {			
+			if (b == 'WorkingPaper') {
+				i = 'Numpad0'
+				ii = 'Numpad1'
+				iii = 'Numpad2'
+				iv = 'Numpad3'
+				v = 'Numpad4'
+				vi = 'Numpad5'
+				keys = [i, ii, iii, iv, v, vi]
+				if (keys.includes(event.code) && (event.ctrlKey || event.metaKey) && (event.altKey || event.metaKey)) {
+				} else {
+					if (keys.includes(event.code) && (event.altKey || event.metaKey)) {
+						event.preventDefault();
+						if (event.code == i) {
+							page = 'IntrinsicValues'
+						}
+						if (event.code == ii) {
+							page = 'CapitalizedCashFlow'
+						}
+						if (event.code == iii) {
+							page = 'CapitalizationRates'
+						}
+						if (event.code == iv) {
+							page = 'CapitalizedIncome'
+						}
+						if (event.code == v) {
+							page = 'AdditionalInformation'
+						}
+						if (event.code == vi) {
+							page = 'FinancialRatios'
+						}
+						if (page != undefined) {
+							showPage(page)
+							historyPush(page)
+							window.scrollTo(0, 0);
+						}
+					}
+				}
+			}
+		}
+    });
+
+    // ctrl financials shortcut 
+    document.addEventListener('keydown', (event) => {
+		b = window.location.href.replace(window.location.origin,'')
+		b = b.split('/')[2]
+		if (b == 'WorkingPaper') {
+			i = 'Numpad0'
+			ii = 'Numpad1'
+			iii = 'Numpad2'
+			iv = 'Numpad3'
+			v = 'Numpad4'
+			vi = 'Numpad5'
+			vii = 'Numpad6'
+			viii = 'Numpad7'
+			ix = 'Numpad8'
+			//
+			keys = [i, ii, iii, iv, v, vi, vii, viii, ix]
+			//
+			if (keys.includes(event.code) && (event.altKey || event.metaKey)) {
+			} else {
+				if (keys.includes(event.code) && (event.ctrlKey || event.metaKey)) {
+					event.preventDefault();
+					if (event.code == i) {
+						page = 'AnnualTrialBalances'
+					}
+					if (event.code == ii) {
+						page = 'AnnualCashFlow'
+					}
+					if (event.code == iii) {
+						page = 'AnnualBalanceSheets'
+					}
+					if (event.code == iv) {
+						page = 'AnnualIncomeStatements'
+					}
+					if (event.code == v) {
+						page = 'AnnualComprehensiveIncome'
+					}
+					if (event.code == vi) {
+						page = 'AnnualShareholdersEquity'
+					}
+					if (page != undefined) {
+						showPage(page)
+						historyPush(page)
+						window.scrollTo(0, 0);
+					}
+				}
+			}
+		}
+    });
+
+    // alt + ctrl audit shortcut 
+    document.addEventListener('keydown', (event) => {
+		b = window.location.href.replace(window.location.origin,'')
+		b = b.split('/')[2]
+		if (b == 'WorkingPaper') {
+			i = 'Numpad0'
+			ii = 'Numpad1'
+			iii = 'Numpad2'
+			iv = 'Numpad3'
+			v = 'Numpad4'
+			vi = 'Numpad5'
+			vii = 'Numpad6'
+			viii = 'Numpad7'
+			ix = 'Numpad8'
+			keys = [i, ii, iii, iv, v, vi, vii, viii, ix]
+			if (keys.includes(event.code) && (event.ctrlKey || event.metaKey) && (event.altKey || event.metaKey)) {
+				if (event.code == i) {
+					page = 'Summary'
+				}
+				if (event.code == ii) {
+					page = 'ProcedureAnnualCashFlow'
+				}
+				if (event.code == iii) {
+					page = 'ProcedureAnnualBalanceSheets'
+				}
+				if (event.code == iv) {
+					page = 'ProcedureAnnualIncomeStatements'
+				}
+				if (event.code == v) {
+					page = 'ProcedureAnnualComprehensiveIncome'
+				}
+				if (event.code == vi) {
+					page = 'ProcedureAnnualShareholdersEquity'
+				}
+				if (event.code == vii) {
+					page = 'Anomalies'
+				}
+				if (event.code == viii) {
+					page = 'MaterialityThreshold'
+				}
+				if (event.code == ix) {
+					page = 'Mission'
+				}
+				if (page != undefined) {
+					showPage(page)
+					historyPush(page)
+					window.scrollTo(0, 0);
+				}
+			}
+		}
+    });
+
+</script>

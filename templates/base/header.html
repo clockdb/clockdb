@@ -1,0 +1,196 @@
+{% load static %}
+<style type="text/css">
+	.chat-dropdown-header:hover{
+		cursor: pointer;
+		background: var(--main-background-color);
+	}
+	.chat-dropdown-header{
+		color: var(--light-primary-text-color);
+	}
+	.scrollable-menu {
+		height: auto;
+		max-height: 90vh;
+		width: 400px;
+		overflow-x: hidden;
+	}
+	.notifications-material-icon {
+		font-size: 28px;
+
+	}
+	.notifications-icon-container{
+		width: 40px;
+		height: 40px;
+		background-color: var(--main-background-color);
+	}
+	.notifications-icon-container:hover {
+		cursor: pointer;
+		background-color: var(--secondary-text-color)
+	}
+	.notify-badge{
+		position: absolute;
+		background: transparent;
+		height:1.2rem;
+		width:1.2rem;
+		line-height: 1.2rem;
+		top:1rem;
+		right:2rem;
+		text-align: center;
+		font-size: 1rem;
+		border-radius: 50%;
+		color:white;
+		font-weight: 630;
+		margin-top:-15px;
+		margin-right: -25px;
+	}
+	#id_notifications_spinner{
+		margin-top: 20px;
+		margin-bottom: 20px;
+	}
+	.button{
+		color: #696969;
+		border:0;
+		background-color: white;
+	}
+	.button:focus{
+		outline: none;
+	}
+	.button:active{
+		outline: none;
+	}
+	.button::selection{
+		outline: none;
+	}
+	.dropdown-item:focus{
+		outline: none;
+	}
+</style>
+<!-- Header -->
+<span id="HeaderMenu" style="display: none;">
+	<div class="HeaderMenu">
+		<span class="menuItem" id="clockdbSpan">
+			<h6 class="clockdbHeader">clockdb</h6>
+		</span>
+		<span class="menuItem" id="HomeSpan">
+			<a href="/{{request.user.id}}/Posts/" target="_blank"><h3>φ</h3></a>
+		</span>
+		{% if request.user.is_authenticated %}
+		<span class="menuItem" id="SearchBarSpan">
+			<input type="text" class="form-control" id="SearchBar" placeholder="Search for entities">
+		</span>
+		<span class="menuItem" id="FinancialsSpan">
+			<a class="p-2 text-dark" data-toggle="dropdown" title="financials">
+				<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-book-fill" viewBox="0 0 16 16">
+					<path d="M8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
+				</svg>
+			</a>
+			<div class="dropdown-menu scrollable-menu" style="margin-top: 51px;">
+				<button class="dropdown-item" data-page="AnnualBalanceSheets">Balance Sheets</button>
+				<button class="dropdown-item" data-page="AnnualIncomeStatements">Income Statements</button>
+				<button class="dropdown-item" data-page="AnnualComprehensiveIncome">Comprehensive Income</button>
+				<button class="dropdown-item" data-page="AnnualShareholdersEquity">Shareholders' Equity</button>
+				<button class="dropdown-item" data-page="AnnualCashFlow">Cash Flow</button>
+				<button class="dropdown-item" data-page="AnnualTrialBalances">Trial Balances</button>
+			</div>
+		</span>
+		<span class="menuItem" id="AuditSpan">
+			<a class="p-2 text-dark" data-toggle="dropdown" title="audit">
+				<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-shield-fill-check" viewBox="0 0 16 16">
+					<path fill-rule="evenodd" d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.777 11.777 0 0 0 2.517 2.453c.386.273.744.482 1.048.625.28.132.581.24.829.24s.548-.108.829-.24a7.159 7.159 0 0 0 1.048-.625 11.775 11.775 0 0 0 2.517-2.453c1.678-2.195 3.061-5.513 2.465-9.99a1.541 1.541 0 0 0-1.044-1.263 62.467 62.467 0 0 0-2.887-.87C9.843.266 8.69 0 8 0zm2.146 5.146a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647z"/>
+				</svg>
+			</a>
+			<div class="dropdown-menu scrollable-menu" style="margin-top: 51px;">
+				<button class="dropdown-item" data-page="Anomalies">Anomalies</button>
+				<button class="dropdown-item" data-page="Summary">Summary</button>
+				<button class="dropdown-item" data-page="MaterialityThreshold">Materiality</button>
+				<button class="dropdown-item" data-page="Mission">Mission</button>
+				<button class="dropdown-item" data-page="ProcedureAnnualCashFlow">Procedures Cash Flow</button>
+				<button class="dropdown-item" data-page="ProcedureAnnualBalanceSheets">Procedures Balance Sheets</button>
+				<button class="dropdown-item" data-page="ProcedureAnnualIncomeStatements">Procedures Income Statements</button>
+				<button class="dropdown-item" data-page="ProcedureAnnualComprehensiveIncome">Procedures Comprehensive Income</button>
+				<button class="dropdown-item" data-page="ProcedureAnnualShareholdersEquity">Procedures Shareholders' Equity</button>
+			</div>
+		</span>
+		<span class="menuItem" id="ValuationSpan">
+			<a class="p-2 text-dark" data-toggle="dropdown" title="valuation">
+				<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-vinyl-fill" viewBox="0 0 16 16">
+					<path d="M8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm0 3a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+					<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4 8a4 4 0 1 0 8 0 4 4 0 0 0-8 0z"/>
+				</svg>
+			</a>
+			<div class="dropdown-menu scrollable-menu" style="margin-top: 51px;">
+				<button class="dropdown-item" data-page="Graph">Graph</button>
+				<button class="dropdown-item" data-page="IntrinsicValues">Intrinsic Values</button>
+				<button class="dropdown-item" data-page="CapitalizationRates">Capitalization Rates</button>
+				<button class="dropdown-item" data-page="CapitalizedCashFlow">Capitalized Cash Flow</button>
+				<button class="dropdown-item" data-page="CapitalizedIncome">Capitalized Income</button>
+				<button class="dropdown-item" data-page="FinancialRatios">Financial Ratios</button>
+				<button class="dropdown-item" data-page="AdditionalInformation">Additional Information</button>
+			</div>
+		</span>
+		<span class="menuItem" id="OpinionSpan">
+			<button class="button" data-page="Opinion">
+				<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-newspaper" viewBox="0 0 16 16">
+					<path d="M0 2.5A1.5 1.5 0 0 1 1.5 1h11A1.5 1.5 0 0 1 14 2.5v10.528c0 .3-.05.654-.238.972h.738a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 1 1 0v9a1.5 1.5 0 0 1-1.5 1.5H1.497A1.497 1.497 0 0 1 0 13.5v-11zM12 14c.37 0 .654-.211.853-.441.092-.106.147-.279.147-.531V2.5a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0-.5.5v11c0 .278.223.5.497.5H12z"/>
+					<path d="M2 3h10v2H2V3zm0 3h4v3H2V6zm0 4h4v1H2v-1zm0 2h4v1H2v-1zm5-6h2v1H7V6zm3 0h2v1h-2V6zM7 8h2v1H7V8zm3 0h2v1h-2V8zm-3 2h2v1H7v-1zm3 0h2v1h-2v-1zm-3 2h2v1H7v-1zm3 0h2v1h-2v-1z"/>
+				</svg>
+			</button>
+		</span>
+		<span class="menuItem" id="GearSpan">
+			<a class="p-2 text-dark" data-toggle="dropdown" title="Gear">
+				<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-calendar2" viewBox="0 0 16 16">
+					<path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2z"/>
+					<path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z"/>
+				  </svg>
+			</a>
+			<div class="dropdown-menu scrollable-menu" style="margin-top: 51px;">
+				<button class="dropdown-item" data-page="Context">Context</button>
+				<button class="dropdown-item" data-page="Files">Engagement Files</button>
+				<button class="dropdown-item" data-page="ReferenceMap">Reference Map</button>
+			</div>
+		</span>
+		<span class="menuItem" id="FilesSpan">
+			<a class="p-2 text-dark" data-toggle="dropdown" title="Files">
+				<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-collection-fill" viewBox="0 0 16 16">
+					<path d="M0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6v7zM2 3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11A.5.5 0 0 0 2 3zm2-2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7A.5.5 0 0 0 4 1z"/>
+				</svg>
+			</a>
+			<div class="dropdown-menu scrollable-menu" style="margin-top: 51px;">
+				<button class="dropdown-item" data-page="New">New</button>
+				<button class="dropdown-item" data-page="Save">Save</button>
+				<button class="dropdown-item" data-page="Print">Print</button>
+			</div>
+		</span>
+		<span class="menuItem" id="PostsSpan">
+			<button class="button" data-page="Posts" title="posts">
+				<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-stack" viewBox="0 0 16 16">
+					<path d="m14.12 10.163 1.715.858c.22.11.22.424 0 .534L8.267 15.34a.598.598 0 0 1-.534 0L.165 11.555a.299.299 0 0 1 0-.534l1.716-.858 5.317 2.659c.505.252 1.1.252 1.604 0l5.317-2.66zM7.733.063a.598.598 0 0 1 .534 0l7.568 3.784a.3.3 0 0 1 0 .535L8.267 8.165a.598.598 0 0 1-.534 0L.165 4.382a.299.299 0 0 1 0-.535L7.733.063z"/>
+					<path d="m14.12 6.576 1.715.858c.22.11.22.424 0 .534l-7.568 3.784a.598.598 0 0 1-.534 0L.165 7.968a.299.299 0 0 1 0-.534l1.716-.858 5.317 2.659c.505.252 1.1.252 1.604 0l5.317-2.659z"/>
+				</svg>
+			</button>
+		</span>
+		<span class="menuItem" id="MoreSpan">
+			<a class="p-2 text-dark" data-toggle="dropdown" title="more">
+				<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-info-square-fill" viewBox="0 0 16 16">
+					<path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm8.93 4.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+				</svg>
+			</a>
+			<div class="dropdown-menu scrollable-menu" style="margin-top: 51px;">
+				<button class="dropdown-item" data-page="documentation">Documentation</button>
+				<button class="dropdown-item" data-page="commands">Commands</button>
+				<button class="dropdown-item" data-page="about">About</button>
+				<button class="dropdown-item" data-page="disclaimer">Disclaimer</button>
+			</div>
+		</span>
+		<span class="menuItem" id="SearchUsersBarSpan">
+			<input type="text" class="form-control" id="SearchUsersBar" name="SearchUsersBar" placeholder="Search for people">
+		</span>
+		{% else %}
+		<span class="NotAuthenticated" id="NotAuthenticated">
+			<a class="p-2 text-dark" href="{% url 'login' %}">Login</a>
+			<a class="btn btn-outline-primary" href="{% url 'register' %}">Register</a>
+		</span>
+		{% endif %}	
+	</div>
+</span>
+
+

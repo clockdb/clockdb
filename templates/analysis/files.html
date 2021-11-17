@@ -1,0 +1,64 @@
+
+<style>
+    .FilesAdd{
+        vertical-align: middle;
+        font-weight: bold;
+        font-style: italic;
+        text-align: center;
+        padding: 3%;
+        margin-bottom: 21px;
+    }
+    .FilesAdd:hover{
+		background-color: #f5f4f4;
+		border-radius: 15px;
+    }
+    .center{
+        text-align: center;
+        vertical-align: middle;
+    }
+    .ReferenceHeader{
+        font-weight: bold;
+    }
+</style>
+
+<!--- FILES --->
+<div id="Files" style="display: none" class="card p-4 align-items-start">
+    <table class='margin'>
+        <tbody>
+            <tr>
+                <td><h3 id="EntityRegistrantNameFiles" style="font-weight:bold; margin-left:0px;"></h3></td>
+            </tr>
+            <tr>
+                <td><h3 id="FilesLabel" style="font-weight:bold; margin-left:0px;">FILES</h3></td>
+            </tr>
+        </tbody>
+    </table>
+    <span class="Files" style="width:95%;">
+        <table class="Files">
+            <tbody>
+                <tr>
+                    <td class="center"><label class="FilesAdd" for="AddLineInputFile" >Add File</label></td>
+                    <td class="center"><label class="FilesAdd" onclick="New()">New Directory</label></td>
+                    <td class="center"><label class="FilesAdd" style="visibility:hidden" id="New" for="Files1" onclick="HideNewDirectoryButton()">Confirm?</label></td>
+                    <td class="center"><input type='file' multiple id="Files1" style="visibility: hidden" onchange="FilesFunction()"></input></td>
+                    <td class="center"><input type='file' id="AddLineInputFile" style="visibility: hidden" multiple onchange="AddLine()"></input></td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="Files" id="FilesSection">
+            <tbody id="FilesButtons">
+                <tr style="display:none" id="ReferenceHeaderRow">
+                    <td colspan="3" class="center"><button class="ReferenceHeader" data-page="ReferenceHeader">Description</button></td>
+                    <td colspan="1" class="center"><button class="ReferenceHeader" data-page="ReferenceHeader">Reference</button></td>
+                    <td colspan="1" class="center"><button class="ReferenceHeader" data-page="ReferenceHeader">Status</button></td>
+                    <td colspan="1" class="center"><button class="ReferenceHeader" data-page="ReferenceHeader">Work In Progress</button></td>
+                    <td colspan="1" class="center"><button class="ReferenceHeader" data-page="ReferenceHeader">Prepared</button></td>
+                    <td colspan="1" class="center"><button class="ReferenceHeader" data-page="ReferenceHeader">Date Prepared</button></td>
+                    <td colspan="1" class="center"><button class="ReferenceHeader" data-page="ReferenceHeader">Reviewed</button></td>
+                    <td colspan="1" class="center"><button class="ReferenceHeader" data-page="ReferenceHeader">Date Reviewed</button></td>
+                <tr>
+            </tbody>
+            <tbody id="FilesDetails"></tbody>
+        </table>
+    </span>
+</div>

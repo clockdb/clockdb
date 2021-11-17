@@ -1,0 +1,41 @@
+{% load static %}
+
+<style type="text/css">
+	.notification-thumbnail-image{
+		height: 50px;
+		width: 50px;
+	}
+	.chat-card:hover{
+		cursor: pointer;
+		background: #f2f2f2;
+	}
+	.chat-card{
+		border-bottom: 1px solid var(--main-background-color);
+	}
+	.timestamp-text{
+		color: var(--secondary-text-color);
+	}
+	.notification-chatroom-msg{
+		color: var(--light-primary-text-color);
+	}
+	#id_notifications_loading_spinner{
+		position: absolute;
+		margin-top: 40px;
+	}
+	.chat-dropdown-header:hover{
+		cursor: pointer;
+		background: var(--main-background-color);
+	}
+	.chat-dropdown-header{
+		color: var(--light-primary-text-color);
+	}
+</style>
+
+<script src="{% static 'collections/collections.min.js' %}"></script>
+
+<p class="d-none" id="id_chat_newest_timestamp"></p>
+<p class="d-none" id="id_chat_page_number">1</p>
+
+
+
+

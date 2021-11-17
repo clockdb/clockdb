@@ -1,0 +1,408 @@
+
+<!--- REFERENCE MAP --->
+<div id="ReferenceMap" style="display: none" class="card p-4 align-items-start">
+    <table class='margin'> 
+        <tbody>
+            <tr>
+                <td><h3 id="EntityRegistrantNameReferenceMap" style="font-weight:bold; margin-left:0px;"></h3></td>
+            </tr>
+            <tr>
+                <td><h3 style="font-weight:bold; margin-left:0px;">REFERENCE MAP</h3></td>
+            </tr>
+        </tbody>
+    </table>
+    <table class='margin'>
+        <tbody>
+            <tr id="CurrentAssetsREFRow" class="REF">
+                <td colspan="5" style="text-align: left"><h3>Current Assets</h3></td>
+                <td></td>
+                <td><input id="CurrentAssetsREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="CurrentAssetsREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="CurrentAssetsREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="CurrentAssetsREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="CurrentAssetsREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="CurrentAssetsREFCheckbox"></input>
+                    <input type="checkbox" id="CurrentAssetsREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="CurrentAssetsREF6" onfocusout="Compile()" onchange="CurrentAssetsREF()" value="A"></input></td>
+            </tr>
+            <tr id="NonCurrentAssetsREFRow" class="REF">
+                <td colspan="5" style="text-align: left"><h3>Non-Current Assets</td>
+                <td></td>
+                <td><input id="NonCurrentAssetsREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="NonCurrentAssetsREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="NonCurrentAssetsREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="NonCurrentAssetsREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="NonCurrentAssetsREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="NonCurrentAssetsREFCheckbox"></input>
+                    <input type="checkbox" id="NonCurrentAssetsREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="NonCurrentAssetsREF6" onfocusout="Compile()" onchange="NonCurrentAssetsREF()" value="G"></input></td>
+            </tr>
+            <tr id="CurrentLiabilitiesREFRow" class="REF">
+                <td colspan="5" style="text-align: left"><h3>Current Liabilities</td>
+                <td></td>
+                <td><input id="CurrentLiabilitiesREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="CurrentLiabilitiesREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="CurrentLiabilitiesREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="CurrentLiabilitiesREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="CurrentLiabilitiesREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="CurrentLiabilitiesREFCheckbox"></input>
+                    <input type="checkbox" id="CurrentLiabilitiesREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="CurrentLiabilitiesREF6" onfocusout="Compile()" onchange="CurrentLiabilitiesREF()" value="AA"></input></td>
+            </tr>
+            <tr id="NonCurrentLiabilitiesREFRow" class="REF">
+                <td colspan="5" style="text-align: left"><h3>Non-Current Liabilities </td>
+                <td></td>
+                <td><input id="NonCurrentLiabilitiesREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="NonCurrentLiabilitiesREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="NonCurrentLiabilitiesREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="NonCurrentLiabilitiesREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="NonCurrentLiabilitiesREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="NonCurrentLiabilitiesREFCheckbox"></input>
+                    <input type="checkbox" id="NonCurrentLiabilitiesREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="NonCurrentLiabilitiesREF6" onfocusout="Compile()" onchange="NonCurrentLiabilitiesREF()" value="DD"></input></td>
+            </tr>
+            <tr id="ShareholdersEquityREFRow" class="REF">
+                <td colspan="5" style="text-align: left"><h3>Shareholders' Equity </td>
+                <td></td>
+                <td><input id="ShareholdersEquityREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="ShareholdersEquityREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="ShareholdersEquityREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="ShareholdersEquityREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="ShareholdersEquityREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="ShareholdersEquityREFCheckbox"></input>
+                    <input type="checkbox" id="ShareholdersEquityREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="ShareholdersEquityREF6" onfocusout="Compile()" onchange="ShareholdersEquityREF()" value="EE"></input></td>
+            </tr>
+            <tr id="GrossMarginREFRow" class="REF">
+                <td colspan="5" style="text-align: left"><h3>Gross Margin </td>
+                <td></td>
+                <td><input id="GrossMarginREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="GrossMarginREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="GrossMarginREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="GrossMarginREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="GrossMarginREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="GrossMarginREFCheckbox"></input>
+                    <input type="checkbox" id="GrossMarginREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="GrossMarginREF6" onfocusout="Compile()" onchange="GrossMarginREF()" value="20"></input></td>
+            </tr>
+            <tr id="OperatingExpensesREFRow" class="REF">
+                <td colspan="5" style="text-align: left"><h3>Operating Expenses </h3></td>
+                <td></td>
+                <td><input id="OperatingExpensesREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="OperatingExpensesREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="OperatingExpensesREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="OperatingExpensesREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="OperatingExpensesREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="OperatingExpensesREFCheckbox"></input>
+                    <input type="checkbox" id="OperatingExpensesREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="OperatingExpensesREF6" onfocusout="Compile()" onchange="OperatingExpensesREF()" value="30"></input></td>
+            </tr>
+            <tr id="ImpairmentAndRestructuringREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Impairment And Restructuring </td>
+                <td></td>
+                <td><input id="ImpairmentAndRestructuringREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="ImpairmentAndRestructuringREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="ImpairmentAndRestructuringREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="ImpairmentAndRestructuringREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="ImpairmentAndRestructuringREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="ImpairmentAndRestructuringREFCheckbox"></input>
+                    <input type="checkbox" id="ImpairmentAndRestructuringREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="ImpairmentAndRestructuringREF6" onfocusout="Compile()" onchange="ImpairmentAndRestructuringREF()" value="40"></input></td>
+            </tr>
+            <tr id="NonOperatingExpensesREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Non-Operating Expenses </td>
+                <td></td>
+                <td><input id="NonOperatingExpensesREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="NonOperatingExpensesREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="NonOperatingExpensesREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="NonOperatingExpensesREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="NonOperatingExpensesREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="NonOperatingExpensesREFCheckbox"></input>
+                    <input type="checkbox" id="NonOperatingExpensesREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="NonOperatingExpensesREF6" onfocusout="Compile()" onchange="NonOperatingExpensesREF()" value="50"></input></td>
+            </tr>
+            <tr id="EquityMethodInvesteesIncomeREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Equity Method Investees Income </td>
+                <td></td>
+                <td><input id="EquityMethodInvesteesIncomeREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="EquityMethodInvesteesIncomeREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="EquityMethodInvesteesIncomeREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="EquityMethodInvesteesIncomeREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="EquityMethodInvesteesIncomeREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="EquityMethodInvesteesIncomeREFCheckbox"></input>
+                    <input type="checkbox" id="EquityMethodInvesteesIncomeREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="EquityMethodInvesteesIncomeREF6" onfocusout="Compile()" onchange="EquityMethodInvesteesIncomeREF()" value="60"></input></td>
+            </tr>
+            <tr id="DiscontinuedOperationsREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Discontinued Operations </td>
+                <td></td>
+                <td><input id="DiscontinuedOperationsREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="DiscontinuedOperationsREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="DiscontinuedOperationsREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="DiscontinuedOperationsREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="DiscontinuedOperationsREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="DiscontinuedOperationsREFCheckbox"></input>
+                    <input type="checkbox" id="DiscontinuedOperationsREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="DiscontinuedOperationsREF6" onfocusout="Compile()" onchange="DiscontinuedOperationsREF()" value="70"></input></td>
+            </tr>
+            <tr id="IncomeTaxesREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Income Taxes </td>
+                <td></td>
+                <td><input id="IncomeTaxesREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="IncomeTaxesREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="IncomeTaxesREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="IncomeTaxesREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="IncomeTaxesREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="IncomeTaxesREFCheckbox"></input>
+                    <input type="checkbox" id="IncomeTaxesREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="IncomeTaxesREF6" onfocusout="Compile()" onchange="IncomeTaxesREF()" value="80"></input></td>
+            </tr>
+            <tr id="OtherComprehensiveIncomeREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Other Comprehensive Income </td>
+                <td></td>
+                <td><input id="OtherComprehensiveIncomeREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="OtherComprehensiveIncomeREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="OtherComprehensiveIncomeREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="OtherComprehensiveIncomeREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="OtherComprehensiveIncomeREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="OtherComprehensiveIncomeREFCheckbox"></input>
+                    <input type="checkbox" id="OtherComprehensiveIncomeREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="OtherComprehensiveIncomeREF6" onfocusout="Compile()" onchange="OtherComprehensiveIncomeREF()" value="90"></input></td>
+            </tr>
+            <tr id="OperatingActivitiesREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Operating Activities </td>
+                <td></td>
+                <td><input id="OperatingActivitiesREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="OperatingActivitiesREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="OperatingActivitiesREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="OperatingActivitiesREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="OperatingActivitiesREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="OperatingActivitiesREFCheckbox"></input>
+                    <input type="checkbox" id="OperatingActivitiesREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="OperatingActivitiesREF6" onfocusout="Compile()" onchange="OperatingActivitiesREF()" value="600"></input></td>
+            </tr>
+            <tr id="InvestingActivitiesREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Investing Activities </td>
+                <td></td>
+                <td><input id="InvestingActivitiesREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="InvestingActivitiesREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="InvestingActivitiesREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="InvestingActivitiesREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="InvestingActivitiesREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="InvestingActivitiesREFCheckbox"></input>
+                    <input type="checkbox" id="InvestingActivitiesREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="InvestingActivitiesREF6" onfocusout="Compile()" onchange="InvestingActivitiesREF()" value="700"></input></td>
+            </tr>
+            <tr id="FinancingActivitiesREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Financing Activities </td>
+                <td></td>
+                <td><input id="FinancingActivitiesREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="FinancingActivitiesREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="FinancingActivitiesREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="FinancingActivitiesREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="FinancingActivitiesREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="FinancingActivitiesREFCheckbox"></input>
+                    <input type="checkbox" id="FinancingActivitiesREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="FinancingActivitiesREF6" onfocusout="Compile()" onchange="FinancingActivitiesREF()" value="800"></input></td>
+            </tr>
+            <tr id="EffectOfExchangeRateOnCashREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Effect Of Exchange Rate On Cash </td>
+                <td></td>
+                <td><input id="EffectOfExchangeRateOnCashREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="EffectOfExchangeRateOnCashREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="EffectOfExchangeRateOnCashREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="EffectOfExchangeRateOnCashREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="EffectOfExchangeRateOnCashREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="EffectOfExchangeRateOnCashREFCheckbox"></input>
+                    <input type="checkbox" id="EffectOfExchangeRateOnCashREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="EffectOfExchangeRateOnCashREF6" onfocusout="Compile()" onchange="EffectOfExchangeRateOnCashREF()" value="900"></input></td>
+            </tr>
+            <tr id="MissionREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Mission </td>
+                <td></td>
+                <td><input id="MissionREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="MissionREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="MissionREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="MissionREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="MissionREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="MissionREFCheckbox"></input>
+                    <input type="checkbox" id="MissionREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="MissionREF6" onfocusout="Compile()" onchange="MissionREF()" value="1000"></input></td>
+            </tr>
+            <tr id="MaterialityREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Materiality </td>
+                <td></td>
+                <td><input id="MaterialityREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="MaterialityREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="MaterialityREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="MaterialityREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="MaterialityREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="MaterialityREFCheckbox"></input>
+                    <input type="checkbox" id="MaterialityREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="MaterialityREF6" onfocusout="Compile()"onchange="MaterialityREF()"  value="1100"></input></td>
+            </tr>
+            <tr id="BalanceSheetsProcedureREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Balance Sheets - Procedure </td>
+                <td></td>
+                <td><input id="BalanceSheetsProcedureREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="BalanceSheetsProcedureREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="BalanceSheetsProcedureREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="BalanceSheetsProcedureREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="BalanceSheetsProcedureREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="BalanceSheetsProcedureREFCheckbox"></input>
+                    <input type="checkbox" id="BalanceSheetsProcedureREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="BalanceSheetsProcedureREF6" onfocusout="Compile()" onchange="BalanceSheetsProcedureREF()" value="2000"></input></td>
+            </tr>
+            <tr id="IncomeStatementsProcedureREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Income Statements - Procedure </td>
+                <td></td>
+                <td><input id="IncomeStatementsProcedureREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="IncomeStatementsProcedureREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="IncomeStatementsProcedureREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="IncomeStatementsProcedureREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="IncomeStatementsProcedureREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="IncomeStatementsProcedureREFCheckbox"></input>
+                    <input type="checkbox" id="IncomeStatementsProcedureREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="IncomeStatementsProcedureREF6" onfocusout="Compile()" onchange="IncomeStatementsProcedureREF()" value="3000"></input></td>
+            </tr>
+            <tr id="ComprehensiveIncomeProcedureREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Comprehensive Income - Procedure </td>
+                <td></td>
+                <td><input id="ComprehensiveIncomeProcedureREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="ComprehensiveIncomeProcedureREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="ComprehensiveIncomeProcedureREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="ComprehensiveIncomeProcedureREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="ComprehensiveIncomeProcedureREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="ComprehensiveIncomeProcedureREFCheckbox"></input>
+                    <input type="checkbox" id="ComprehensiveIncomeProcedureREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="ComprehensiveIncomeProcedureREF6" onfocusout="Compile()" onchange="ComprehensiveIncomeProcedureREF()" value="4000"></input></td>
+            </tr>
+            <tr id="ShareholdersEquityProcedureREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Shareholders' Equity - Procedure </td>
+                <td></td>
+                <td><input id="ShareholdersEquityProcedureREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="ShareholdersEquityProcedureREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="ShareholdersEquityProcedureREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="ShareholdersEquityProcedureREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="ShareholdersEquityProcedureREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="ShareholdersEquityProcedureREFCheckbox"></input>
+                    <input type="checkbox" id="ShareholdersEquityProcedureREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="ShareholdersEquityProcedureREF6" onfocusout="Compile()" onchange="ShareholdersEquityProcedureREF()" value="5000"></input></td>
+            </tr>
+            <tr id="CashFlowProcedureREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Cash Flow - Procedure </td>
+                <td></td>
+                <td><input id="CashFlowProcedureREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="CashFlowProcedureREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="CashFlowProcedureREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="CashFlowProcedureREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="CashFlowProcedureREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="CashFlowProcedureREFCheckbox"></input>
+                    <input type="checkbox" id="CashFlowProcedureREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="CashFlowProcedureREF6" onfocusout="Compile()" onchange="CashFlowProcedureREF()" value="6000"></input></td>
+            </tr>
+            <tr id="AnomaliesREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Anomalies </td>
+                <td></td>
+                <td><input id="AnomaliesREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="AnomaliesREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="AnomaliesREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="AnomaliesREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="AnomaliesREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="AnomaliesREFCheckbox"></input>
+                    <input type="checkbox" id="AnomaliesREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="AnomaliesREF6" onfocusout="Compile()" onchange="AnomaliesREF()" value="9999"></input></td>
+            </tr>
+            <tr id="OpinionREFRow" class="REF">
+                <td colspan="5" style="text-align: left"> <h3>Opinion </td>
+                <td></td>
+                <td><input id="OpinionREF1" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="OpinionREF2" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="OpinionREF3" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="OpinionREF4" style="display:none" onfocusout="Compile()"></input></td>
+                <td><input id="OpinionREF5" style="display:none" onfocusout="Compile()"></input></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="OpinionREFCheckbox"></input>
+                    <input type="checkbox" id="OpinionREFCheckbox2"></input>
+                </td>
+                <td colspan='5'><input style="" id="OpinionREF6" onfocusout="Compile()" onchange="OpinionREF()" value="db"></input></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

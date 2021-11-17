@@ -1,0 +1,1627 @@
+<style>
+	.controlHeader{
+		width : 100%;
+		border: solid 0.5px #E5E4E2;
+		border-top-left-radius: 15px;
+		border-top-right-radius: 15px;
+		float: left;
+		overflow: hidden;
+		vertical-align: middle;
+	}
+	.controlHeaderTitle{
+		color: #696969;
+		width: 72%;
+		vertical-align: middle;
+		float: left;
+		overflow: hidden;
+		vertical-align: middle;
+		margin-top:3%;
+		margin-left:3%;
+		margin-bottom:3%;
+	}
+	.controlHeaderPanel{
+		width: 25%;
+		text-align: right;
+		float: left;
+		overflow: hidden;
+		vertical-align: right;
+		margin-top:2%;
+		margin-bottom:2%;
+	}
+	.controlContent{
+		padding-bottom: 6%;
+		max-height: 600px;
+		overflow-y: scroll;
+		border: solid 0.5px #E5E4E2;
+		border-bottom-left-radius: 15px;
+		border-bottom-right-radius: 15px;
+	}
+	.controlOptions{
+		float: left;
+		overflow: hidden;
+		width: 95%;
+		margin-top:3%;
+		margin-left:3%;
+	}
+	.controlItem{
+		float: left;
+		overflow: hidden;
+		width: 100%;
+	}
+	.controlInput{
+		display: none;
+		text-align: left;
+	}
+	.options {
+		width: 100%;
+		font-style: italic;
+		font-size: 12px;
+		text-align: left;
+		border: 0;
+		background: transparent;
+	}
+	.options:focus {
+		outline: 0;
+		border-radius: 15px;
+	}
+	.options:hover {
+		background-color: #f5f4f4;
+		border-radius: 15px;
+	}
+	.options:active {
+		border-radius: 15px;
+		background-color: #E5E4E2;
+	}
+	.options::selection{
+		background-color: #f5f4f4;
+		border-radius: 15px;
+	}
+</style>
+
+
+<!-- Control -->
+<div class="controlHeader">
+	<div class='controlHeaderTitle'></div>
+	<div class='controlHeaderPanel'>
+		<button class="virgin" id="CloseControl" data-page="CloseControl">
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+				<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+			</svg>
+		</button>
+	</div>
+</div>
+<div class="controlContent">
+	<div class="controlWorkingPaper">
+		<div class="controlOptions">
+			<div class="controlItem">
+				<input class="virgin" type="file" id='Upload' accept='.db' style="display: none" onchange="OpenFileName()">
+				<label class="virgin" for="Upload" data-page="Upload" style="padding: 2%;">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder2-open" viewBox="0 0 16 16">
+						<path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v.64c.57.265.94.876.856 1.546l-.64 5.124A2.5 2.5 0 0 1 12.733 15H3.266a2.5 2.5 0 0 1-2.481-2.19l-.64-5.124A1.5 1.5 0 0 1 1 6.14V3.5zM2 6h12v-.5a.5.5 0 0 0-.5-.5H9c-.964 0-1.71-.629-2.174-1.154C6.374 3.334 5.82 3 5.264 3H2.5a.5.5 0 0 0-.5.5V6zm-.367 1a.5.5 0 0 0-.496.562l.64 5.124A1.5 1.5 0 0 0 3.266 14h9.468a1.5 1.5 0 0 0 1.489-1.314l.64-5.124A.5.5 0 0 0 14.367 7H1.633z"/>
+					  </svg>
+				</label>
+				<label class="virgin" id="OpenFileName" style="font-style: italic; font-weight: lighter; font-size: 11px; margin-left: 15px;"></label>
+				<button class="virgin" data-page="UploadConfirm" id="UploadConfirm" style="display: none;">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+						<path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z"/>
+						<path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z"/>
+					  </svg>
+					Confirm
+				</button>
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button class="virgin" data-page="Graph">
+					<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-activity" viewBox="0 0 16 16">
+						<path fill-rule="evenodd" d="M6 2a.5.5 0 0 1 .47.33L10 12.036l1.53-4.208A.5.5 0 0 1 12 7.5h3.5a.5.5 0 0 1 0 1h-3.15l-1.88 5.17a.5.5 0 0 1-.94 0L6 3.964 4.47 8.171A.5.5 0 0 1 4 8.5H.5a.5.5 0 0 1 0-1h3.15l1.88-5.17A.5.5 0 0 1 6 2Z"/>
+					</svg>
+					Graph
+				</button>
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button class="virgin" data-page="AnnualCashFlow">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-coin" viewBox="0 0 16 16">
+						<path d="M5.5 9.511c.076.954.83 1.697 2.182 1.785V12h.6v-.709c1.4-.098 2.218-.846 2.218-1.932 0-.987-.626-1.496-1.745-1.76l-.473-.112V5.57c.6.068.982.396 1.074.85h1.052c-.076-.919-.864-1.638-2.126-1.716V4h-.6v.719c-1.195.117-2.01.836-2.01 1.853 0 .9.606 1.472 1.613 1.707l.397.098v2.034c-.615-.093-1.022-.43-1.114-.9H5.5zm2.177-2.166c-.59-.137-.91-.416-.91-.836 0-.47.345-.822.915-.925v1.76h-.005zm.692 1.193c.717.166 1.048.435 1.048.91 0 .542-.412.914-1.135.982V8.518l.087.02z"/>
+						<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+						<path d="M8 13.5a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11zm0 .5A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/>
+					  </svg>
+				Cash Flow
+			</button>
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button class="virgin" data-page="AnnualTrialBalances">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fullscreen-exit" viewBox="0 0 16 16">
+						<path d="M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5zM0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zm10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4z"/>
+					  </svg>
+					Trial Balances
+				</button>
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button class="virgin" data-page="Context">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
+						<path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"/>
+						<path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+					  </svg>
+					Context
+				</button>
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button class="virgin" data-page="Files">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-files" viewBox="0 0 16 16">
+						<path d="M13 0H6a2 2 0 0 0-2 2 2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm0 13V4a2 2 0 0 0-2-2H5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1zM3 4a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4z"/>
+					  </svg>
+					Engagement Files
+				</button>
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button class="virgin" data-page="ReferenceMap">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-spreadsheet" viewBox="0 0 16 16">
+						<path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v4h10V2a1 1 0 0 0-1-1H4zm9 6h-3v2h3V7zm0 3h-3v2h3v-2zm0 3h-3v2h2a1 1 0 0 0 1-1v-1zm-4 2v-2H6v2h3zm-4 0v-2H3v1a1 1 0 0 0 1 1h1zm-2-3h2v-2H3v2zm0-3h2V7H3v2zm3-2v2h3V7H6zm3 3H6v2h3v-2z"/>
+					  </svg>
+					Reference Map
+				</button>
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button class="virgin" data-page="UnhideCheckbox">
+					<span id="UnhideCheckboxOn">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-down-alt" viewBox="0 0 16 16">
+							<path d="M3.5 3.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 12.293V3.5zm4 .5a.5.5 0 0 1 0-1h1a.5.5 0 0 1 0 1h-1zm0 3a.5.5 0 0 1 0-1h3a.5.5 0 0 1 0 1h-3zm0 3a.5.5 0 0 1 0-1h5a.5.5 0 0 1 0 1h-5zM7 12.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5z"/>
+						</svg>
+						Unhide empty rows	
+					</span>
+					<span id="UnhideCheckboxOff" style="display: none;">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-up" viewBox="0 0 16 16">
+							<path d="M3.5 12.5a.5.5 0 0 1-1 0V3.707L1.354 4.854a.5.5 0 1 1-.708-.708l2-1.999.007-.007a.498.498 0 0 1 .7.006l2 2a.5.5 0 1 1-.707.708L3.5 3.707V12.5zm3.5-9a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zM7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1z"/>
+						</svg>
+						Hide empty rows
+					</span>
+				</button>
+			</div>
+			<div class="controlInput" style="display: none;">
+				<input type="checkbox" id="UnhideCheckbox" style="visibility: visible" onchange="CheckUnhideCheckbox()" onfocusout="Compile()"></input>
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button class="virgin" data-page="OpenEditor">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-command" viewBox="0 0 16 16">
+						<path d="M3.5 2A1.5 1.5 0 0 1 5 3.5V5H3.5a1.5 1.5 0 1 1 0-3zM6 5V3.5A2.5 2.5 0 1 0 3.5 6H5v4H3.5A2.5 2.5 0 1 0 6 12.5V11h4v1.5a2.5 2.5 0 1 0 2.5-2.5H11V6h1.5A2.5 2.5 0 1 0 10 3.5V5H6zm4 1v4H6V6h4zm1-1V3.5A1.5 1.5 0 1 1 12.5 5H11zm0 6h1.5a1.5 1.5 0 1 1-1.5 1.5V11zm-6 0v1.5A1.5 1.5 0 1 1 3.5 11H5z"/>
+					  </svg>
+					Open Editor
+				</button>
+				<span id="OpenEditorIcon" style="display: none; color: green; font-weight: bold;">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+						<path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z"/>
+						<path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z"/>
+					  </svg>
+				</span>
+			</div>
+			<div class="controlInput" style="display: none;">
+				<input type="checkbox" id="OpenEditor" style="visibility: visible" onfocusout="Compile()"></input>
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button class="virgin" data-page="ClearCheckboxes">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-check" viewBox="0 0 16 16">
+						<path fill-rule="evenodd" d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+						<path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/>
+					  </svg>
+					Clear checkboxes
+				</button>
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button class="virgin" data-page="Rollover">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hurricane" viewBox="0 0 16 16">
+						<path d="M6.999 2.6A5.5 5.5 0 0 1 15 7.5a.5.5 0 0 0 1 0 6.5 6.5 0 1 0-13 0 5 5 0 0 0 6.001 4.9A5.5 5.5 0 0 1 1 7.5a.5.5 0 0 0-1 0 6.5 6.5 0 1 0 13 0 5 5 0 0 0-6.001-4.9zM10 7.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
+					  </svg>
+					Rollover
+				</button>
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button class="virgin" data-page="Save">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder-check" viewBox="0 0 16 16">
+						<path d="m.5 3 .04.87a1.99 1.99 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14H9v-1H2.826a1 1 0 0 1-.995-.91l-.637-7A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09L14.54 8h1.005l.256-2.819A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2zm5.672-1a1 1 0 0 1 .707.293L7.586 3H2.19c-.24 0-.47.042-.683.12L1.5 2.98a1 1 0 0 1 1-.98h3.672z"/>
+						<path d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.707 0l-1.5-1.5a.5.5 0 0 1 .707-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0z"/>
+					  </svg>
+					Save
+				</button>
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button class="virgin" data-page="Print">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+						<path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+						<path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
+					  </svg>
+					Print
+				</button>
+			</div>
+		</div>
+	</div>
+	<div class="controlPosts">
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button id='SortButton' class="virgin" data-page="SortAndOrder" style="font-weight: bold; text-align: left;">
+					Sort
+				</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="controlPanelTitles()">
+					<select id="Sort" name="Sort" class="select">
+						<option value=any name=any selected></option>
+						<option value=ClockφLastYear name=ClockφLastYear>clockdb</option>
+						<option value=lastyear name=lastyear>Period End Date</option>
+						<option value=CommonSharesIntrinsicValueLastYear name=CommonSharesIntrinsicValueLastYear>Intrinsic Value</option>
+						<option value=MarketCapitalizationLastYear name=MarketCapitalizationLastYear>Market Capitalization</option>
+						<option value=Industry name=Industry>Industry</option>
+						<option value=Region name=Region>Regions</option>
+						<option value=EntityRegistrantName name=EntityRegistrantName>Alphabetical</option>
+					</select>
+				</form>
+			</div>
+			<div class="SortOptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button id="OrderButton" class="virgin" data-page="SortAndOrder" style="text-align: left;">
+					Order
+				</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="controlPanelTitles()">
+					<select id="Order" name="Order" class="select">
+						<option value=any value=any selected></option>
+						<option value=+ name=Ascending>ascending</option>
+						<option value=- name=Descending>descending</option>
+					</select>
+				</form>
+			</div>
+			<div class="OrderOptionsSection" style="display: none;">
+				Order Option Section
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button id="filterFor" class="virgin" data-page="SortAndOrder" style="font-weight: bold;">
+					Filter for
+				</button>
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button id="IndustryButton" class="virgin" data-page="SortAndOrder" style="text-align: left;">
+					Industry
+				</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustryChange()">
+					<select id="Industry" name="Industry" class="select">
+						<option value=any></option>
+						<option value=33>Aeronautical</option>
+						<option value=24>Aerospacial</option>
+						<option value=21>Agriculture & Forestry</option>
+						<option value=15>Art, Sports & Culture</option>
+						<option value=28>Automobile & Motor Vehicules</option>
+						<option value=11>Banking</option>
+						<option value=41>Blank Checks</option>
+						<option value=32>Breweries & Bottlers</option>
+						<option value=39>Brokers, Investors, Savings Institutions</option>
+						<option value=12>Building & Infrastructures</option>
+						<option value=17>Chemical Engineering</option>
+						<option value=5>Computer & Semiconductors</option>
+						<option value=40>Credit & Collection Agencies</option>
+						<option value=29>Educational</option>
+						<option value=20>Electric</option>
+						<option value=13>Energy</option>
+						<option value=1>Engineering & Laboratory</option>
+						<option value=8>Finance, Legal, Management & Consulting</option>
+						<option value=18>Food</option>
+						<option value=31>Furniture & Fixtures</option>
+						<option value=36>Government</option>
+						<option value=9>Health Care</option>
+						<option value=6>Industrial, Machinery & Equipment</option>
+						<option value=16>Information Technology</option>
+						<option value=4>Insurance</option>
+						<option value=30>Marketing & Advertising</option>
+						<option value=27>Metal Manufacturing</option>
+						<option value=7>Military, Marine & Surety</option>
+						<option value=22>Mining & Quarrying</option>
+						<option value=25>Patent Owners & Lessors</option>
+						<option value=26>Personal Services</option>
+						<option value=37>Pharmaceutical</option>
+						<option value=34>Railroads</option>
+						<option value=2>Real Estate</option>
+						<option value=38>Retail</option>
+						<option value=19>Telecommunication</option>
+						<option value=23>Textile & Leather</option>
+						<option value=35>Tobacco Products</option>
+						<option value=3>Transportation, Routing & Courier</option>
+						<option value=10>Wholesale, Distribution & Storage</option>
+						<option value=14>Wood Products</option>
+					</select>
+				</form>
+			</div>
+			<div class="IndustryOptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="1m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_1"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=1 name="Engineering & Laboratory" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Auto Controls For Regulating Residential & Comml Environments" value=3822>Auto Controls For Regulating Residential & Comml Environments</option>
+						<option class="Laboratory Analytical Instruments" value=3826>Laboratory Analytical Instruments</option>
+						<option class="Laboratory Apparatus & Furniture" value=3821>Laboratory Apparatus & Furniture</option>
+						<option class="Measuring & Controlling Devices, Nec" value=3829>Measuring & Controlling Devices, Nec</option>
+						<option class="Optical Instruments & Lenses" value=3827>Optical Instruments & Lenses</option>
+						<option class="Photographic Equipment & Supplies" value=3861>Photographic Equipment & Supplies</option>
+						<option class="Services-Engineering Services" value=8711>Services-Engineering Services</option>
+						<option class="Services-Miscellaneous Repair Services" value=7600>Services-Miscellaneous Repair Services</option>
+					</select>
+				</form>
+			</div>
+			<div class="1OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="2m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_2"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=2 name="Real Estate" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Hotels & Motels" value=7011>Hotels & Motels</option>
+						<option class="Hotels, Rooming Houses, Camps & Other Lodging Places" value=7000>Hotels, Rooming Houses, Camps & Other Lodging Places</option>
+						<option class="Land Subdividers & Developers (No Cemeteries)" value=6552>Land Subdividers & Developers (No Cemeteries)</option>
+						<option class="Lessors Of Real Property, Nec" value=6519>Lessors Of Real Property, Nec</option>
+						<option class="Operators Of Nonresidential Buildings" value=6512>Operators Of Nonresidential Buildings</option>
+						<option class="Real Estate" value=6500>Real Estate</option>
+						<option class="Real Estate Agents & Managers (For Others)" value=6531>Real Estate Agents & Managers (For Others)</option>
+						<option class="Real Estate Investment Trusts" value=6798>Real Estate Investment Trusts</option>
+						<option class="Real Estate Operators (No Developers) & Lessors" value=6510>Real Estate Operators (No Developers) & Lessors</option>
+						<option class="Services-To Dwellings & Other Buildings" value=7340>Services-To Dwellings & Other Buildings</option>
+					</select>
+				</form>
+			</div>
+			<div class="2OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="3m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_3"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=3 name="Transportation, Routing & Courier" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Air Courier Services" value=4513>Air Courier Services</option>
+						<option class="Air Transportation, Scheduled" value=4512>Air Transportation, Scheduled</option>
+						<option class="Airports, Flying Fields & Airport Terminal Services" value=4581>Airports, Flying Fields & Airport Terminal Services</option>
+						<option class="Arrangement Of Transportation Of Freight & Cargo" value=4731>Arrangement Of Transportation Of Freight & Cargo</option>
+						<option class="Deep Sea Foreign Transportation Of Freight" value=4412>Deep Sea Foreign Transportation Of Freight</option>
+						<option class="Transportation Services" value=4700>Transportation Services</option>
+						<option class="Trucking & Courier Services (No Air)" value=4210>Trucking & Courier Services (No Air)</option>
+						<option class="Trucking (No Local)" value=4213>Trucking (No Local)</option>
+					</select>
+				</form>
+			</div>
+			<div class="3OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="4m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_4"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=4 name="Insurance" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Accident & Health Insurance" value=6321>Accident & Health Insurance</option>
+						<option class="Fire, Marine & Casualty Insurance" value=6331>Fire, Marine & Casualty Insurance</option>
+						<option class="Insurance Agents, Brokers & Service" value=6411>Insurance Agents, Brokers & Service</option>
+						<option class="Insurance Carriers, Nec" value=6399>Insurance Carriers, Nec</option>
+						<option class="Life Insurance" value=6311>Life Insurance</option>
+						<option class="Surety Insurance" value=6351>Surety Insurance</option>
+						<option class="Title Insurance" value=6361>Title Insurance</option>
+					</select>
+				</form>
+			</div>
+			<div class="4OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="5m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_5"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=5 name="Computer & Semiconductors" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Computer & Office Equipment" value=3570>Computer & Office Equipment</option>
+						<option class="Computer Peripheral Equipment, Nec" value=3577>Computer Peripheral Equipment, Nec</option>
+						<option class="Computer Storage Devices" value=3572>Computer Storage Devices</option>
+						<option class="Electronic Coils, Transformers & Other Inductors" value=3677>Electronic Coils, Transformers & Other Inductors</option>
+						<option class="Electronic Components & Accessories" value=3670>Electronic Components & Accessories</option>
+						<option class="Electronic Components, Nec" value=3679>Electronic Components, Nec</option>
+						<option class="Electronic Computers" value=3571>Electronic Computers</option>
+						<option class="Electronic Connectors" value=3678>Electronic Connectors</option>
+						<option class="Office Machines, Nec" value=3579>Office Machines, Nec</option>
+						<option class="Printed Circuit Boards" value=3672>Printed Circuit Boards</option>
+						<option class="Semiconductors & Related Devices" value=3674>Semiconductors & Related Devices</option>
+					</select>
+				</form>
+			</div>
+			<div class="5OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="6m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_6"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=6 name="Industrial, Machinery & Equipment" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Air-Cond & Warm Air Heatg Equip & Comm & Indl Refrig Equip" value=3585>Air-Cond & Warm Air Heatg Equip & Comm & Indl Refrig Equip</option>
+						<option class="Ball & Roller Bearings" value=3562>Ball & Roller Bearings</option>
+						<option class="Commercial Printing" value=2750>Commercial Printing</option>
+						<option class="Engines & Turbines" value=3510>Engines & Turbines</option>
+						<option class="Farm Machinery & Equipment" value=3523>Farm Machinery & Equipment</option>
+						<option class="Gaskets, Packg & Sealg Devices & Rubber & Plastics Hose" value=3050>Gaskets, Packg & Sealg Devices & Rubber & Plastics Hose</option>
+						<option class="General Industrial Machinery & Equipment" value=3560>General Industrial Machinery & Equipment</option>
+						<option class="General Industrial Machinery & Equipment, Nec" value=3569>General Industrial Machinery & Equipment, Nec</option>
+						<option class="Household Appliances" value=3630>Household Appliances</option>
+						<option class="Industrial & Commercial Fans & Blowers & Air Purifing Equip" value=3564>Industrial & Commercial Fans & Blowers & Air Purifing Equip</option>
+						<option class="Industrial Instruments For Measurement, Display, And Control" value=3823>Industrial Instruments For Measurement, Display, And Control</option>
+						<option class="Industrial Trucks, Tractors, Trailors & Stackers" value=3537>Industrial Trucks, Tractors, Trailors & Stackers</option>
+						<option class="Lawn & Garden Tractors & Home Lawn & Gardens Equip" value=3524>Lawn & Garden Tractors & Home Lawn & Gardens Equip</option>
+						<option class="Metalworkg Machinery & Equipment" value=3540>Metalworkg Machinery & Equipment</option>
+						<option class="Misc Industrial & Commercial Machinery & Equipment" value=3590>Misc Industrial & Commercial Machinery & Equipment</option>
+						<option class="Miscellaneous Manufacturing Industries" value=3990>Miscellaneous Manufacturing Industries</option>
+						<option class="Miscellaneous Transportation Equipment" value=3790>Miscellaneous Transportation Equipment</option>
+						<option class="Motors & Generators" value=3621>Motors & Generators</option>
+						<option class="Oil & Gas Field Machinery & Equipment" value=3533>Oil & Gas Field Machinery & Equipment</option>
+						<option class="Printing Trades Machinery & Equipment" value=3555>Printing Trades Machinery & Equipment</option>
+						<option class="Pumps & Pumping Equipment" value=3561>Pumps & Pumping Equipment</option>
+						<option class="Refrigeration & Service Industry Machinery" value=3580>Refrigeration & Service Industry Machinery</option>
+						<option class="Special Industry Machinery, Nec" value=3559>Special Industry Machinery, Nec</option>
+						<option class="Totalizing Fluid Meters & Counting Devices" value=3824>Totalizing Fluid Meters & Counting Devices</option>
+						<option class="Truck & Bus Bodies" value=3713>Truck & Bus Bodies</option>
+						<option class="Truck Trailers" value=3715>Truck Trailers</option>
+					</select>
+				</form>
+			</div>
+			<div class="6OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="7m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_7"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=7 name="Military, Marine & Surety" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Guided Missiles & Space Vehicles & Parts" value=3760>Guided Missiles & Space Vehicles & Parts</option>
+						<option class="Ordnance & Accessories, (No Vehicles/Guided Missiles)" value=3480>Ordnance & Accessories, (No Vehicles/Guided Missiles)</option>
+						<option class="Services-Detective, Guard & Armored Car Services" value=7381>Services-Detective, Guard & Armored Car Services</option>
+					</select>
+				</form>
+			</div>
+			<div class="7OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="8m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_8"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=8 name="Finance, Legal, Management & Consulting" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Finance Services" value=6199>Finance Services</option>
+						<option class="Investment Advice" value=6282>Investment Advice</option>
+						<option class="Manifold Business Forms" value=2761>Manifold Business Forms</option>
+						<option class="Services-Business Services, Nec" value=7389>Services-Business Services, Nec</option>
+						<option class="Services-Employment Agencies" value=7361>Services-Employment Agencies</option>
+						<option class="Services-Engineering, Accounting, Research, Management" value=8700>Services-Engineering, Accounting, Research, Management</option>
+						<option class="Services-Facilities Support Management Services" value=8744>Services-Facilities Support Management Services</option>
+						<option class="Services-Legal Services" value=8111>Services-Legal Services</option>
+						<option class="Services-Management Consulting Services" value=8742>Services-Management Consulting Services</option>
+						<option class="Services-Management Services" value=8741>Services-Management Services</option>
+						<option class="Services-Miscellaneous Business Services" value=7380>Services-Miscellaneous Business Services</option>
+						<option class="Services-Personal Services" value=7200>Services-Personal Services</option>
+					</select>
+				</form>
+			</div>
+			<div class="8OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="9m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_9"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=9 name="Health Care" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Dental Equipment & Supplies" value=3843>Dental Equipment & Supplies</option>
+						<option class="Electromedical & Electrotherapeutic Apparatus" value=3845>Electromedical & Electrotherapeutic Apparatus</option>
+						<option class="Hospital & Medical Service Plans" value=6324>Hospital & Medical Service Plans</option>
+						<option class="In Vitro & In Vivo Diagnostic Substances" value=2835>In Vitro & In Vivo Diagnostic Substances</option>
+						<option class="Medicinal Chemicals & Botanical Products" value=2833>Medicinal Chemicals & Botanical Products</option>
+						<option class="Ophthalmic Goods" value=3851>Ophthalmic Goods</option>
+						<option class="Orthopedic, Prosthetic & Surgical Appliances & Supplies" value=3842>Orthopedic, Prosthetic & Surgical Appliances & Supplies</option>
+						<option class="Services-General Medical & Surgical Hospitals, Nec" value=8062>Services-General Medical & Surgical Hospitals, Nec</option>
+						<option class="Services-Health Services" value=8000>Services-Health Services</option>
+						<option class="Services-Help Supply Services" value=7363>Services-Help Supply Services</option>
+						<option class="Services-Home Health Care Services" value=8082>Services-Home Health Care Services</option>
+						<option class="Services-Hospitals" value=8060>Services-Hospitals</option>
+						<option class="Services-Medical Laboratories" value=8071>Services-Medical Laboratories</option>
+						<option class="Services-Misc Health & Allied Services, Nec" value=8090>Services-Misc Health & Allied Services, Nec</option>
+						<option class="Services-Nursing & Personal Care Facilities" value=8050>Services-Nursing & Personal Care Facilities</option>
+						<option class="Services-Offices & Clinics Of Doctors Of Medicine" value=8011>Services-Offices & Clinics Of Doctors Of Medicine</option>
+						<option class="Services-Skilled Nursing Care Facilities" value=8051>Services-Skilled Nursing Care Facilities</option>
+						<option class="Services-Social Services" value=8300>Services-Social Services</option>
+						<option class="Services-Specialty Outpatient Facilities, Nec" value=8093>Services-Specialty Outpatient Facilities, Nec</option>
+						<option class="Surgical & Medical Instruments & Apparatus" value=3841>Surgical & Medical Instruments & Apparatus</option>
+						<option class="Wholesale-Medical, Dental & Hospital Equipment & Supplies" value=5047>Wholesale-Medical, Dental & Hospital Equipment & Supplies</option>
+						<option class="X-Ray Apparatus & Tubes & Related Irradiation Apparatus" value=3844>X-Ray Apparatus & Tubes & Related Irradiation Apparatus</option>
+					</select>
+				</form>
+			</div>
+			<div class="9OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="10m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_10"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=10 name="Wholesale, Distribution & Storage" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Wholesale-Apparel, Piece Goods & Notions" value=5130>Wholesale-Apparel, Piece Goods & Notions</option>
+						<option class="Wholesale-Chemicals & Allied Products" value=5160>Wholesale-Chemicals & Allied Products</option>
+						<option class="Wholesale-Computers & Peripheral Equipment & Software" value=5045>Wholesale-Computers & Peripheral Equipment & Software</option>
+						<option class="Wholesale-Drugs, Proprietaries & Druggists Sundries" value=5122>Wholesale-Drugs, Proprietaries & Druggists Sundries</option>
+						<option class="Wholesale-Durable Goods" value=5000>Wholesale-Durable Goods</option>
+						<option class="Wholesale-Electrical Apparatus & Equipment, Wiring Supplies" value=5063>Wholesale-Electrical Apparatus & Equipment, Wiring Supplies</option>
+						<option class="Wholesale-Electronic Parts & Equipment, Nec" value=5065>Wholesale-Electronic Parts & Equipment, Nec</option>
+						<option class="Wholesale-Farm Product Raw Materials" value=5150>Wholesale-Farm Product Raw Materials</option>
+						<option class="Wholesale-Groceries & Related Products" value=5140>Wholesale-Groceries & Related Products</option>
+						<option class="Wholesale-Groceries, General Line" value=5141>Wholesale-Groceries, General Line</option>
+						<option class="Wholesale-Hardware & Plumbing & Heating Equipment & Supplies" value=5070>Wholesale-Hardware & Plumbing & Heating Equipment & Supplies</option>
+						<option class="Wholesale-Industrial Machinery & Equipment" value=5084>Wholesale-Industrial Machinery & Equipment</option>
+						<option class="Wholesale-Jewelry, Watches, Precious Stones & Metals" value=5094>Wholesale-Jewelry, Watches, Precious Stones & Metals</option>
+						<option class="Wholesale-Lumber & Other Construction Materials" value=5030>Wholesale-Lumber & Other Construction Materials</option>
+						<option class="Wholesale-Lumber, Plywood, Millwork & Wood Panels" value=5031>Wholesale-Lumber, Plywood, Millwork & Wood Panels</option>
+						<option class="Wholesale-Machinery, Equipment & Supplies" value=5080>Wholesale-Machinery, Equipment & Supplies</option>
+						<option class="Wholesale-Metals Service Centers & Offices" value=5051>Wholesale-Metals Service Centers & Offices</option>
+						<option class="Wholesale-Misc Durable Goods" value=5090>Wholesale-Misc Durable Goods</option>
+						<option class="Wholesale-Miscellaneous Nondurable Goods" value=5190>Wholesale-Miscellaneous Nondurable Goods</option>
+						<option class="Wholesale-Motor Vehicle Supplies & New Parts" value=5013>Wholesale-Motor Vehicle Supplies & New Parts</option>
+						<option class="Wholesale-Motor Vehicles & Motor Vehicle Parts & Supplies" value=5010>Wholesale-Motor Vehicles & Motor Vehicle Parts & Supplies</option>
+						<option class="Wholesale-Paper & Paper Products" value=5110>Wholesale-Paper & Paper Products</option>
+						<option class="Wholesale-Petroleum & Petroleum Products (No Bulk Stations)" value=5172>Wholesale-Petroleum & Petroleum Products (No Bulk Stations)</option>
+						<option class="Wholesale-Petroleum Bulk Stations & Terminals" value=5171>Wholesale-Petroleum Bulk Stations & Terminals</option>
+						<option class="Wholesale-Professional & Commercial Equipment & Supplies" value=5040>Wholesale-Professional & Commercial Equipment & Supplies</option>
+					</select>
+				</form>
+			</div>
+			<div class="10OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="11m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_11"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=11 name="Banking" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Commercial Banks, Nec" value=6029>Commercial Banks, Nec</option>
+						<option class="Functions Related To Depository Banking, Nec" value=6099>Functions Related To Depository Banking, Nec</option>
+						<option class="Miscellaneous Business Credit Institution" value=6159>Miscellaneous Business Credit Institution</option>
+						<option class="Mortgage Bankers & Loan Correspondents" value=6162>Mortgage Bankers & Loan Correspondents</option>
+						<option class="National Commercial Banks" value=6021>National Commercial Banks</option>
+						<option class="Personal Credit Institutions" value=6141>Personal Credit Institutions</option>
+						<option class="Short-Term Business Credit Institutions" value=6153>Short-Term Business Credit Institutions</option>
+						<option class="State Commercial Banks" value=6022>State Commercial Banks</option>
+					</select>
+				</form>
+			</div>
+			<div class="11OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="12m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_12"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=12 name="Building & Infrastructures" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Construction - Special Trade Contractors" value=1700>Construction - Special Trade Contractors</option>
+						<option class="Construction Machinery & Equip" value=3531>Construction Machinery & Equip</option>
+						<option class="Construction, Mining & Materials Handling Machinery & Equip" value=3530>Construction, Mining & Materials Handling Machinery & Equip</option>
+						<option class="General Bldg Contractors - Nonresidential Bldgs" value=1540>General Bldg Contractors - Nonresidential Bldgs</option>
+						<option class="General Bldg Contractors - Residential Bldgs" value=1520>General Bldg Contractors - Residential Bldgs</option>
+						<option class="Hazardous Waste Management" value=4955>Hazardous Waste Management</option>
+						<option class="Heavy Construction Other Than Bldg Const - Contractors" value=1600>Heavy Construction Other Than Bldg Const - Contractors</option>
+						<option class="Operative Builders" value=1531>Operative Builders</option>
+						<option class="Prefabricated Metal Buildings & Components" value=3448>Prefabricated Metal Buildings & Components</option>
+						<option class="Refuse Systems" value=4953>Refuse Systems</option>
+						<option class="Sanitary Services" value=4950>Sanitary Services</option>
+						<option class="Water Transportation" value=4400>Water Transportation</option>
+						<option class="Water, Sewer, Pipeline, Comm & Power Line Construction" value=1623>Water, Sewer, Pipeline, Comm & Power Line Construction</option>
+					</select>
+				</form>
+			</div>
+			<div class="12OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="13m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_13"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=13 name="Energy" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Bituminous Coal & Lignite Mining" value=1220>Bituminous Coal & Lignite Mining</option>
+						<option class="Bituminous Coal & Lignite Surface Mining" value=1221>Bituminous Coal & Lignite Surface Mining</option>
+						<option class="Cogeneration Services & Small Power Producers" value=4991>Cogeneration Services & Small Power Producers</option>
+						<option class="Crude Petroleum & Natural Gas" value=1311>Crude Petroleum & Natural Gas</option>
+						<option class="Drilling Oil & Gas Wells" value=1381>Drilling Oil & Gas Wells</option>
+						<option class="Gas & Other Services Combined" value=4932>Gas & Other Services Combined</option>
+						<option class="Heating Equipment, Except Electric & Warm Air Furnaces" value=3433>Heating Equipment, Except Electric & Warm Air Furnaces</option>
+						<option class="Miscellaneous Products Of Petroleum & Coal" value=2990>Miscellaneous Products Of Petroleum & Coal</option>
+						<option class="Natural Gas Distribution" value=4924>Natural Gas Distribution</option>
+						<option class="Natural Gas Transmisison & Distribution" value=4923>Natural Gas Transmisison & Distribution</option>
+						<option class="Natural Gas Transmission" value=4922>Natural Gas Transmission</option>
+						<option class="Oil & Gas Field Exploration Services" value=1382>Oil & Gas Field Exploration Services</option>
+						<option class="Oil & Gas Field Services, Nec" value=1389>Oil & Gas Field Services, Nec</option>
+						<option class="Oil Royalty Traders" value=6792>Oil Royalty Traders</option>
+						<option class="Petroleum Refining" value=2911>Petroleum Refining</option>
+						<option class="Pipe Lines (No Natural Gas)" value=4610>Pipe Lines (No Natural Gas)</option>
+						<option class="Power, Distribution & Specialty Transformers" value=3612>Power, Distribution & Specialty Transformers</option>
+					</select>
+				</form>
+			</div>
+			<div class="13OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="14m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_14"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=14 name="Wood Products" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Blankbooks, Looseleaf Binders & Bookbindg & Relatd Work" value=2780>Blankbooks, Looseleaf Binders & Bookbindg & Relatd Work</option>
+						<option class="Converted Paper & Paperboard Prods (No Contaners/Boxes)" value=2670>Converted Paper & Paperboard Prods (No Contaners/Boxes)</option>
+						<option class="Lumber & Wood Products (No Furniture)" value=2400>Lumber & Wood Products (No Furniture)</option>
+						<option class="Millwood, Veneer, Plywood, & Structural Wood Members" value=2430>Millwood, Veneer, Plywood, & Structural Wood Members</option>
+						<option class="Paper Mills" value=2621>Paper Mills</option>
+						<option class="Paperboard Containers & Boxes" value=2650>Paperboard Containers & Boxes</option>
+						<option class="Paperboard Mills" value=2631>Paperboard Mills</option>
+						<option class="Pulp Mills" value=2611>Pulp Mills</option>
+						<option class="Sawmills & Planting Mills, General" value=2421>Sawmills & Planting Mills, General</option>
+					</select>
+				</form>
+			</div>
+			<div class="14OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="15m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_15"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=15 name="Art, Sports & Culture" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Books: Publishing Or Publishing & Printing" value=2731>Books: Publishing Or Publishing & Printing</option>
+						<option class="Dolls & Stuffed Toys" value=3942>Dolls & Stuffed Toys</option>
+						<option class="Games, Toys & Childrens Vehicles (No Dolls & Bicycles)" value=3944>Games, Toys & Childrens Vehicles (No Dolls & Bicycles)</option>
+						<option class="Jewelry, Silverware & Plated Ware" value=3910>Jewelry, Silverware & Plated Ware</option>
+						<option class="Newspapers: Publishing Or Publishing & Printing" value=2711>Newspapers: Publishing Or Publishing & Printing</option>
+						<option class="Periodicals: Publishing Or Publishing & Printing" value=2721>Periodicals: Publishing Or Publishing & Printing</option>
+						<option class="Phonograph Records & Prerecorded Audio Tapes & Disks" value=3652>Phonograph Records & Prerecorded Audio Tapes & Disks</option>
+						<option class="Services-Allied To Motion Picture Production" value=7819>Services-Allied To Motion Picture Production</option>
+						<option class="Services-Amusement & Recreation Services" value=7900>Services-Amusement & Recreation Services</option>
+						<option class="Services-Mailing, Reproduction, Commercial Art & Photography" value=7330>Services-Mailing, Reproduction, Commercial Art & Photography</option>
+						<option class="Services-Membership Sports & Recreation Clubs" value=7997>Services-Membership Sports & Recreation Clubs</option>
+						<option class="Services-Miscellaneous Amusement & Recreation" value=7990>Services-Miscellaneous Amusement & Recreation</option>
+						<option class="Services-Motion Picture & Video Tape Distribution" value=7822>Services-Motion Picture & Video Tape Distribution</option>
+						<option class="Services-Motion Picture & Video Tape Production" value=7812>Services-Motion Picture & Video Tape Production</option>
+						<option class="Services-Motion Picture Theaters" value=7830>Services-Motion Picture Theaters</option>
+						<option class="Services-Racing, Including Track Operation" value=7948>Services-Racing, Including Track Operation</option>
+						<option class="Services-Video Tape Rental" value=7841>Services-Video Tape Rental</option>
+						<option class="Watches, Clocks, Clockwork Operated Devices/Parts" value=3873>Watches, Clocks, Clockwork Operated Devices/Parts</option>
+					</select>
+				</form>
+			</div>
+			<div class="15OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="16m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_16"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=16 name="Information Technology" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Calculating & Accounting Machines (No Electronic Computers)" value=3578>Calculating & Accounting Machines (No Electronic Computers)</option>
+						<option class="Services-Computer Integrated Systems Design" value=7373>Services-Computer Integrated Systems Design</option>
+						<option class="Services-Computer Processing & Data Preparation" value=7374>Services-Computer Processing & Data Preparation</option>
+						<option class="Services-Computer Programming Services" value=7371>Services-Computer Programming Services</option>
+						<option class="Services-Computer Programming, Data Processing, Etc." value=7370>Services-Computer Programming, Data Processing, Etc.</option>
+						<option class="Services-Prepackaged Software" value=7372>Services-Prepackaged Software</option>
+					</select>
+				</form>
+			</div>
+			<div class="16OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="17m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_17"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=17 name="Chemical Engineering" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Abrasive, Asbestos & Misc Nonmetallic Mineral Prods" value=3290>Abrasive, Asbestos & Misc Nonmetallic Mineral Prods</option>
+						<option class="Adhesives & Sealants" value=2891>Adhesives & Sealants</option>
+						<option class="Cement, Hydraulic" value=3241>Cement, Hydraulic</option>
+						<option class="Chemicals & Allied Products" value=2800>Chemicals & Allied Products</option>
+						<option class="Concrete Products, Except Block & Brick" value=3272>Concrete Products, Except Block & Brick</option>
+						<option class="Fabricated Rubber Products, Nec" value=3060>Fabricated Rubber Products, Nec</option>
+						<option class="Flat Glass" value=3211>Flat Glass</option>
+						<option class="Glass Containers" value=3221>Glass Containers</option>
+						<option class="Glass Products, Made Of Purchased Glass" value=3231>Glass Products, Made Of Purchased Glass</option>
+						<option class="Industrial Inorganic Chemicals" value=2810>Industrial Inorganic Chemicals</option>
+						<option class="Industrial Organic Chemicals" value=2860>Industrial Organic Chemicals</option>
+						<option class="Miscellaneous Chemical Products" value=2890>Miscellaneous Chemical Products</option>
+						<option class="Miscellaneous Plastics Products" value=3080>Miscellaneous Plastics Products</option>
+						<option class="Paints, Varnishes, Lacquers, Enamels & Allied Prods" value=2851>Paints, Varnishes, Lacquers, Enamels & Allied Prods</option>
+						<option class="Perfumes, Cosmetics & Other Toilet Preparations" value=2844>Perfumes, Cosmetics & Other Toilet Preparations</option>
+						<option class="Plastic Material, Synth Resin/Rubber, Cellulos (No Glass)" value=2820>Plastic Material, Synth Resin/Rubber, Cellulos (No Glass)</option>
+						<option class="Plastic Materials, Synth Resins & Nonvulcan Elastomers" value=2821>Plastic Materials, Synth Resins & Nonvulcan Elastomers</option>
+						<option class="Plastics Foam Products" value=3086>Plastics Foam Products</option>
+						<option class="Plastics Products, Nec" value=3089>Plastics Products, Nec</option>
+						<option class="Rubber & Plastics Footwear" value=3021>Rubber & Plastics Footwear</option>
+						<option class="Soap, Detergents, Cleang Preparations, Perfumes, Cosmetics" value=2840>Soap, Detergents, Cleang Preparations, Perfumes, Cosmetics</option>
+						<option class="Specialty Cleaning, Polishing And Sanitation Preparations" value=2842>Specialty Cleaning, Polishing And Sanitation Preparations</option>
+						<option class="Tires & Inner Tubes" value=3011>Tires & Inner Tubes</option>
+						<option class="Unsupported Plastics Film & Sheet" value=3081>Unsupported Plastics Film & Sheet</option>
+					</select>
+				</form>
+			</div>
+			<div class="17OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="18m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_18"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=18 name="Food" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Bakery Products" value=2050>Bakery Products</option>
+						<option class="Beverages" value=2080>Beverages</option>
+						<option class="Biological Products, (No Disgnostic Substances)" value=2836>Biological Products, (No Disgnostic Substances)</option>
+						<option class="Bottled & Canned Soft Drinks & Carbonated Waters" value=2086>Bottled & Canned Soft Drinks & Carbonated Waters</option>
+						<option class="Canned, Frozen & Preservd Fruit, Veg & Food Specialties" value=2030>Canned, Frozen & Preservd Fruit, Veg & Food Specialties</option>
+						<option class="Canned, Fruits, Veg, Preserves, Jams & Jellies" value=2033>Canned, Fruits, Veg, Preserves, Jams & Jellies</option>
+						<option class="Cookies & Crackers" value=2052>Cookies & Crackers</option>
+						<option class="Dairy Products" value=2020>Dairy Products</option>
+						<option class="Fats & Oils" value=2070>Fats & Oils</option>
+						<option class="Food And Kindred Products" value=2000>Food And Kindred Products</option>
+						<option class="Grain Mill Products" value=2040>Grain Mill Products</option>
+						<option class="Meat Packing Plants" value=2011>Meat Packing Plants</option>
+						<option class="Metal Cans" value=3411>Metal Cans</option>
+						<option class="Miscellaneous Food Preparations & Kindred Products" value=2090>Miscellaneous Food Preparations & Kindred Products</option>
+						<option class="Poultry Slaughtering And Processing" value=2015>Poultry Slaughtering And Processing</option>
+						<option class="Retail-Eating & Drinking Places" value=5810>Retail-Eating & Drinking Places</option>
+						<option class="Retail-Eating Places" value=5812>Retail-Eating Places</option>
+						<option class="Sugar & Confectionery Products" value=2060>Sugar & Confectionery Products</option>
+						<option class="Water Supply" value=4941>Water Supply</option>
+						<option class="Wholesale-Beer, Wine & Distilled Alcoholic Beverages" value=5180>Wholesale-Beer, Wine & Distilled Alcoholic Beverages</option>
+					</select>
+				</form>
+			</div>
+			<div class="18OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="19m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_19"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=19 name="Telecommunication" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Cable & Other Pay Television Services" value=4841>Cable & Other Pay Television Services</option>
+						<option class="Communications Equipment, Nec" value=3669>Communications Equipment, Nec</option>
+						<option class="Communications Services, Nec" value=4899>Communications Services, Nec</option>
+						<option class="Computer Communications Equipment" value=3576>Computer Communications Equipment</option>
+						<option class="Household Audio & Video Equipment" value=3651>Household Audio & Video Equipment</option>
+						<option class="Radio & Tv Broadcasting & Communications Equipment" value=3663>Radio & Tv Broadcasting & Communications Equipment</option>
+						<option class="Radio Broadcasting Stations" value=4832>Radio Broadcasting Stations</option>
+						<option class="Radiotelephone Communications" value=4812>Radiotelephone Communications</option>
+						<option class="Telegraph & Other Message Communications" value=4822>Telegraph & Other Message Communications</option>
+						<option class="Telephone & Telegraph Apparatus" value=3661>Telephone & Telegraph Apparatus</option>
+						<option class="Telephone Communications (No Radiotelephone)" value=4813>Telephone Communications (No Radiotelephone)</option>
+						<option class="Television Broadcasting Stations" value=4833>Television Broadcasting Stations</option>
+					</select>
+				</form>
+			</div>
+			<div class="19OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="20m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_20"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=20 name="Electric" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Electric & Other Services Combined" value=4931>Electric & Other Services Combined</option>
+						<option class="Electric Housewares & Fans" value=3634>Electric Housewares & Fans</option>
+						<option class="Electric Lighting & Wiring Equipment" value=3640>Electric Lighting & Wiring Equipment</option>
+						<option class="Electric Services" value=4911>Electric Services</option>
+						<option class="Electric, Gas & Sanitary Services" value=4900>Electric, Gas & Sanitary Services</option>
+						<option class="Electrical Industrial Apparatus" value=3620>Electrical Industrial Apparatus</option>
+						<option class="Electrical Work" value=1731>Electrical Work</option>
+						<option class="Electronic & Other Electrical Equipment (No Computer Equip)" value=3600>Electronic & Other Electrical Equipment (No Computer Equip)</option>
+						<option class="Instruments For Meas & Testing Of Electricity & Elec Signals" value=3825>Instruments For Meas & Testing Of Electricity & Elec Signals</option>
+						<option class="Miscellaneous Electrical Machinery, Equipment & Supplies" value=3690>Miscellaneous Electrical Machinery, Equipment & Supplies</option>
+						<option class="Switchgear & Switchboard Apparatus" value=3613>Switchgear & Switchboard Apparatus</option>
+					</select>
+				</form>
+			</div>
+			<div class="20OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="21m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_21"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=21 name="Agriculture & Forestry" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Agricultural Chemicals" value=2870>Agricultural Chemicals</option>
+					</select>
+				</form>
+			</div>
+			<div class="21OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="22m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_22"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=22 name="Mining & Quarrying" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Gold And Silver Ores" value=1040>Gold And Silver Ores</option>
+						<option class="Metal Shipping Barrels, Drums, Kegs & Pails" value=3412>Metal Shipping Barrels, Drums, Kegs & Pails</option>
+						<option class="Mineral Royalty Traders" value=6795>Mineral Royalty Traders</option>
+						<option class="Mining & Quarrying Of Nonmetallic Minerals (No Fuels)" value=1400>Mining & Quarrying Of Nonmetallic Minerals (No Fuels)</option>
+						<option class="Miscellaneous Metal Ores" value=1090>Miscellaneous Metal Ores</option>
+						<option class="Miscellaneous Primary Metal Products" value=3390>Miscellaneous Primary Metal Products</option>
+						<option class="Primary Smelting & Refining Of Nonferrous Metals" value=3330>Primary Smelting & Refining Of Nonferrous Metals</option>
+						<option class="Rolling Drawing & Extruding Of Nonferrous Metals" value=3350>Rolling Drawing & Extruding Of Nonferrous Metals</option>
+						<option class="Secondary Smelting & Refining Of Nonferrous Metals" value=3341>Secondary Smelting & Refining Of Nonferrous Metals</option>
+					</select>
+				</form>
+			</div>
+			<div class="22OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="23m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_23"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=23 name="Textile & Leather" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Apparel & Other Finishd Prods Of Fabrics & Similar Matl" value=2300>Apparel & Other Finishd Prods Of Fabrics & Similar Matl</option>
+						<option class="Broadwoven Fabric Mills, Cotton" value=2211>Broadwoven Fabric Mills, Cotton</option>
+						<option class="Broadwoven Fabric Mills, Man Made Fiber & Silk" value=2221>Broadwoven Fabric Mills, Man Made Fiber & Silk</option>
+						<option class="Carpets & Rugs" value=2273>Carpets & Rugs</option>
+						<option class="Footwear, (No Rubber)" value=3140>Footwear, (No Rubber)</option>
+						<option class="Leather & Leather Products" value=3100>Leather & Leather Products</option>
+						<option class="Mens & Boys Furnishgs, Work Clothg, & Allied Garments" value=2320>Mens & Boys Furnishgs, Work Clothg, & Allied Garments</option>
+						<option class="Textile Mill Products" value=2200>Textile Mill Products</option>
+						<option class="Womens, Misses, Childrens & Infants Undergarments" value=2340>Womens, Misses, Childrens & Infants Undergarments</option>
+					</select>
+				</form>
+			</div>
+			<div class="23OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="24m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_24"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=24 name="Aerospacial" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Aircraft" value=3721>Aircraft</option>
+						<option class="Aircraft & Parts" value=3720>Aircraft & Parts</option>
+						<option class="Aircraft Engines & Engine Parts" value=3724>Aircraft Engines & Engine Parts</option>
+						<option class="Aircraft Parts & Auxiliary Equipment, Nec" value=3728>Aircraft Parts & Auxiliary Equipment, Nec</option>
+					</select>
+				</form>
+			</div>
+			<div class="24OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="25m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_25"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=25 name="Patent Owners & Lessors" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Patent Owners & Lessors" value=6794>Patent Owners & Lessors</option>
+						<option class="Services-Auto Rental & Leasing (No Drivers)" value=7510>Services-Auto Rental & Leasing (No Drivers)</option>
+						<option class="Services-Equipment Rental & Leasing, Nec" value=7359>Services-Equipment Rental & Leasing, Nec</option>
+						<option class="Services-Miscellaneous Equipment Rental & Leasing" value=7350>Services-Miscellaneous Equipment Rental & Leasing</option>
+					</select>
+				</form>
+			</div>
+			<div class="25OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="27m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_27"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=27 name="Metal Manufacturing" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Coating, Engraving & Allied Services" value=3470>Coating, Engraving & Allied Services</option>
+						<option class="Cutlery, Handtools & General Hardware" value=3420>Cutlery, Handtools & General Hardware</option>
+						<option class="Drawing & Insulating Of Nonferrous Wire" value=3357>Drawing & Insulating Of Nonferrous Wire</option>
+						<option class="Fabricated Plate Work (Boiler Shops)" value=3443>Fabricated Plate Work (Boiler Shops)</option>
+						<option class="Fabricated Structural Metal Products" value=3440>Fabricated Structural Metal Products</option>
+						<option class="Machine Tools, Metal Cutting Types" value=3541>Machine Tools, Metal Cutting Types</option>
+						<option class="Metal Doors, Sash, Frames, Moldings & Trim" value=3442>Metal Doors, Sash, Frames, Moldings & Trim</option>
+						<option class="Metal Forgings & Stampings" value=3460>Metal Forgings & Stampings</option>
+						<option class="Metal Mining" value=1000>Metal Mining</option>
+						<option class="Miscellaneous Fabricated Metal Products" value=3490>Miscellaneous Fabricated Metal Products</option>
+						<option class="Nonferrous Foundries (Castings)" value=3360>Nonferrous Foundries (Castings)</option>
+						<option class="Primary Production Of Aluminum" value=3334>Primary Production Of Aluminum</option>
+						<option class="Services-Services, Nec" value=8900>Services-Services, Nec</option>
+						<option class="Special Industry Machinery (No Metalworking Machinery)" value=3550>Special Industry Machinery (No Metalworking Machinery)</option>
+						<option class="Steel Pipe & Tubes" value=3317>Steel Pipe & Tubes</option>
+						<option class="Steel Works, Blast Furnaces & Rolling & Finishing Mills" value=3310>Steel Works, Blast Furnaces & Rolling & Finishing Mills</option>
+						<option class="Steel Works, Blast Furnaces & Rolling Mills (Coke Ovens)" value=3312>Steel Works, Blast Furnaces & Rolling Mills (Coke Ovens)</option>
+					</select>
+				</form>
+			</div>
+			<div class="27OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="28m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_28"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=28 name="Automobile & Motor Vehicules" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Mobile Homes" value=2451>Mobile Homes</option>
+						<option class="Motor Homes" value=3716>Motor Homes</option>
+						<option class="Motor Vehicle Parts & Accessories" value=3714>Motor Vehicle Parts & Accessories</option>
+						<option class="Motor Vehicles & Passenger Car Bodies" value=3711>Motor Vehicles & Passenger Car Bodies</option>
+						<option class="Motorcycles, Bicycles & Parts" value=3751>Motorcycles, Bicycles & Parts</option>
+						<option class="Services-Automotive Repair, Services & Parking" value=7500>Services-Automotive Repair, Services & Parking</option>
+					</select>
+				</form>
+			</div>
+			<div class="28OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="29m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_29"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=29 name="Educational" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Services-Child Day Care Services" value=8351>Services-Child Day Care Services</option>
+						<option class="Services-Educational Services" value=8200>Services-Educational Services</option>
+					</select>
+				</form>
+			</div>
+			<div class="29OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="30m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_30"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=30 name="Marketing & Advertising" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Services-Advertising" value=7310>Services-Advertising</option>
+						<option class="Services-Advertising Agencies" value=7311>Services-Advertising Agencies</option>
+						<option class="Services-Direct Mail Advertising Services" value=7331>Services-Direct Mail Advertising Services</option>
+					</select>
+				</form>
+			</div>
+			<div class="30OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="31m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_31"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=31 name="Furniture & Fixtures" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Heating Equip, Except Elec & Warm Air; & Plumbing Fixtures" value=3430>Heating Equip, Except Elec & Warm Air; & Plumbing Fixtures</option>
+						<option class="Household Furniture" value=2510>Household Furniture</option>
+						<option class="Miscellaneous Furniture & Fixtures" value=2590>Miscellaneous Furniture & Fixtures</option>
+						<option class="Office Furniture" value=2520>Office Furniture</option>
+						<option class="Office Furniture (No Wood)" value=2522>Office Furniture (No Wood)</option>
+						<option class="Wood Household Furniture, (No Upholstered)" value=2511>Wood Household Furniture, (No Upholstered)</option>
+					</select>
+				</form>
+			</div>
+			<div class="31OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="32m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_32"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=32 name="Breweries & Bottlers" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Malt Beverages" value=2082>Malt Beverages</option>
+					</select>
+				</form>
+			</div>
+			<div class="32OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="33m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_33"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=33 name="Aeronautical" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Search, Detection, Navagation, Guidance, Aeronautical Sys" value=3812>Search, Detection, Navagation, Guidance, Aeronautical Sys</option>
+						<option class="Ship & Boat Building & Repairing" value=3730>Ship & Boat Building & Repairing</option>
+					</select>
+				</form>
+			</div>
+			<div class="33OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="34m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_34"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=34 name="Railroads" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Railroad Equipment" value=3743>Railroad Equipment</option>
+						<option class="Railroad Switching & Terminal Establishments" value=4013>Railroad Switching & Terminal Establishments</option>
+						<option class="Railroads, Line-Haul Operating" value=4011>Railroads, Line-Haul Operating</option>
+					</select>
+				</form>
+			</div>
+			<div class="34OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="35m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_35"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=35 name="Tobacco Products" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Cigarettes" value=2111>Cigarettes</option>
+						<option class="Tobacco Products" value=2100>Tobacco Products</option>
+					</select>
+				</form>
+			</div>
+			<div class="35OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="37m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_37"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=37 name="Pharmaceutical" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Pharmaceutical Preparations" value=2834>Pharmaceutical Preparations</option>
+						<option class="Services-Commercial Physical & Biological Research" value=8731>Services-Commercial Physical & Biological Research</option>
+					</select>
+				</form>
+			</div>
+			<div class="37OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="38m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_38"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=38 name="Retail" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Retail-Apparel & Accessory Stores" value=5600>Retail-Apparel & Accessory Stores</option>
+						<option class="Retail-Auto & Home Supply Stores" value=5531>Retail-Auto & Home Supply Stores</option>
+						<option class="Retail-Auto Dealers & Gasoline Stations" value=5500>Retail-Auto Dealers & Gasoline Stations</option>
+						<option class="Retail-Building Materials, Hardware, Garden Supply" value=5200>Retail-Building Materials, Hardware, Garden Supply</option>
+						<option class="Retail-Catalog & Mail-Order Houses" value=5961>Retail-Catalog & Mail-Order Houses</option>
+						<option class="Retail-Computer & Computer Software Stores" value=5734>Retail-Computer & Computer Software Stores</option>
+						<option class="Retail-Convenience Stores" value=5412>Retail-Convenience Stores</option>
+						<option class="Retail-Department Stores" value=5311>Retail-Department Stores</option>
+						<option class="Retail-Drug Stores And Proprietary Stores" value=5912>Retail-Drug Stores And Proprietary Stores</option>
+						<option class="Retail-Family Clothing Stores" value=5651>Retail-Family Clothing Stores</option>
+						<option class="Retail-Furniture Stores" value=5712>Retail-Furniture Stores</option>
+						<option class="Retail-Grocery Stores" value=5411>Retail-Grocery Stores</option>
+						<option class="Retail-Hobby, Toy & Game Shops" value=5945>Retail-Hobby, Toy & Game Shops</option>
+						<option class="Retail-Home Furniture, Furnishings & Equipment Stores" value=5700>Retail-Home Furniture, Furnishings & Equipment Stores</option>
+						<option class="Retail-Jewelry Stores" value=5944>Retail-Jewelry Stores</option>
+						<option class="Retail-Lumber & Other Building Materials Dealers" value=5211>Retail-Lumber & Other Building Materials Dealers</option>
+						<option class="Retail-Miscellaneous Retail" value=5900>Retail-Miscellaneous Retail</option>
+						<option class="Retail-Miscellaneous Shopping Goods Stores" value=5940>Retail-Miscellaneous Shopping Goods Stores</option>
+						<option class="Retail-Nonstore Retailers" value=5960>Retail-Nonstore Retailers</option>
+						<option class="Retail-Radio, Tv & Consumer Electronics Stores" value=5731>Retail-Radio, Tv & Consumer Electronics Stores</option>
+						<option class="Retail-Retail Stores, Nec" value=5990>Retail-Retail Stores, Nec</option>
+						<option class="Retail-Shoe Stores" value=5661>Retail-Shoe Stores</option>
+						<option class="Retail-Variety Stores" value=5331>Retail-Variety Stores</option>
+						<option class="Retail-Womens Clothing Stores" value=5621>Retail-Womens Clothing Stores</option>
+						<option class="Sporting & Athletic Goods, Nec" value=3949>Sporting & Athletic Goods, Nec</option>
+					</select>
+				</form>
+			</div>
+			<div class="38OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="39m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_39"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=39 name="Brokers, Investors, Savings Institutions" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Commodity Contracts Brokers & Dealers" value=6221>Commodity Contracts Brokers & Dealers</option>
+						<option class="Investors, Nec" value=6799>Investors, Nec</option>
+						<option class="Loan Brokers" value=6163>Loan Brokers</option>
+						<option class="Savings Institution, Federally Chartered" value=6035>Savings Institution, Federally Chartered</option>
+						<option class="Savings Institutions, Not Federally Chartered" value=6036>Savings Institutions, Not Federally Chartered</option>
+						<option class="Security & Commodity Brokers, Dealers, Exchanges & Services" value=6200>Security & Commodity Brokers, Dealers, Exchanges & Services</option>
+						<option class="Security Brokers, Dealers & Flotation Companies" value=6211>Security Brokers, Dealers & Flotation Companies</option>
+					</select>
+				</form>
+			</div>
+			<div class="39OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="40m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_40"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=40 name="Credit & Collection Agencies" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Federal & Federally-Sponsored Credit Agencies" value=6111>Federal & Federally-Sponsored Credit Agencies</option>
+						<option class="Services-Consumer Credit Reporting, Collection Agencies" value=7320>Services-Consumer Credit Reporting, Collection Agencies</option>
+					</select>
+				</form>
+			</div>
+			<div class="40OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions" name="Industry_SEC" id="41m">
+			<div class="controlItem">
+				<button class="virgin" data-page="SortAndOrder" id="IndustryButton_41"  style="text-align: left;">+</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="IndustrySECChange()">
+					<select id=41 name="Blank Checks" class="select">
+						<option class="any" value=any selected></option>
+						<option class="Blank Cheks" value=6770>Blank Checks</option>
+					</select>
+				</form>
+			</div>
+			<div class="41OptionsSection" style="display: none;"></div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button id="RegionButton" class="virgin" data-page="SortAndOrder"  style="text-align: left;">
+					Region
+				</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="controlPanelTitles()">
+					<select id="Region" name="Region" class="select">
+						<option value=any selected></option>
+						<option value=1>Alabama</option>
+						<option value=2>Alaska</option>
+						<option value=3>Arizona</option>
+						<option value=4>Arkansas</option>
+						<option value=5>California</option>
+						<option value=6>Colorado</option>
+						<option value=7>Connecticut</option>
+						<option value=8>Delaware</option>
+						<option value=9>District Of Columbia</option>
+						<option value=10>Florida</option>
+						<option value=11>Georgia</option>
+						<option value=12>Hawaii</option>
+						<option value=13>Idaho</option>
+						<option value=14>Illinois</option>
+						<option value=15>Indiana</option>
+						<option value=16>Iowa</option>
+						<option value=17>Kansas</option>
+						<option value=18>Kentucky</option>
+						<option value=19>Louisiana</option>
+						<option value=20>Maine</option>
+						<option value=21>Maryland</option>
+						<option value=22>Massachusetts</option>
+						<option value=23>Michigan</option>
+						<option value=24>Minnesota</option>
+						<option value=25>Mississippi</option>
+						<option value=26>Missouri</option>
+						<option value=27>Montana</option>
+						<option value=28>Nebraska</option>
+						<option value=29>Nevada</option>
+						<option value=30>New Hampshire</option>
+						<option value=31>New Jersey</option>
+						<option value=32>New Mexico</option>
+						<option value=33>New York</option>
+						<option value=34>North Carolina</option>
+						<option value=35>North Dakota</option>
+						<option value=36>Ohio</option>
+						<option value=37>Oklahoma</option>
+						<option value=38>Oregon</option>
+						<option value=39>Pennsylvania</option>
+						<option value=40>Rhode Island</option>
+						<option value=41>South Carolina</option>
+						<option value=42>South Dakota</option>
+						<option value=43>Tennessee</option>
+						<option value=44>Texas</option>
+						<option value=45>United States</option>
+						<option value=46>Utah</option>
+						<option value=47>Vermont</option>
+						<option value=48>Virginia</option>
+						<option value=49>Washington</option>
+						<option value=50>West Virginia</option>
+						<option value=51>Wisconsin</option>
+						<option value=52>Wyoming</option>
+						<option value=53>Alberta, Canada</option>
+						<option value=54>British Columbia, Canada</option>
+						<option value=55>Manitoba, Canada</option>
+						<option value=56>New Brunswick, Canada</option>
+						<option value=57>Newfoundland, Canada</option>
+						<option value=58>Nova Scotia, Canada</option>
+						<option value=59>Ontario, Canada</option>
+						<option value=60>Prince Edward Island, Canada</option>
+						<option value=61>Quebec, Canada</option>
+						<option value=62>Saskatchewan, Canada</option>
+						<option value=63>Yukon, Canada</option>
+						<option value=64>Canada (Federal Level)</option>
+						<option value=65>Afghanistan</option>
+						<option value=66>Aland Islands</option>
+						<option value=67>Albania</option>
+						<option value=68>Algeria</option>
+						<option value=69>American Samoa</option>
+						<option value=70>Andorra</option>
+						<option value=71>Angola</option>
+						<option value=72>Anguilla</option>
+						<option value=73>Antarctica</option>
+						<option value=74>Antigua And Barbuda</option>
+						<option value=75>Argentina</option>
+						<option value=76>Armenia</option>
+						<option value=77>Aruba</option>
+						<option value=78>Australia</option>
+						<option value=79>Austria</option>
+						<option value=80>Azerbaijan</option>
+						<option value=81>Bahamas</option>
+						<option value=82>Bahrain</option>
+						<option value=83>Bangladesh</option>
+						<option value=84>Barbados</option>
+						<option value=85>Belarus</option>
+						<option value=86>Belgium</option>
+						<option value=87>Belize</option>
+						<option value=88>Benin</option>
+						<option value=89>Bermuda</option>
+						<option value=90>Bhutan</option>
+						<option value=91>Bolivia</option>
+						<option value=92>Bosnia And Herzegovina</option>
+						<option value=93>Botswana</option>
+						<option value=94>Bouvet Island</option>
+						<option value=95>Brazil</option>
+						<option value=96>British Indian Ocean Territory</option>
+						<option value=97>Brunei Darussalam</option>
+						<option value=98>Bulgaria</option>
+						<option value=99>Burkina Faso</option>
+						<option value=100>Burundi</option>
+						<option value=101>Cambodia</option>
+						<option value=102>Cameroon</option>
+						<option value=103>Cape Verde</option>
+						<option value=104>Cayman Islands</option>
+						<option value=105>Central African Republic</option>
+						<option value=106>Chad</option>
+						<option value=107>Chile</option>
+						<option value=108>China</option>
+						<option value=109>Christmas Island</option>
+						<option value=110>Cocos (Keeling) Islands</option>
+						<option value=111>Colombia</option>
+						<option value=112>Comoros</option>
+						<option value=113>Congo</option>
+						<option value=114>Congo, The Democratic Republic Of The</option>
+						<option value=115>Cook Islands</option>
+						<option value=116>Costa Rica</option>
+						<option value=117>Cote Divoire</option>
+						<option value=118>Croatia</option>
+						<option value=119>Cuba</option>
+						<option value=120>Cyprus</option>
+						<option value=121>Czech Republic</option>
+						<option value=122>Denmark</option>
+						<option value=123>Djibouti</option>
+						<option value=124>Dominica</option>
+						<option value=125>Dominican Republic</option>
+						<option value=126>Ecuador</option>
+						<option value=127>Egypt</option>
+						<option value=128>El Salvador</option>
+						<option value=129>Equatorial Guinea</option>
+						<option value=130>Eritrea</option>
+						<option value=131>Estonia</option>
+						<option value=132>Ethiopia</option>
+						<option value=133>Falkland Islands (Malvinas)</option>
+						<option value=134>Faroe Islands</option>
+						<option value=135>Fiji</option>
+						<option value=136>Finland</option>
+						<option value=137>France</option>
+						<option value=138>French Guiana</option>
+						<option value=139>French Polynesia</option>
+						<option value=140>French Southern Territories</option>
+						<option value=141>Gabon</option>
+						<option value=142>Gambia</option>
+						<option value=143>Germany</option>
+						<option value=144>Ghana</option>
+						<option value=145>Gibraltar</option>
+						<option value=146>Greece</option>
+						<option value=147>Greenland</option>
+						<option value=148>Grenada</option>
+						<option value=149>Guadeloupe</option>
+						<option value=150>Guam</option>
+						<option value=151>Guatemala</option>
+						<option value=152>Guernsey</option>
+						<option value=153>Guinea</option>
+						<option value=154>Guinea-Bissau</option>
+						<option value=155>Guyana</option>
+						<option value=156>Haiti</option>
+						<option value=157>Heard Island And Mcdonald Islands</option>
+						<option value=158>Holy See (Vatican City State)</option>
+						<option value=159>Honduras</option>
+						<option value=160>Hong Kong</option>
+						<option value=161>Hungary</option>
+						<option value=162>Iceland</option>
+						<option value=163>India</option>
+						<option value=164>Indonesia</option>
+						<option value=165>Iran, Islamic Republic Of</option>
+						<option value=166>Iraq</option>
+						<option value=167>Ireland</option>
+						<option value=168>Isle Of Man</option>
+						<option value=169>Israel</option>
+						<option value=170>Italy</option>
+						<option value=171>Jamaica</option>
+						<option value=172>Japan</option>
+						<option value=173>Jersey</option>
+						<option value=174>Jordan</option>
+						<option value=175>Kazakstan</option>
+						<option value=176>Kenya</option>
+						<option value=177>Kiribati</option>
+						<option value=178>Korea, Democratic Peoples Republic Of</option>
+						<option value=179>Korea, Republic Of</option>
+						<option value=180>Kuwait</option>
+						<option value=181>Kyrgyzstan</option>
+						<option value=182>Lao Peoples Democratic Republic</option>
+						<option value=183>Latvia</option>
+						<option value=184>Lebanon</option>
+						<option value=185>Lesotho</option>
+						<option value=186>Liberia</option>
+						<option value=187>Libyan Arab Jamahiriya</option>
+						<option value=188>Liechtenstein</option>
+						<option value=189>Lithuania</option>
+						<option value=190>Luxembourg</option>
+						<option value=191>Macau</option>
+						<option value=192>Macedonia, The Former Yugoslav Republic Of</option>
+						<option value=193>Madagascar</option>
+						<option value=194>Malawi</option>
+						<option value=195>Malaysia</option>
+						<option value=196>Maldives</option>
+						<option value=197>Mali</option>
+						<option value=198>Malta</option>
+						<option value=199>Marshall Islands</option>
+						<option value=200>Martinique</option>
+						<option value=201>Mauritania</option>
+						<option value=202>Mauritius</option>
+						<option value=203>Mayotte</option>
+						<option value=204>Mexico</option>
+						<option value=205>Micronesia, Federated States Of</option>
+						<option value=206>Moldova, Republic Of</option>
+						<option value=207>Monaco</option>
+						<option value=208>Mongolia</option>
+						<option value=209>Montenegro</option>
+						<option value=210>Montserrat</option>
+						<option value=211>Morocco</option>
+						<option value=212>Mozambique</option>
+						<option value=213>Myanmar</option>
+						<option value=214>Namibia</option>
+						<option value=215>Nauru</option>
+						<option value=216>Nepal</option>
+						<option value=217>Netherlands</option>
+						<option value=218>Netherlands Antilles</option>
+						<option value=219>New Caledonia</option>
+						<option value=220>New Zealand</option>
+						<option value=221>Nicaragua</option>
+						<option value=222>Niger</option>
+						<option value=223>Nigeria</option>
+						<option value=224>Niue</option>
+						<option value=225>Norfolk Island</option>
+						<option value=226>Northern Mariana Islands</option>
+						<option value=227>Norway</option>
+						<option value=228>Oman</option>
+						<option value=229>Pakistan</option>
+						<option value=230>Palau</option>
+						<option value=231>Palestinian Territory, Occupied</option>
+						<option value=232>Panama</option>
+						<option value=233>Papua New Guinea</option>
+						<option value=234>Paraguay</option>
+						<option value=235>Peru</option>
+						<option value=236>Philippines</option>
+						<option value=237>Pitcairn</option>
+						<option value=238>Poland</option>
+						<option value=239>Portugal</option>
+						<option value=240>Puerto Rico</option>
+						<option value=241>Qatar</option>
+						<option value=242>Reunion</option>
+						<option value=243>Romania</option>
+						<option value=244>Russian Federation</option>
+						<option value=245>Rwanda</option>
+						<option value=246>Saint Barthelemy</option>
+						<option value=247>Saint Helena</option>
+						<option value=248>Saint Kitts And Nevis</option>
+						<option value=249>Saint Lucia</option>
+						<option value=250>Saint Martin</option>
+						<option value=251>Saint Pierre And Miquelon</option>
+						<option value=252>Saint Vincent And The Grenadines</option>
+						<option value=253>Samoa</option>
+						<option value=254>San Marino</option>
+						<option value=255>Sao Tome And Principe</option>
+						<option value=256>Saudi Arabia</option>
+						<option value=257>Senegal</option>
+						<option value=258>Serbia</option>
+						<option value=259>Seychelles</option>
+						<option value=260>Sierra Leone</option>
+						<option value=261>Singapore</option>
+						<option value=262>Slovakia</option>
+						<option value=263>Slovenia</option>
+						<option value=264>Solomon Islands</option>
+						<option value=265>Somalia</option>
+						<option value=266>South Africa</option>
+						<option value=267>South Georgia And The South Sandwich Islands</option>
+						<option value=268>Spain</option>
+						<option value=269>Sri Lanka</option>
+						<option value=270>Sudan</option>
+						<option value=271>Suriname</option>
+						<option value=272>Svalbard And Jan Mayen</option>
+						<option value=273>Swaziland</option>
+						<option value=274>Sweden</option>
+						<option value=275>Switzerland</option>
+						<option value=276>Syrian Arab Republic</option>
+						<option value=277>Taiwan, Province Of China</option>
+						<option value=278>Tajikistan</option>
+						<option value=279>Tanzania, United Republic Of</option>
+						<option value=280>Thailand</option>
+						<option value=281>Timor-Leste</option>
+						<option value=282>Togo</option>
+						<option value=283>Tokelau</option>
+						<option value=284>Tonga</option>
+						<option value=285>Trinidad And Tobago</option>
+						<option value=286>Tunisia</option>
+						<option value=287>Turkey</option>
+						<option value=288>Turkmenistan</option>
+						<option value=289>Turks And Caicos Islands</option>
+						<option value=290>Tuvalu</option>
+						<option value=291>Uganda</option>
+						<option value=292>Ukraine</option>
+						<option value=293>United Arab Emirates</option>
+						<option value=294>United Kingdom</option>
+						<option value=295>United States Minor Outlying Islands</option>
+						<option value=296>Uruguay</option>
+						<option value=297>Uzbekistan</option>
+						<option value=298>Vanuatu</option>
+						<option value=299>Venezuela</option>
+						<option value=300>Viet Nam</option>
+						<option value=301>Virgin Islands, British</option>
+						<option value=302>Virgin Islands, U.S.</option>
+						<option value=303>Wallis And Futuna</option>
+						<option value=304>Western Sahara</option>
+						<option value=305>Yemen</option>
+						<option value=306>Zambia</option>
+						<option value=307>Zimbabwe</option>
+						<option value=0>Unknown</option>
+					</select>
+				</form>
+			</div>
+			<div class="RegionOptionsSection" style="display: none;">
+				Region Option Section
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button id="PeriodButton" class="virgin" data-page="SortAndOrder"  style="text-align: left;">
+					Year Ending
+				</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="controlPanelTitles()">
+					<select id="Period" name="Period" class="select">
+						<option value=any selected></option>
+						<option value=01>January</option>
+						<option value=02>February</option>
+						<option value=03>March</option>
+						<option value=04>April</option>
+						<option value=05>Mai</option>
+						<option value=06>June</option>
+						<option value=07>July</option>
+						<option value=08>August</option>	
+						<option value=09>September</option>
+						<option value=10>October</option>
+						<option value=11>November</option>
+						<option value=12>December</option>
+					</select>
+				</form>
+			</div>
+			<div class="PeriodOptionsSection" style="display: none;">
+				Period Option Section
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div class="controlItem">
+				<button id="WorkInProgressButton" class="virgin" data-page="SortAndOrder"  style="text-align: left;">
+					Work In Progress
+				</button>
+			</div>
+			<div class="controlInput">
+				<form onchange="controlPanelTitles()">
+					<select id="WorkInProgress" name="WorkInProgress" class="select">
+						<option value=21>Exclude Work In Progress</option>
+						<option value=any selected>Include Work in Progress</option>
+					</select>
+				</form>
+			</div>
+		</div>
+		<div class="controlOptions">
+			<div style="text-align:center;">
+				<button id="SearchPostsButton" class="virgin" data-page="search_posts"
+					style="font-weight: bold;
+					width: 100%; margin-top: 3%">
+					Search
+				</button>
+			</div>
+		</div>
+	</div>
+</div>

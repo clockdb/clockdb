@@ -1,0 +1,1174 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang=en>
+
+	<head>
+
+		<!-- Required meta tags -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+		<link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
+		
+		<!-- favicon -->
+		<link rel="shortcut icon" href="{% static 'clockdb/favicon.ico' %}">
+		<link rel="icon" href="{% static 'clockdb/favicon.ico' %}" type="image/x-icon">
+
+		<!-- Cropperjs -->
+		<link rel="stylesheet" href="{% static 'cropperjs/dist/cropper.min.css' %}">
+
+		<!-- Markdown-it -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/11.0.1/markdown-it.min.js" integrity="sha512-hW0KbtvDnXCHbh2UCNP/6R+oXxCKiOfm9ciuUekdGBCQF1+57bGqZAk3sAFir7PMQstyRW0UecsSc2HQotH2vg==" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/styles/default.min.css" integrity="sha512-kZqGbhf9JTB4bVJ0G8HCkqmaPcRgo88F0dneK30yku5Y/dep7CZfCnNml2Je/sY4lBoqoksXz4PtVXS4GHSUzQ==" crossorigin="anonymous" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/highlight.min.js" integrity="sha512-TDKKr+IvoqZnPzc3l35hdjpHD0m+b2EC2SrLEgKDRWpxf2rFCxemkgvJ5kfU48ip+Y+m2XVKyOCD85ybtlZDmw==" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/kotlin.min.js" integrity="sha512-8aYTnyDstX39PHxorDD+6ROknf98Vqr5KTOjwRCl/442uAVKOpCJ5wY9I3VQ6y46rdDJKYBIglIfE2+GQk8U5Q==" crossorigin="anonymous"></script>
+		<script> hljs.initHighlightingOnLoad(); </script>
+
+	</head>
+
+	<body>
+
+		<!-- Header -->
+		<div class="header" style="display: none">
+			{% include 'base/base_css.html' %}
+			{% include 'base/header.html' %}	
+		</div>
+
+		<i id="user_id" style="display: none;">{{request.user.id}}</i>
+
+		<div class="Panel">
+			<div class="panelHeader">
+				{% include 'base/panelHeader.html' %}
+			</div>
+			<div class="Control">
+				{% include 'panel/control.html' %}
+			</div>
+			<div class="Messenger">
+				{% include 'panel/messenger.html' %}
+			</div>
+			<div class="MessengerNotifications">
+				{% include 'panel/messengerNotifications.html' %}
+			</div>
+			<div class="Notifications">
+				{% include 'panel/Notifications.html' %}
+			</div>	
+		</div>
+
+		<!-- Clockdb -->
+		<div class="main">
+
+			<div class="content">
+				
+				{% block content %}
+				{% endblock content %}
+
+				<!-- Loading -->
+				<div class="loading">
+					<div id="id_loading_spinner">
+						<span class="d-flex flex-row mx-auto flex-grow-1 justify-content-center">
+							<span class="spinner-border text-primary" role="status">
+								<span class="sr-only">Loading...</span>
+							</span>
+						</span>
+					</div>
+				</div>
+
+			</div>
+
+			{% include 'base/footer.html' %}
+
+		</div>
+
+		<script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
+		<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+		<script type="module" src="{% static 'cropperjs/dist/cropper.min.js' %}"></script>
+
+		<!-- JavaScript -->
+
+		<script type="text/javascript">
+
+			function preloadCallback(src, elementId){
+				var img = document.getElementById(elementId)
+				img.src = src
+			}
+
+			function preloadImage(imgSrc, elementId){
+				// console.log("attempting to load " + imgSrc + " on element " + elementId)
+				var objImagePreloader = new Image();
+				objImagePreloader.src = imgSrc;
+				if(objImagePreloader.complete){
+					preloadCallback(objImagePreloader.src, elementId);
+					objImagePreloader.onload = function(){};
+				}
+				else{
+					objImagePreloader.onload = function() {
+						preloadCallback(objImagePreloader.src, elementId);
+						//    clear onLoad, IE behaves irratically with animated gifs otherwise
+						objImagePreloader.onload=function(){};
+					}
+				}
+			}
+
+			function validateText(str)
+			{
+				var md = window.markdownit({
+					highlight: function (str, lang) {
+						if (lang && hljs.getLanguage(lang)) {
+							try {
+								return '<pre class="hljs"><code>' +
+									hljs.highlight(lang, str, true).value +
+									'</code></pre>';
+							} catch (__) {}
+						}
+						return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>';
+					},
+					linkify: true,
+				});
+				var result = md.render(str);
+				return result
+			}
+
+			function displayLoadingSpinner(isDisplayed){
+				var spinner = document.getElementById("id_loading_spinner")
+				if(isDisplayed){
+					spinner.style.display = "block"
+				}
+				else{
+					spinner.style.display = "none"
+				}
+			}
+
+			// display
+			function display(hideIf) {
+				const user_id = document.getElementById('user_id').innerHTML
+				const loading = document.getElementById('id_loading_spinner')
+				loading.style.display = 'block';
+				var page = window.location.pathname
+				page = page.split('/')[2];
+				document.getElementById('clockdbSpan').style.display = 'inline-block';
+				document.getElementById('HomeSpan').style.display = 'inline-block';
+				try {
+					if (page != 'password_change') {
+						document.getElementById('NotAuthenticated').style.display = 'inline-block';
+					}
+				} catch {
+					document.getElementById('Authenticated').style.display = 'inline-block';
+				}
+				if (hideIf.includes(page)) {
+				} else {
+					if (page == 'WorkingPaper') {
+						a = 'inline-block';
+						b = 'none';
+						c = 'inline-block';
+					} else {
+						a = 'none';
+						b = 'inline-block';
+						c = 'inline-block';
+					}
+					document.getElementById('FilesSpan').style.display = a;
+					document.getElementById('GearSpan').style.display = a;
+					document.getElementById('FinancialsSpan').style.display = a;
+					document.getElementById('AuditSpan').style.display = a;
+					document.getElementById('ValuationSpan').style.display = a;
+					document.getElementById('OpinionSpan').style.display = a;
+					document.getElementById('MoreSpan').style.display = a;
+					//
+					document.getElementById('PostsSpan').style.display = b;
+					//document.getElementById('DatabaseSpan').style.display = b;
+					//
+					//document.getElementById('ControlSpan').style.display = c;
+					//document.getElementById('MessengerNotificationsSpan').style.display = c;
+					//document.getElementById('NotificationsSpan').style.display = c;
+					document.getElementById('SearchBarSpan').style.display = c;
+					document.getElementById('SearchUsersBarSpan').style.display = c;
+					try {
+						if (user_id != "{{id}}") {
+							username = "{{username}}"
+							username = username.toLowerCase()
+							a = username + ' network'
+						} else {
+							a = 'My Network'
+						}
+						document.getElementById('SearchUsersBar').placeholder = a
+						if (window.innerWidth > 799) {
+							a = '80%';
+						} else {
+							a = '60%';
+						}
+						document.getElementsByClassName('clockdb')[0].style.width = a;
+						document.getElementsByClassName('loading')[0].style.width = a;
+					} catch {}
+				}
+				document.getElementById('HeaderMenu').style.display = 'block';
+				document.getElementsByClassName('header')[0].style.display = 'block';
+				document.getElementsByClassName('panelHeader')[0].style.display = 'block';
+				loading.style.display = 'none';
+			}
+
+			function onePageAppOnLoad(hideIf) {
+				const user_id = document.getElementById('user_id').innerHTML
+				var page = window.location.pathname.replace('/','').split('/')[1];
+				if (user_id != '') {
+					document.querySelectorAll('div').forEach(div => {
+						hideDiv(div);
+					});
+					document.querySelectorAll('button').forEach(button => {
+						onePageApp(button);
+					})
+					// φ
+					if (page == 'WorkingPaper') {
+						var subpage = window.location.href.replace(window.location.origin,'').split('/')[4]
+						if (subpage == '') {
+							subpage = 'Opinion'
+						}
+						showPage(subpage)
+						Compile();
+						ts = document.getElementById('TradingSymbol1').value;
+						document.title = 'Clockdb | ' + ts + ' | '+ subpage;
+						page = subpage
+						history.pushState({page}, ``, `/${user_id}/WorkingPaper/${ts}/${page}/`);
+					// Posts
+					} else {
+						// phase
+						if (page == 'phase') {
+							url = window.location.origin + '/'
+							window.open(url, '_self');
+						}
+						// home
+						home = [
+							undefined,
+							'',
+							'home',
+							'Home',
+						]
+						if (home.includes(page)) {
+							try {
+								a = document.getElementById('user_id').innerHTML
+								if (a != 'None') {
+									activeurl = window.location.href.replace(window.location.origin,'').replaceAll('/','')
+									activeurlsub = window.location.href.split('/')[1]
+									url = window.location.origin + '/' + a + '/Posts/'
+									if (activeurl != a) {
+										window.open(url, '_self');
+									} else {
+										page = 'Posts'
+										document.title = 'Clockdb | ' + page;
+										history.pushState({page}, ``, `/${user_id}/${page}/`);
+										showPage(page)
+									}
+								}
+							} catch {
+								url = window.location.origin + '/login'
+								window.open(url, '_self');
+							}
+						// others
+						} else {
+							document.title = 'Clockdb | ' + page;
+							history.pushState({page}, ``, ``);
+							showPage(page)
+						}
+					}
+				}
+			};
+
+			document.querySelectorAll('button').forEach(button => {
+				onePageApp(button);
+			});
+
+			// buttons
+			function onePageApp(button) {
+				button.onclick = function() {
+					user_id = document.getElementById('user_id').innerHTML;
+					page = this.dataset.page;
+					gg = 0
+					if (page != "#") {
+						if (page == 'Messenger') {
+							if (localStorage.Messenger == 'On') {
+								Messenger('Off');
+							} else {
+								Messenger('On')
+							}
+							gg = 1
+						}
+						if (page == 'MessengerNotifications') {
+							if (localStorage.MessengerNotifications == 'On') {
+								MessengerNotifications('Off');
+							} else {
+								MessengerNotifications('On');
+							}
+							gg = 1
+						}
+						if (page == 'Notifications') {
+							if (localStorage.Notifications == 'On') {
+								Notifications('Off')
+							} else {
+								Notifications('On')
+							}
+							setGeneralNotificationsAsRead();
+							gg = 1
+						}
+						if (page == 'SortAndOrder') {
+							SortAndOrder(button.id);
+							gg = 1
+						}
+						if (page == 'Print') {
+							Print();
+							gg = 1
+						}
+						if (page == 'UploadConfirm') {
+							UploadConfirm();
+							gg = 1
+						}
+						if (page == 'Save') {
+							Save();
+							gg = 1
+						}
+						if (page == 'Rollover') {
+							Rollover();
+							gg = 1
+						}
+						if (page == 'ClearCheckboxes') {
+							ClearCheckboxes();
+							gg = 1
+						}
+						if (page == 'OpenEditor') {
+							OpenEditor();
+							gg = 1
+						}
+						if (page == 'UnhideCheckbox') {
+							UnhideCheckbox();
+							gg = 1
+						}
+						id = this.id
+						if (id.slice(id.length - 8) == 'ShortCut') {
+							position = button.className
+							ShortCuts(id, page, position);
+							gg = 1
+						}
+						if (page.slice(-5) == 'Files') {
+							FilesPage(page);
+							gg = 1
+						}
+						if (page == 'ReferenceHeader') {
+							thisHeader = this
+							ReferenceHeaderButton(thisHeader)
+							gg = 1
+						}
+						if (page == 'search_posts') {
+							showPage('Posts');
+							historyPush('Posts');
+							ClearPosts();
+							Posts();
+							gg = 1
+						}
+						if (page == 'Control') {
+							if (localStorage.Control == 'On') {
+								Control('Off');
+							} else {
+								Control('On');
+							}
+							gg = 1
+						}
+						if (page == 'change_password') {
+							url = window.location.origin + '/' + user_id + '/change_password/';
+							window.open(url, '_self');
+						}
+						if (page == 'messages') {
+							const user_id = document.getElementById('user_id').innerHTML
+							const this_user_id = button.name.replace('messageTo','')
+							redirect(page, user_id, this_user_id)
+							Messenger('On');
+							gg = 1
+						}
+						if (page == 'CloseControl') {
+							Control('Off');
+							gg = 1
+						}
+						if (page == 'CloseMessenger') {
+							Messenger('Off');
+							gg = 1
+						}
+						if (page == 'friend_request') {
+							id = button.name
+							classB = button.className
+							if (classB == 'btn btn-primary') {
+								sendFriendRequest(id)
+							}
+							if (classB == 'btn btn-danger') {
+								cancelFriendRequest(id)
+							}
+							toggleButton(id, classB)
+							gg = 1
+						}
+						if (page == 'send_message') {
+							messagesSend();
+							gg = 1
+						}
+						if (page == 'New') {
+							url = window.location.origin + '/' + user_id + '/WorkingPaper/MODEL';
+							window.open(url, '_self');
+						}
+						if (page == 'Save') {
+							Save()
+							gg = 1
+						}
+						if (page == 'Logout') {
+							url = window.location.origin + '/logout';
+							window.open(url, '_self');
+						}
+						home = [
+							'',
+							'Home',
+						]
+						if (home.includes(page)) {
+							page == 'Home'
+						}
+						if (page == 'Home') {
+							try {
+								a = document.getElementById('Authenticated')
+								showPage(page)
+								gg = 1
+							} catch {
+								url = window.location.origin + '/login/'
+								window.open(url, '_self');
+							}
+						}
+						if (page == 'Posts') {
+							PostsUrl()
+						}
+						profile = [
+							'profile',
+						]
+						if (profile.includes(page)) {
+							redirect(page, user_id)
+							gg = 1
+						}
+						if (gg < 1) {
+							showPage(page);
+							historyPush(page);
+							Compile();
+						}
+					}
+				}
+			}
+
+			function ShortCuts(id, page, position) {
+				localStorage.setItem('position', position)
+				showPage(page)
+				historyPush(page)
+				ShortCutsLinks = [
+					'Context',
+					'IntrinsicValues',
+					'CapitalizationRates',
+					'CapitalizedCashFlow',
+					'CapitalizedIncome',
+					'FinancialRatios',
+					'AdditionalInformation',
+					'Summary',
+					'Anomalies',
+					'MaterialityThreshold',
+					'ProcedureAnnualBalanceSheets',
+					'ProcedureAnnualIncomeStatements',
+					'ProcedureAnnualComprehensiveIncome',
+					'ProcedureAnnualShareholdersEquity',
+					'ProcedureAnnualCashFlow',
+					'AnnualBalanceSheets',
+					'AnnualIncomeStatements',
+					'AnnualComprehensiveIncome',
+					'AnnualShareholdersEquity',
+					'AnnualCashFlow',
+					'AnnualTrialBalances',
+				]
+				if (ShortCutsLinks.includes(page)) {
+					a = id.replace('ShortCut', '1')
+					if (a == 'MaterialityThresholdValue1') {
+						a = a.replace('1','6')
+					}
+					a = document.getElementById(a);
+					window.scrollTo(0, 0);
+				}
+				try {
+					a.focus();
+					a.select();
+				} catch {}
+			}
+
+			function ReferenceHeaderButton(thisHeader) {
+				Rows = document.getElementsByClassName('Reference')
+				References = []
+				for (let i = 0; i < Rows.length; i++) {
+					try {
+						//
+						a = Rows[i].id.replace('.Row', '.1');
+						b = Rows[i].id.replace('.Row', '.2');
+						c = Rows[i].id.replace('.Row', '.3');
+						d = Rows[i].id.replace('.Row', '.4');
+						e = Rows[i].id.replace('.Row', '.5');
+						f = Rows[i].id.replace('.Row', '.6');
+						g = Rows[i].id.replace('.Row', '.7');
+						h = Rows[i].id.replace('.Row', '.8');
+						//
+						aa = document.getElementById(a).value;
+						bb = document.getElementById(b).value;
+						cc = document.getElementById(c).value;
+						dd = document.getElementById(d).value;
+						ee = document.getElementById(e).value;
+						ff = document.getElementById(f).value;
+						gg = document.getElementById(g).value;
+						hh = document.getElementById(h).value;
+						ii = Rows[i].style.display;
+						//
+						a = [Rows[i].id, aa, 'Reference', bb, cc, dd, ee, ff, gg, hh, ii]
+						//
+						References.push(a)
+					} catch {}
+				}
+				header = []
+				for (let i = 0; i < Rows.length; i++) {
+					//
+					if (thisHeader.innerHTML == 'Description') {
+						r = Rows[i].id.replace('.Row', '.1')
+						s = document.getElementById(r).value
+						gg = 1
+					}
+					if (thisHeader.innerHTML == 'Reference') {
+						r = Rows[i].id.replace('.Row', '.2')
+						s = document.getElementById(r).value
+						gg = 3
+					}
+					if (thisHeader.innerHTML == 'Status') {
+						r = Rows[i].id.replace('.Row', '.3')
+						s = document.getElementById(r).value
+						gg = 4
+					}
+					if (thisHeader.innerHTML == 'Work In Progress') {
+						r = Rows[i].id.replace('.Row', '.4')
+						s = document.getElementById(r).value
+						gg = 5
+					}
+					if (thisHeader.innerHTML == 'Prepared') {
+						r = Rows[i].id.replace('.Row', '.5')
+						s = document.getElementById(r).value
+						gg = 6
+					}
+					if (thisHeader.innerHTML == 'Date Prepared') {
+						r = Rows[i].id.replace('.Row', '.6')
+						s = document.getElementById(r).value
+						gg = 7
+					}
+					if (thisHeader.innerHTML == 'Reviewed') {
+						r = Rows[i].id.replace('.Row', '.7')
+						s = document.getElementById(r).value
+						gg = 8
+					}
+					if (thisHeader.innerHTML == 'Date Reviewed') {
+						r = Rows[i].id.replace('.Row', '.8')
+						s = document.getElementById(r).value
+						gg = 9
+					}
+					header.push(s)
+				}
+				header = header.sort()
+				//
+				for (let i = 0; i < Rows.length; i++) {
+					z = 0
+					for (let j = 0; j < Rows.length; j++) {
+						if (z == 1) {
+						} else {
+							if (References[i][gg] == header[j]) {
+								References[i].push(j)
+								header[j] = 'sorted'
+								z = 1
+							};
+						};
+					};
+				};
+				//
+				var list = document.createElement('tbody');
+				for (let i = 0; i < Rows.length; i++) {
+					for (let j = 0; j < Rows.length; j++) {
+						if (References[j][11] == [i]) {
+							var name = References[j][1];
+							var tr = document.createElement('tr');
+							tr.className = "Reference";
+							tr.style.display = References[j][10];
+							c = i + 1
+							var r = "FileProperty" + c;
+							tr.id = r + '.Row';
+							b = 1 
+							var Reference = References[j][3];
+							var Status = References[j][4];
+							var WorkInProgress = References[j][5];
+							var Prepared = References[j][6];
+							var DatePrepared = References[j][7];
+							var Reviewed = References[j][8];
+							var DateReviewed = References[j][9];
+							AddFile(name, tr, b, r, list, Reference, Status, WorkInProgress, Prepared, DatePrepared, Reviewed, DateReviewed);
+							list.appendChild(tr)
+							//                                        
+						}
+					}
+				}
+				document.getElementById('FilesDetails').innerHTML = list.innerHTML;
+			}
+
+			function FilesPage(page) {
+				if (page == 'Files') {
+					showPage(page);
+					historyPush(page)
+					ReferenceVisibility();
+					document.getElementById('FilesLabel').innerHTML = "FILES";
+				} else {
+					if (page ==  'CurrentAssetsFiles') {
+						SupportingDocumentsCurrentAssets();
+					}
+					if (page ==  'NonCurrentAssetsFiles') {
+						SupportingDocumentsNonCurrentAssets();
+					}
+					if (page ==  'CurrentLiabilitiesFiles') {
+						SupportingDocumentsCurrentLiabilities();
+					}
+					if (page ==  'NonCurrentLiabilitiesFiles') {
+						SupportingDocumentsNonCurrentLiabilities();
+					}
+					if (page ==  'ShareholdersEquityFiles') {
+						SupportingDocumentsShareholdersEquity();
+					}
+					if (page ==  'GrossMarginFiles') {
+						SupportingDocumentsGrossMargin();
+					}
+					if (page ==  'OperatingExpensesFiles') {
+						SupportingDocumentsOperatingExpenses();
+					}
+					if (page ==  'ImpairmentAndRestructuringFiles') {
+						SupportingDocumentsImpairmentAndRestructuringFiles();
+					}
+					if (page ==  'NonOperatingExpensesFiles') {
+						SupportingDocumentsNonOperatingExpenses();
+					}
+					if (page ==  'EquityMethodInvesteesIncomeFiles') {
+						SupportingDocumentsEquityMethodInvesteesIncome();
+					}
+					if (page ==  'DiscontinuedOperationsFiles') {
+						SupportingDocumentsDiscontinuedOperations();
+					}
+					if (page ==  'IncomeTaxFiles') {
+						SupportingDocumentsIncomeTax();
+					}
+					if (page ==  'OtherComprehensiveIncomeFiles') {
+						SupportingDocumentsOtherComprehensiveIncome();
+					}
+					if (page ==  'OperatingActivitiesFiles') {
+						SupportingDocumentsOperatingActivities();
+					}
+					if (page ==  'InvestingActivitiesFiles') {
+						SupportingDocumentsInvestingActivities();
+					}
+					if (page ==  'FinancingActivitiesFiles') {
+						SupportingDocumentsFinancingActivities();
+					}
+					if (page ==  'EffectOfExchangeRateOnCashFiles') {
+						SupportingDocumentsEffectOfExchangeRateOnCash();
+					}
+					if (page ==  'MissionFiles') {
+						SupportingDocumentsMission();
+					}
+					if (page ==  'MaterialityFiles') {
+						SupportingDocumentsMateriality();
+					}
+					if (page ==  'BalanceSheetsProcedureFiles') {
+						SupportingDocumentsBalanceSheetsProcedure();
+					}
+					if (page ==  'IncomeStatementsProcedureFiles') {
+						SupportingDocumentsIncomeStatementsProcedure();
+					}
+					if (page ==  'ComprehensiveIncomeProcedureFiles') {
+						SupportingDocumentsComprehensiveIncomeProcedure();
+					}
+					if (page ==  'ShareholdersEquityProcedureFiles') {
+						SupportingDocumentsShareholdersEquityProcedure();
+					}
+					if (page ==  'CashFlowProcedureFiles') {
+						SupportingDocumentsCashFlowProcedure();
+					}
+					if (page ==  'AnomaliesFiles') {
+						SupportingDocumentsAnomalies();
+					}
+					if (page ==  'OpinionFiles') {
+						SupportingDocumentsOpinion();
+					}
+					showPage('Files');
+					historyPush('Files')
+				}
+			}
+
+			function SupportingDocuments(key) {
+				Rows = document.getElementsByClassName('Reference');
+				z = 0
+				for(let i = 0; i < Rows.length; i++) {
+					var row = Rows[i].id;
+					input = row.replace('.Row', '.2');
+					input = document.getElementById(input).value.split('-')[0];
+					a = 'none';
+					if (input == key) {
+						a = '';
+						z = z + 1
+					}
+					document.getElementById(row).style.display = a;
+				}
+				if (z > 0) {
+					a = '';
+				} else {
+					a = 'none';
+				}
+				document.getElementById('ReferenceHeaderRow').style.display = a;
+			}
+
+			function SupportingDocumentsCurrentAssets() {
+				const key = document.getElementById('CurrentAssetsREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ CURRENT ASSETS (" + document.getElementById('CurrentAssetsREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsNonCurrentAssets() {
+				const key = document.getElementById('NonCurrentAssetsREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ NON-CURRENT ASSETS (" + document.getElementById('NonCurrentAssetsREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsCurrentLiabilities() {
+				const key = document.getElementById('CurrentLiabilitiesREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ CURRENT LIABILITIES (" + document.getElementById('CurrentLiabilitiesREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsNonCurrentLiabilities() {
+				const key = document.getElementById('NonCurrentLiabilitiesREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ NON-CURRENT LIABILITIES (" + document.getElementById('NonCurrentLiabilitiesREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsShareholdersEquity() {
+				const key = document.getElementById('ShareholdersEquityREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ SHAREHOLDERS' EQUITY (" + document.getElementById('ShareholdersEquityREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsGrossMargin() {
+				const key = document.getElementById('GrossMarginREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ GROSS MARGIN (" + document.getElementById('GrossMarginREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsOperatingExpenses() {
+				const key = document.getElementById('OperatingExpensesREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ OPERATING EXPENSES (" + document.getElementById('OperatingExpensesREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsImpairmentAndRestructuring() {
+				const key = document.getElementById('ImpairmentAndRestructuringREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ IMPAIRMENT AND RESTRUCTURING (" + document.getElementById('ImpairmentAndRestructuringREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsNonOperatingExpenses() {
+				const key = document.getElementById('NonOperatingExpensesREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ NON-OPERATING EXPENSES (" + document.getElementById('NonOperatingExpensesREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsEquityMethodInvesteesIncome() {
+				const key = document.getElementById('EquityMethodInvesteesIncomeREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ EQUITY METHOD INVESTEES INCOME (" + document.getElementById('EquityMethodInvesteesIncomeREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsDiscontinuedOperations() {
+				const key = document.getElementById('DiscontinuedOperationsREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ DISCONTINUED OPERATIONS (" + document.getElementById('DiscontinuedOperationsREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsIncomeTax() {
+				const key = document.getElementById('IncomeTaxesREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ INCOME TAXES (" + document.getElementById('IncomeTaxesREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsOtherComprehensiveIncome() {
+				const key = document.getElementById('OtherComprehensiveIncomeREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ COMPREHENSIVE INCOME (" + document.getElementById('OtherComprehensiveIncomeREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsOperatingActivities() {
+				const key = document.getElementById('OperatingActivitiesREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ OPERATING ACTIVITIES (" + document.getElementById('OperatingActivitiesREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsInvestingActivities() {
+				const key = document.getElementById('InvestingActivitiesREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ INVESTING ACTIVITIES (" + document.getElementById('InvestingActivitiesREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsFinancingActivities() {
+				const key = document.getElementById('FinancingActivitiesREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ FINANCING ACTIVITIES (" + document.getElementById('FinancingActivitiesREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsMission() {
+				const key = document.getElementById('MissionREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ MISSION (" + document.getElementById('MissionREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsMateriality() {
+				const key = document.getElementById('MaterialityREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ MATERIALITY THRESHOLD (" + document.getElementById('MaterialityREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsBalanceSheetsProcedure() {
+				const key = document.getElementById('BalanceSheetsProcedureREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ BALANCE SHEETS PROCEDURES (" + document.getElementById('BalanceSheetsProcedureREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsIncomeStatementsProcedure() {
+				const key = document.getElementById('IncomeStatementsProcedureREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ INCOME STATEMENTS PROCEDURES (" + document.getElementById('IncomeStatementsProcedureREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsComprehensiveIncomeProcedure() {
+				const key = document.getElementById('ComprehensiveIncomeProcedureREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ COMPREHENSIVE INCOME PROCEDURES (" + document.getElementById('ComprehensiveIncomeProcedureREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsShareholdersEquityProcedure() {
+				const key = document.getElementById('ShareholdersEquityProcedureREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ SHAREHOLDERS' EQUITY PROCEDURES (" + document.getElementById('ShareholdersEquityProcedureREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsCashFlowProcedure() {
+				const key = document.getElementById('CashFlowProcedureREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ CASH FLOW PROCEDURES (" + document.getElementById('CashFlowProcedureREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsAnomalies() {
+				const key = document.getElementById('AnomaliesREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ ANOMALIES (" + document.getElementById('AnomaliesREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function SupportingDocumentsOpinion() {
+				const key = document.getElementById('OpinionREF6').value;
+				SupportingDocuments(key);
+				document.getElementById('FilesLabel').innerHTML = "FILES \\ OPINION (" + document.getElementById('OpinionREF6').value + ") \\"
+				window.scrollTo(0, 0)
+			}
+
+			function Notifications(Arg) {
+				if (Arg == 'On') {
+					c = 'none'
+					m = 'none'
+					g = 'none'
+					t = 'block'
+					Panel(c, m, g, t, 'Notifications')
+				} else {
+					closePanel()
+				}
+			}
+
+			function MessengerNotifications(Arg) {
+				if (Arg == 'On') {
+					c = 'none'
+					m = 'none'
+					g = 'block'
+					t = 'none'
+					Panel(c, m, g, t, 'MessengerNotifications')
+				} else {
+					closePanel()
+				}
+			}
+
+			function Messenger(Arg) {
+				if (Arg == 'On') {
+					c = 'none'
+					m = 'block'
+					g = 'none'
+					t = 'none'
+					Panel(c, m, g, t, 'Messenger')
+				} else {
+					closePanel()
+				}
+				messageInputFocus();
+			}
+
+			function Control(Arg) {
+				if (Arg == 'On') {
+					c = 'block'
+					m = 'none'
+					g = 'none'
+					t = 'none'
+					Panel(c, m, g, t, 'Control')
+				} else {
+					closePanel()
+				}
+			}
+
+			function Panel(c, m, g, t, r) {
+				z = 'border-bottom: solid #0D47A1;'
+				s = 'border-bottom: solid white;'
+				document.getElementsByClassName('Control')[0].style.display = c;
+				document.getElementsByClassName('Messenger')[0].style.display = m;
+				document.getElementsByClassName('MessengerNotifications')[0].style.display = g;
+				document.getElementsByClassName('Notifications')[0].style.display = t;
+				resize(c, m, g, t)
+				document.getElementById('ControlButton').style = s
+				document.getElementById('MessengerButton').style = s
+				document.getElementById('MessengerNotificationsButton').style = s
+				document.getElementById('NotificationsButton').style = s
+				document.getElementById(r + 'Button').style = z
+				localStorage.setItem('Control', 'Off')
+				localStorage.setItem('Messenger', 'Off')
+				localStorage.setItem('MessengerNotifications', 'Off')
+				localStorage.setItem('Notifications', 'Off')
+				localStorage.setItem(r, 'On')
+			}
+
+			function resize(c, m, g, t) {
+				a = ''
+				if (c == 'none') {
+					if (m == 'none') {
+						if (g == 'none') {
+							if (t == 'none') {
+								a = '100%';
+							}
+						}
+					} else {
+						a = ''
+					}
+				} else {
+					a = ''
+				}
+				if (a == '') {
+					if (window.innerWidth > 799) {
+						a = '80%';
+					} else {
+						a = '60%';
+					}
+				}
+				document.getElementsByClassName('clockdb')[0].style.width = a;
+				document.getElementsByClassName('loading')[0].style.width = a;
+			}
+
+			window.addEventListener('resize', function() {
+				c = document.getElementsByClassName('Control')[0].style.display;
+				m = document.getElementsByClassName('Messenger')[0].style.display
+				g = document.getElementsByClassName('MessengerNotifications')[0].style.display
+				t = document.getElementsByClassName('Notifications')[0].style.display
+				resize(c, m, g, t)
+				try {
+					b = window.location.href.replace(window.location.origin,'')
+					b = b.split('/')[2]
+					if (b == 'WorkingPaper') {
+						innerWidthColumn();
+					}
+				} catch {}
+			})
+
+			function innerWidthColumn() {
+				var w = window.innerWidth;
+				if (w < 799) {
+					disp = 'none';
+				} else {
+					disp = '';
+				}
+				Columns(disp);
+			}
+			
+            function Columns(disp) {
+                a = document.getElementsByClassName('C2');
+                for(let i = 0; i < a.length; i++) { 
+                    document.getElementsByClassName('C2')[i].style.display = disp;
+                };
+                a = document.getElementsByClassName('C3');
+                for(let i = 0; i < a.length; i++) { 
+                    document.getElementsByClassName('C3')[i].style.display = disp;
+                };
+                a = document.getElementsByClassName('C4');
+                for(let i = 0; i < a.length; i++) { 
+                    document.getElementsByClassName('C4')[i].style.display = disp;
+                };
+                a = document.getElementsByClassName('C5');
+                for(let i = 0; i < a.length; i++) { 
+                    document.getElementsByClassName('C5')[i].style.display = disp;
+                };
+                a = document.getElementsByClassName('C6');
+                for(let i = 0; i < a.length; i++) { 
+                    document.getElementsByClassName('C6')[i].style.display = disp;
+                };
+                document.getElementById('Clockφ2').style.display = disp;
+                document.getElementById('Clockφ3').style.display = disp;
+                document.getElementById('Clockφ4').style.display = disp;
+                document.getElementById('Bridgeφ2').style.display = disp;
+                document.getElementById('Bridgeφ3').style.display = disp;
+                document.getElementById('Bridgeφ4').style.display = disp;
+                localStorage.setItem('Column', 1)
+            }
+
+			function controlPanel() {
+				try {
+					a = window.location.href.replace(window.location.origin,'').split('/')[2]
+					if (a == 'WorkingPaper') {
+						a = 'Working Paper'
+						wp = 'block'
+						p = 'none'
+					} else {
+						a = 'Posts'
+						wp = 'none'
+						p = 'block'
+					}
+					document.getElementsByClassName('controlWorkingPaper')[0].style.display = wp;
+					document.getElementsByClassName('controlPosts')[0].style.display = p;
+					document.getElementsByClassName('controlHeaderTitle')[0].innerHTML = a;
+				} catch {}
+			};
+
+			function closePanel() {
+				c = 'none'
+				m = 'none'
+				g = 'none'
+				t = 'none'
+				document.getElementsByClassName('Control')[0].style.display = c;
+				document.getElementsByClassName('Messenger')[0].style.display = m;
+				document.getElementsByClassName('MessengerNotifications')[0].style.display = g;
+				document.getElementsByClassName('Notifications')[0].style.display = t;
+				document.getElementsByClassName('clockdb')[0].style.width = '100%';
+				document.getElementsByClassName('loading')[0].style.width = '100%';
+				localStorage.setItem('Control', 'Off')
+				localStorage.setItem('Messenger', 'Off')
+				localStorage.setItem('MessengerNotifications', 'Off')
+				localStorage.setItem('Notifications', 'Off')
+			}
+
+			function toggleButton(id, classB) {
+				if (classB == 'btn btn-danger') {
+					classA = 'btn btn-primary'
+					innerHTML = 'Send Friend Request'
+				} else {
+					classA = 'btn btn-danger'
+					innerHTML = 'Cancel Friend Request'
+				}
+				a = document.getElementsByName(id)[0].className = classA
+				a = document.getElementsByName(id)[0].innerHTML = innerHTML
+				b = document.getElementsByName(id)[1].className = classA
+				a = document.getElementsByName(id)[1].innerHTML = innerHTML
+			}
+
+			function hideDiv(div) {
+				skip = [
+					// loading
+					'id_loading_spinner',
+					// header
+					'id_chat_notification_dropdown_toggle',
+					'id_chat_notifications_container',
+					'id_notification_dropdown_toggle',
+					'id_general_notifications_container',
+					// room
+					'id_chatroom_card',
+					'id_room_title',
+					'id_chat_log_container',
+					'id_chatroom_loading_spinner_container',
+					'id_chatroom_loading_spinner',
+					'id_client_error_modal',
+				]
+				if (skip.includes(div.id)) {
+				} else {
+					z = 0
+					try {
+						a = parseInt(div.id.replace('m',''))
+						if (isNaN(a)) {
+							z = 1
+						}
+					} catch {
+						z = 1
+					}
+					if (z == 1) {
+						if (div.id != '') {
+							div.style.display = 'none';
+						}
+					}
+				}
+			}
+
+			document.addEventListener('DOMContentLoaded', function() {
+				var loading = document.getElementById('id_loading_spinner')
+				loading.style.display = 'block'
+				hideIf = [
+					'',
+					'login',
+					'register',
+					'password_reset',
+					'change_password',
+					'done',
+				]
+				display(hideIf);
+				onePageAppOnLoad(hideIf);
+				try {
+					document.getElementById('SearchBar').select()            
+				} catch {
+					try {
+						document.getElementById('inputEmail').select()            
+					} catch {
+						try {
+							document.getElementById('id_email').select()            
+						} catch {}
+					}
+				}
+				a = document.getElementsByClassName('NotAuthenticated')[0]
+				if (a != undefined) {
+					document.getElementsByClassName('HeaderMenu')[0].style.width = '100%';
+				} else {
+					Control('On')
+				}
+			});
+
+		</script>
+
+	</body>
+
+</html>

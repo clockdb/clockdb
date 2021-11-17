@@ -1,0 +1,234 @@
+<style type="text/css">
+    .image-container{
+        max-width: 250px;
+        height: auto;
+    }
+    .field-heading{
+        color: var(--secondary-text-color);
+    }
+    .icon-container:hover {
+        opacity: 0.3;
+        cursor: pointer;
+    }
+    .friends-icon{
+        color: #4287f5;
+        font-size: 40px;
+    }
+    .person-add-icon{
+        color: #4287f5;
+        font-size: 40px;
+    }
+    .friend-text{
+        font-weight: 500;
+        color: black;
+        padding-bottom: 27px;
+    }
+    .friends-btn{
+        background-color: #cccccc;
+        border-color: #cccccc;
+        color: #000;
+        font-weight: 500;
+    }
+    .friends-btn:hover {
+        background-color: #bfbfbf;
+        border-color: #bfbfbf;
+    }
+    .friends-list-btn {
+        background-color: transparent;
+        outline: none;
+        border: 0;
+        display: inline-flex;
+        align-items: center;
+        vertical-align: middle;
+    }
+    .friends-list-btn:active {
+        outline: none;
+        
+    }
+    .friends-list-btn:focus {
+        outline: none;
+        
+    }
+    .message-friend-btn {
+        background-color: transparent;
+        outline: none;
+        border: 0;
+        display: inline-flex;
+        align-items: center;
+        vertical-align: middle; 
+    }
+    .message-friend-btn:active {
+        outline: none;
+        
+    }
+    .message-friend-btn:focus {
+        outline: none;
+        
+    }
+    .dropdown-toggle::after { 
+        content: none; 
+    }
+    .material-icons{
+        font-size: 30px;
+    }
+    .material-icons:hover{
+        cursor: pointer;
+    }
+    .confirm-friend-request{
+        color: green;
+    }
+    .confirm-friend-request:hover {
+        opacity: 0.3;
+    }
+    .decline-friend-request:hover {
+        opacity: 0.3;
+    }
+    .decline-friend-request{
+        color: red;
+    }
+    .message-btn-text{
+        font-weight: 500;
+        padding-bottom: 28px;
+    }
+    .profile-card{
+        width: 400px;
+        float: left;
+    }
+    .profile-header{
+        width: 350px;
+		overflow: hidden;
+		float: left;
+    }
+    .profile-header-image{
+        width: 100%;
+        float: left;
+        overflow: hidden;
+        text-align: center
+    }
+    .profile-header-section{
+        width: 100%;
+        display: inline-block;
+    }
+    .profile-section{
+        margin-top: 3%;
+        width: 100%;
+		overflow: hidden;
+		float: left;
+    }
+    .card-body{
+        width: 100%;
+		overflow: hidden;
+		float: left;
+    }
+</style>
+
+<div id="profile" style="display: none;">
+	<div class="profile-margin">
+        <div class="profile-card">
+            <div class="card profile-card">
+                <div class="card-body">
+					<div class="d-flex flex-column justify-content-center p-4">
+                        <div class="profile-header">
+                            <div class="profile-header-image">
+                                <img class="profile-image" alt="clockdb logo" id="id_profile_image" src="{profile_image}" 
+                                    style="border-radius: 50%;
+                                    object-fit: cover;
+                                    height: 300px;
+                                    width: 300px">
+                            </div>
+                            <div class="profile-header-section">
+                                <p class="mt-4 mb-1 field-heading">Email</p>
+                                {%  if is_self %}
+                                    <h6>{{email}}</h6>
+                                {% else %}
+                                    {% if hide_email %}
+                                        <h6>**********</h6>
+                                    {% else %}
+                                        <h6>{{email}}</h6>
+                                    {% endif %}
+                                {% endif %}
+                                <p class="mt-4 mb-1 field-heading">Username</p>
+                                <h6>{{username}}</h6>
+            
+                                {% if is_self %}
+                                <button class="mt-4 btn btn-primary" data-page="edit">Update</button>
+                                {% endif %}    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="profile-card">
+            <div class="card profile-card">
+                <div class="card-body">
+                    <div class="d-flex flex-column justify-content-center p-4">
+                        <!-- IF AUTH -->
+                        {% if request.user.is_authenticated %}
+                        <div class="profile-section">
+                            <div class="card-body">
+            
+                                <!-- FRIEND REQUEST TO -->
+                                {% if request_sent == 0 %}
+                                    <span class="friend-text align-items-center mr-2">Accept Friend Request</span>
+                                    <span id="id_cancel_{{id}}" class="decline-friend-request material-icons p-1" onclick='triggerDeclineFriendRequest("{{pending_friend_request_id}}")'>cancel</span>
+                                    <span id="id_confirm_{{id}}" class="confirm-friend-request material-icons p-1" onclick='triggerAcceptFriendRequest("{{pending_friend_request_id}}")'>check</span>
+                                {% endif %}
+            
+                                {% if is_friend == False and is_self == False %}
+                                    {% if request_sent == 1 %}
+                                    <button class="btn btn-danger" id="id_cancel_friend_request_btn" data-page="friend_request" name="{{id}}">
+                                        Cancel Friend Request
+                                    </button>
+                                    {% endif %}
+                                    {% if request_sent == -1 %}
+                                    <button class="btn btn-primary" id="id_send_friend_request_btn" data-page="friend_request" name="{{id}}">
+                                        Send Friend Request
+                                    </button>
+                                    {% endif %}
+                                {% endif %} 
+                                    
+                                <!-- FRIENDS -->
+                                {% if is_friend %}
+                                <button class="btn btn-secondary dropdown-toggle friends-btn" type="button" id="id_friends_toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-page="#">Friends</button>
+                                <div class="dropdown-menu" aria-labelledby="id_friends_toggle">
+                                    <a class="dropdown-item" onclick="removeFriend('{{id}}', onFriendRemoved)">Unfriend</a>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- FRIENDS LIST -->
+                                <button data-page="Network" class="friends-list-btn">
+                                    <span class="material-icons mr-2 friends-icon">contact_page</span><span>Network ({{friends|length}})</span>
+                                </button>
+            
+                                <!-- FRIEND REQUESTS FROM -->
+                                {% if friend_requests %}
+                                <button data-page="friend_requests" class="friends-list-btn">
+                                    <span class="material-icons mr-2 person-add-icon">person_add</span><span>Friend Requests ({{friend_requests|length}})</span>
+                                </button>
+                                {% endif %}
+            
+                                <!-- MESSAGE -->
+                                {% if is_friend %}
+                                <button class="virgin" data-page="messages" name="messageTo{{id}}">
+                                    <div class="material-icons mr-2">message</div><span>Message</span>
+                                </button>
+                                {% endif %}
+            
+                                <!-- PROFILE CONTENT -->
+                                {% if is_self %}
+                                <button class="button" data-page="Logout">
+                                    <span>Logout</span>
+                                </button>
+                                {% endif %}
+            
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
